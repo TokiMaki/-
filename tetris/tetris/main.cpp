@@ -24,8 +24,8 @@
 #define WALL 1
 #define INACTIVE_BLOCK 2 // 이동이 완료된 블록값 
 
-#define MAIN_X 11 //게임판 가로크기 
-#define MAIN_Y 23 //게임판 세로크기 
+#define MAIN_X 11 //게임판 가로크기
+#define MAIN_Y 23 //게임판 세로크기
 #define MAIN_X_ADJ 3 //게임판 위치조정 
 #define MAIN_Y_ADJ 1 //게임판 위치조정 
 
@@ -71,7 +71,11 @@ struct Gamestatus {
     int main_org[MAIN_Y][MAIN_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨 
     int main_cpy[MAIN_Y][MAIN_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
                                   //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림) 
-                                  //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침 
+                                  //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
+    int item;       // 0 키 반전
+                    // 1 상대 일시적 스피드 업
+                    // 2 내려오고 있는 블록 모양 바꾸기
+    int target;
 };
 
 struct Flag {
@@ -80,6 +84,7 @@ struct Flag {
     bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag 
     bool space_key_on = 0; //hard drop상태임을 알려주는 flag 
 };
+
 
 Gamestatus gamestatus;
 Flag flag;
@@ -100,7 +105,7 @@ void reset_main_cpy(void); //copy 게임판(gamestatus.main_cpy[][]를 초기화)
 void draw_map(void); //게임 전체 인터페이스를 표시 
 void draw_main(void); //게임판을 그림 
 void new_block(void); //새로운 블록을 하나 만듦 
-void check_key(void); //키보드로 키를 입력받음 
+void check_key(void); //키보드로 키를 입력받음
 void drop_block(float fTimeElapsed = 100.f); //블록을 아래로 떨어트림 
 int check_crush(int bx, int by, int rotation); //bx, by위치에 rotation회전값을 같는 경우 충돌 판단 
 void move_block(int dir); //dir방향으로 블록을 움직임 
@@ -214,8 +219,8 @@ void reset(void) {
     cnt = 0;
     gamestatus.speed = 1;
 
-    system("cls"); //화면지움 
-    reset_main(); // gamestatus.main_org를 초기화 
+    system("cls"); //화면지움
+    reset_main(); // gamestatus.main_org를 초기화
     draw_map(); // 게임화면을 그림
     draw_main(); // 게임판을 그림 
 
@@ -397,19 +402,19 @@ void check_key(void) {
 
 void drop_block(float fTimeElapsed) {
     int i, j;
+    if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+        for (i = 0; i < MAIN_Y; i++) { //현재 조작중인 블럭을 굳힘 
+            for (j = 0; j < MAIN_X; j++) {
+                if (gamestatus.main_org[i][j] == ACTIVE_BLOCK) gamestatus.main_org[i][j] = INACTIVE_BLOCK;
+            }
+        }
+        flag.crush_on = 0; //flag를 끔 
+        check_line(); //라인체크를 함 
+        flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
+        return; //함수 종료 
+    }
     if (fTimeElapsed >= gamestatus.speed) {
         if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == true) flag.crush_on = 0; //밑이 비어있으면 crush flag 끔
-        if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
-            for (i = 0; i < MAIN_Y; i++) { //현재 조작중인 블럭을 굳힘 
-                for (j = 0; j < MAIN_X; j++) {
-                    if (gamestatus.main_org[i][j] == ACTIVE_BLOCK) gamestatus.main_org[i][j] = INACTIVE_BLOCK;
-                }
-            }
-            flag.crush_on = 0; //flag를 끔 
-            check_line(); //라인체크를 함 
-            flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
-            return; //함수 종료 
-        }
         if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == true) move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동 
         if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) flag.crush_on++; //밑으로 이동이 안되면  crush flag를 켬
         gamestatus.fDropBlockTime = 0.0f;
@@ -539,7 +544,7 @@ void check_line(void) {
             // Sleep(500);
             // score += (combo * gamestatus.level * 100);
             reset_main_cpy(); //텍스트를 지우기 위해 gamestatus.main_cpy을 초기화.
-//(gamestatus.main_cpy와 gamestatus.main_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
+        //(gamestatus.main_cpy와 gamestatus.main_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
         }
         // gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", (cnt <= 10) ? 10 - cnt : 0);
         // gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE); printf("        %6d", score);
