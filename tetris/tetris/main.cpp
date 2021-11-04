@@ -1,9 +1,8 @@
-#include "stdafx.h"
 #include "GameClient.h"
 
-int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
+//int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
 int STATUS_Y_LEVEL; //LEVEL 정보표시위치Y 좌표 저장
-int STATUS_Y_SCORE; //SCORE 정보표시위치Y 좌표 저장
+//int STATUS_Y_SCORE; //SCORE 정보표시위치Y 좌표 저장
 
 int blocks[7][4][4][4] = {
 {{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭
@@ -593,7 +592,7 @@ void check_level_up(void) {
         flag.level_up_on = 0; //레벨업 flag꺼줌
 
         gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL); printf(" LEVEL : %5d", gamestatus.level); //레벨표시 
-        gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", 10 - cnt); // 레벨목표 표시 
+        // gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", 10 - cnt); // 레벨목표 표시 
 
     }
 }

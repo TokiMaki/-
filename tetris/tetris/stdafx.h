@@ -1,12 +1,13 @@
 #pragma once
 
-#include<stdio.h>
+#include<winsock2.h>
 #include<windows.h>
+#include<stdio.h>
 #include<conio.h>
 #include<time.h>
 #include<stdlib.h>
 #include<iostream>
-#include<winsock.h>
+
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "ws2_32")
 
