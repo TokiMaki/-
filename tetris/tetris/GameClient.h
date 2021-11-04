@@ -38,9 +38,9 @@ private:
 	void err_quit(char* msg);                       //에러 발생 시 해당 내용 출력
 	void err_display(char* msg);
 
-//public:
-//	GameClient();    //생성 시 윈속초기화, 소켓 생성, connect를 수행
-//	~GameClient(); //소멸 시 closesocket 과 윈속종료 수행
+public:
+	GameClient();    //생성 시 윈속초기화, 소켓 생성, connect를 수행
+	~GameClient(); //소멸 시 closesocket 과 윈속종료 수행
 //public:
 //	void TitleSceneSend(enum MSG_MathcingSystem);
 //	//Msg_Ready 나 Msg_ReadyCancel 를 MatchingThread 에 전송

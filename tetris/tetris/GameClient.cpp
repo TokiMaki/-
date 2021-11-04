@@ -1,5 +1,9 @@
 #include "GameClient.h"
 
+GameClient::GameClient() {}
+
+GameClient::~GameClient() {}
+
 // 소켓 함수 오류 출력 후 종료
 void GameClient::err_quit(char* msg)
 {
