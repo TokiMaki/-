@@ -1,41 +1,14 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS // 최신 VC++ 컴파일 시 경고 방지
-#pragma comment(lib, "ws2_32")
-#include <winsock2.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include<iostream>
-#include<fstream>
+#include "stdafx.h"
+#include "socket_err.h"
+#include "MatchMaking.h"
 using namespace std;
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
 
-// 소켓 함수 오류 출력 후 종료
-void err_quit(char* msg)
-{
-    LPVOID lpMsgBuf;
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL, WSAGetLastError(),
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR)&lpMsgBuf, 0, NULL);
-    MessageBox(NULL, (LPCTSTR)lpMsgBuf, msg, MB_ICONERROR);
-    LocalFree(lpMsgBuf);
-    exit(1);
-}
-
-// 소켓 함수 오류 출력
-void err_display(char* msg)
-{
-    LPVOID lpMsgBuf;
-    FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-        NULL, WSAGetLastError(),
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        (LPTSTR)&lpMsgBuf, 0, NULL);
-    printf("[%s] %s", msg, (char*)lpMsgBuf);
-    LocalFree(lpMsgBuf);
-}
+queue<SOCKADDR> MatchMakingQ; //대기 중인 클라이언트 소켓을 저장
+queue<int> test;
 
 // 사용자 정의 데이터 수신 함수
 int recvn(SOCKET s, char* buf, int len, int flags)
@@ -78,6 +51,12 @@ int main(int argc, char* argv[])
     serveraddr.sin_port = htons(SERVERPORT);
     retval = bind(listen_sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("bind()");
+
+    test.push(1);
+    test.push(3);
+    test.push(2);
+
+    HANDLE MatchMaking = CreateThread(NULL, 0, MatchMakingThread, &test, 0, NULL);
 
     // listen()
     retval = listen(listen_sock, SOMAXCONN);
