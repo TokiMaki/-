@@ -6,7 +6,9 @@
 #include<time.h>
 #include<stdlib.h>
 #include<iostream>
+#include<winsock.h>
 #pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "ws2_32")
 
 #define LEFT 75 //좌로 이동    //키보드값들 
 #define RIGHT 77 //우로 이동 

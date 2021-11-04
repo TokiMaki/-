@@ -34,9 +34,9 @@ private:
 	// SOCKET sock;
 	KeyInput m_keys;                                //클라이언트의 키입력을 저장
 	Gamestatus m_gamestatus[MAX_PLAYER];  	       //내 클라이언트의 게임 상태
-//private: //에러 발생 시 해당 내용 출력
-//	void err_quit(char* msg);
-//	void err_display(char* msg);
+private: //에러 발생 시 해당 내용 출력
+	void err_quit(char* msg);
+	void err_display(char* msg);
 //public:
 //	GameClient();    //생성 시 윈속초기화, 소켓 생성, connect를 수행
 //	~GameClient(); //소멸 시 closesocket 과 윈속종료 수행
