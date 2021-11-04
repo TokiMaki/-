@@ -1,10 +1,14 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS // 최신 VC++ 컴파일 시 경고 방지
 #include "stdafx.h"
 #include "socket_err.h"
+#include "MatchMaking.h"
 using namespace std;
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
+
+queue<SOCKADDR> MatchMakingQ; //대기 중인 클라이언트 소켓을 저장
+queue<int> test;
 
 // 사용자 정의 데이터 수신 함수
 int recvn(SOCKET s, char* buf, int len, int flags)
@@ -47,6 +51,12 @@ int main(int argc, char* argv[])
     serveraddr.sin_port = htons(SERVERPORT);
     retval = bind(listen_sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("bind()");
+
+    test.push(1);
+    test.push(3);
+    test.push(2);
+
+    HANDLE MatchMaking = CreateThread(NULL, 0, MatchMakingThread, &test, 0, NULL);
 
     // listen()
     retval = listen(listen_sock, SOMAXCONN);
