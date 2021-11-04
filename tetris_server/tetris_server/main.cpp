@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "socket_err.h"
 #include "MatchMaking.h"
+#include "GameServer.h"
 using namespace std;
 
 #define SERVERIP   "127.0.0.1"
