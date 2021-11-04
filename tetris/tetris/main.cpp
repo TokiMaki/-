@@ -1,6 +1,7 @@
 #include "stdafx.h"
+#include "GameClient.h"
 
-int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장 
+int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
 int STATUS_Y_LEVEL; //LEVEL 정보표시위치Y 좌표 저장
 int STATUS_Y_SCORE; //SCORE 정보표시위치Y 좌표 저장
 
@@ -21,31 +22,31 @@ int blocks[7][4][4][4] = {
  {0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0},{0,0,0,0,0,1,0,0,1,1,0,0,0,1,0,0}}
 }; //블록모양 저장 4*4공간에 블록을 표현 blcoks[b_type][b_rotation][i][j]로 사용
 
-struct KeyInput {
-    bool left = false;      //←
-    bool right = false;     //→
-    bool up = false;        //↑
-    bool down = false;      //←
-    bool space = false;     //hard drop space(한번에 맨 밑으로 내리기)
-};
-
-struct Gamestatus {
-    int bx, by; //이동중인 블록의 게임판상의 x,y좌표
-    int b_type; //블록 종류
-    int b_rotation; //블록 회전값
-    int b_type_next; //다음 블록값
-    int level; //현재 level
-    float speed; //블럭이 내려오는 속도 1이면 1초마다 한칸씩 내려옴
-    float fDropBlockTime = 0.0f;
-    int main_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨 
-    int main_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
-                                  //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림) 
-                                  //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
-    int item;       // 0 키 반전
-                    // 1 상대 일시적 스피드 업
-                    // 2 내려오고 있는 블록 모양 바꾸기
-    int target;
-};
+//struct KeyInput {
+//    bool left = false;      //←
+//    bool right = false;     //→
+//    bool up = false;        //↑
+//    bool down = false;      //←
+//    bool space = false;     //hard drop space(한번에 맨 밑으로 내리기)
+//};
+//
+//struct Gamestatus {
+//    int bx, by; //이동중인 블록의 게임판상의 x,y좌표
+//    int b_type; //블록 종류
+//    int b_rotation; //블록 회전값
+//    int b_type_next; //다음 블록값
+//    int level; //현재 level
+//    float speed; //블럭이 내려오는 속도 1이면 1초마다 한칸씩 내려옴
+//    float fDropBlockTime = 0.0f;
+//    int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 board_cpy로 복사됨 
+//    int board_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
+//                                  //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림) 
+//                                  //board_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
+//    int item;       // 0 키 반전
+//                    // 1 상대 일시적 스피드 업
+//                    // 2 내려오고 있는 블록 모양 바꾸기
+//    int target;
+//};
 
 struct Flag {
     bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
@@ -69,8 +70,8 @@ int score; //현재 점수
 
 void title(void); //게임시작화면
 void reset(void); //게임판 초기화 
-void reset_main(void); //메인 게임판(gamestatus.main_org[][]를 초기화)
-void reset_main_cpy(void); //copy 게임판(gamestatus.main_cpy[][]를 초기화)
+void reset_main(void); //메인 게임판(gamestatus.board_org[][]를 초기화)
+void reset_main_cpy(void); //copy 게임판(gamestatus.board_cpy[][]를 초기화)
 void draw_map(void); //게임 전체 인터페이스를 표시 
 void draw_main(void); //게임판을 그림 
 void new_block(void); //새로운 블록을 하나 만듦 
@@ -189,7 +190,7 @@ void reset(void) {
     gamestatus.speed = 1;
 
     system("cls"); //화면지움
-    reset_main(); // gamestatus.main_org를 초기화
+    reset_main(); // gamestatus.board_org를 초기화
     draw_map(); // 게임화면을 그림
     draw_main(); // 게임판을 그림 
 
@@ -203,34 +204,34 @@ void reset_main(void) { //게임판을 초기화
 
     for (i = 0; i < BOARD_Y; i++) { // 게임판을 0으로 초기화  
         for (j = 0; j < BOARD_X; j++) {
-            gamestatus.main_org[i][j] = 0;
-            gamestatus.main_cpy[i][j] = 100;
+            gamestatus.board_org[i][j] = 0;
+            gamestatus.board_cpy[i][j] = 100;
         }
     }
     for (j = 1; j < BOARD_X; j++) { //y값이 3인 위치에 천장을 만듦
-        gamestatus.main_org[3][j] = CEILLING;
+        gamestatus.board_org[3][j] = CEILLING;
     }
     for (i = 1; i < BOARD_Y - 1; i++) { //좌우 벽을 만듦  
-        gamestatus.main_org[i][0] = WALL;
-        gamestatus.main_org[i][BOARD_X - 1] = WALL;
+        gamestatus.board_org[i][0] = WALL;
+        gamestatus.board_org[i][BOARD_X - 1] = WALL;
     }
     for (j = 0; j < BOARD_X; j++) { //바닥벽을 만듦 
-        gamestatus.main_org[BOARD_Y - 1][j] = WALL;
+        gamestatus.board_org[BOARD_Y - 1][j] = WALL;
     }
 }
 
-void reset_main_cpy(void) { //gamestatus.main_cpy를 초기화 
+void reset_main_cpy(void) { //gamestatus.board_cpy를 초기화 
     int i, j;
 
     for (i = 0; i < BOARD_Y; i++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음 
-        for (j = 0; j < BOARD_X; j++) {  //이는 gamestatus.main_org와 같은 숫자가 없게 하기 위함 
-            gamestatus.main_cpy[i][j] = 100;
+        for (j = 0; j < BOARD_X; j++) {  //이는 gamestatus.board_org와 같은 숫자가 없게 하기 위함 
+            gamestatus.board_cpy[i][j] = 100;
         }
     }
 }
 
 void draw_map(void) { //게임 상태 표시를 나타내는 함수  
-    int y = 3;             // gamestatus.level, goal, score만 게임중에 값이 바뀔수 도 있음 그 y값을 따로 저장해둠 
+    int y = 3;           // gamestatus.level, goal, score만 게임중에 값이 바뀔수 도 있음 그 y값을 따로 저장해둠 
                          // 그래서 혹시 게임 상태 표시 위치가 바뀌어도 그 함수에서 안바꿔도 되게
     gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL = y); printf(" LEVEL : %5d", gamestatus.level);
     // gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL = y + 1); printf(" GOAL  : %5d", 10 - cnt);
@@ -257,14 +258,14 @@ void draw_main(void) { //게임판 그리는 함수
     int i, j;
 
     for (j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌 
-        if (gamestatus.main_org[3][j] == EMPTY) gamestatus.main_org[3][j] = CEILLING;
+        if (gamestatus.board_org[3][j] == EMPTY) gamestatus.board_org[3][j] = CEILLING;
     }
     for (i = 0; i < BOARD_Y; i++) {
         for (j = 0; j < BOARD_X; j++) {
-            if (gamestatus.main_cpy[i][j] != gamestatus.main_org[i][j]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
+            if (gamestatus.board_cpy[i][j] != gamestatus.board_org[i][j]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
                                                 //이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
                 gotoxy(BOARD_X_ADJ + j, BOARD_Y_ADJ + i);
-                switch (gamestatus.main_org[i][j]) {
+                switch (gamestatus.board_org[i][j]) {
                 case EMPTY: //빈칸모양 
                     printf("  ");
                     break;
@@ -284,9 +285,9 @@ void draw_main(void) { //게임판 그리는 함수
             }
         }
     }
-    for (i = 0; i < BOARD_Y; i++) { //게임판을 그린 후 gamestatus.main_cpy에 복사  
+    for (i = 0; i < BOARD_Y; i++) { //게임판을 그린 후 gamestatus.board_cpy에 복사  
         for (j = 0; j < BOARD_X; j++) {
-            gamestatus.main_cpy[i][j] = gamestatus.main_org[i][j];
+            gamestatus.board_cpy[i][j] = gamestatus.board_org[i][j];
         }
     }
 }
@@ -304,7 +305,7 @@ void new_block(void) { //새로운 블록 생성
 
     for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성  
         for (j = 0; j < 4; j++) {
-            if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = ACTIVE_BLOCK;
+            if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = ACTIVE_BLOCK;
         }
     }
     for (i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
@@ -353,7 +354,7 @@ void check_key(void) {
                 while (flag.crush_on == 0) { //바닥에 닿을때까지 이동시킴
                     drop_block();
                     score += gamestatus.level; // hard drop 보너스
-                    gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE); printf("        %6d", score); //점수 표시  
+                    // gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE); printf("        %6d", score); //점수 표시  
                 }
                 break;
             case P: //P(대문자) 눌렀을때 
@@ -374,7 +375,7 @@ void drop_block(float fTimeElapsed) {
     if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
         for (i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘 
             for (j = 0; j < BOARD_X; j++) {
-                if (gamestatus.main_org[i][j] == ACTIVE_BLOCK) gamestatus.main_org[i][j] = INACTIVE_BLOCK;
+                if (gamestatus.board_org[i][j] == ACTIVE_BLOCK) gamestatus.board_org[i][j] = INACTIVE_BLOCK;
             }
         }
         flag.crush_on = 0; //flag를 끔 
@@ -396,7 +397,7 @@ int check_crush(int bx, int by, int b_rotation) { //지정된 좌표와 회전값으로 충�
 
     for (i = 0; i < 4; i++) {
         for (j = 0; j < 4; j++) { //지정된 위치의 게임판과 블럭모양을 비교해서 겹치면 false를 리턴 
-            if (blocks[gamestatus.b_type][b_rotation][i][j] == 1 && gamestatus.main_org[by + i][bx + j] > 0) return false;
+            if (blocks[gamestatus.b_type][b_rotation][i][j] == 1 && gamestatus.board_org[by + i][bx + j] > 0) return false;
         }
     }
     return true; //하나도 안겹치면 true리턴 
@@ -409,12 +410,12 @@ void move_block(int dir) { //블록을 이동시킴
     case LEFT: //왼쪽방향 
         for (i = 0; i < 4; i++) { //현재좌표의 블럭을 지움 
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
             }
         }
         for (i = 0; i < 4; i++) { //왼쪽으로 한칸가서 active block을 찍음 
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j - 1] = ACTIVE_BLOCK;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j - 1] = ACTIVE_BLOCK;
             }
         }
         gamestatus.bx--; //좌표값 이동 
@@ -423,12 +424,12 @@ void move_block(int dir) { //블록을 이동시킴
     case RIGHT:    //오른쪽 방향. 왼쪽방향이랑 같은 원리로 동작 
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
             }
         }
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j + 1] = ACTIVE_BLOCK;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j + 1] = ACTIVE_BLOCK;
             }
         }
         gamestatus.bx++;
@@ -437,12 +438,12 @@ void move_block(int dir) { //블록을 이동시킴
     case DOWN:    //아래쪽 방향. 왼쪽방향이랑 같은 원리로 동작
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
             }
         }
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i + 1][gamestatus.bx + j] = ACTIVE_BLOCK;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i + 1][gamestatus.bx + j] = ACTIVE_BLOCK;
             }
         }
         gamestatus.by++;
@@ -451,13 +452,13 @@ void move_block(int dir) { //블록을 이동시킴
     case UP: //키보드 위쪽 눌렀을때 회전시킴. 
         for (i = 0; i < 4; i++) { //현재좌표의 블럭을 지움  
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
             }
         }
         gamestatus.b_rotation = (gamestatus.b_rotation + 1) % 4; //회전값을 1증가시킴(3에서 4가 되는 경우는 0으로 되돌림) 
         for (i = 0; i < 4; i++) { //회전된 블록을 찍음 
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = ACTIVE_BLOCK;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = ACTIVE_BLOCK;
             }
         }
         break;
@@ -466,13 +467,13 @@ void move_block(int dir) { //블록을 이동시킴
               //이를 동작시키는 특수동작 
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i][gamestatus.bx + j] = EMPTY;
             }
         }
         gamestatus.b_rotation = (gamestatus.b_rotation + 1) % 4;
         for (i = 0; i < 4; i++) {
             for (j = 0; j < 4; j++) {
-                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.main_org[gamestatus.by + i - 1][gamestatus.bx + j] = ACTIVE_BLOCK;
+                if (blocks[gamestatus.b_type][gamestatus.b_rotation][i][j] == 1) gamestatus.board_org[gamestatus.by + i - 1][gamestatus.bx + j] = ACTIVE_BLOCK;
             }
         }
         gamestatus.by--;
@@ -489,7 +490,7 @@ void check_line(void) {
     for (i = BOARD_Y - 2; i > 3;) { //i=MAIN_Y-2 : 밑쪽벽의 윗칸부터,  i>3 : 천장(3)아래까지 검사 
         block_amount = 0; //블록갯수 저장 변수 초기화 
         for (j = 1; j < BOARD_X - 1; j++) { //벽과 벽사이의 블록갯루를 셈 
-            if (gamestatus.main_org[i][j] > 0) block_amount++;
+            if (gamestatus.board_org[i][j] > 0) block_amount++;
         }
         if (block_amount == BOARD_X - 2) { //블록이 가득 찬 경우 
             if (flag.level_up_on == 0) { //레벨업상태가 아닌 경우에(레벨업이 되면 자동 줄삭제가 있음) 
@@ -499,8 +500,8 @@ void check_line(void) {
             }
             for (k = i; k > 1; k--) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만) 
                 for (l = 1; l < BOARD_X - 1; l++) {
-                    if (gamestatus.main_org[k - 1][l] != CEILLING) gamestatus.main_org[k][l] = gamestatus.main_org[k - 1][l];
-                    if (gamestatus.main_org[k - 1][l] == CEILLING) gamestatus.main_org[k][l] = EMPTY;
+                    if (gamestatus.board_org[k - 1][l] != CEILLING) gamestatus.board_org[k][l] = gamestatus.board_org[k - 1][l];
+                    if (gamestatus.board_org[k - 1][l] == CEILLING) gamestatus.board_org[k][l] = EMPTY;
                     //윗줄이 천장인 경우에는 천장을 한칸 내리면 안되니까 빈칸을 넣음 
                 }
             }
@@ -512,8 +513,8 @@ void check_line(void) {
             gotoxy(BOARD_X_ADJ + (BOARD_X / 2) - 1, BOARD_Y_ADJ + gamestatus.by - 2); printf("%d COMBO!", combo);
             // Sleep(500);
             // score += (combo * gamestatus.level * 100);
-            reset_main_cpy(); //텍스트를 지우기 위해 gamestatus.main_cpy을 초기화.
-        //(gamestatus.main_cpy와 gamestatus.main_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
+            reset_main_cpy(); //텍스트를 지우기 위해 gamestatus.board_cpy을 초기화.
+        //(gamestatus.board_cpy와 gamestatus.board_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
         }
         // gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", (cnt <= 10) ? 10 - cnt : 0);
         // gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE); printf("        %6d", score);
@@ -543,13 +544,13 @@ void check_level_up(void) {
             Sleep(200);
         }
         */
-        reset_main_cpy(); //텍스트를 지우기 위해 gamestatus.main_cpy을 초기화.
-        //(gamestatus.main_cpy와 gamestatus.main_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
+        reset_main_cpy(); //텍스트를 지우기 위해 gamestatus.board_cpy을 초기화.
+        //(gamestatus.board_cpy와 gamestatus.board_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
 
         /*
         for (i = MAIN_Y - 2; i > MAIN_Y - 2 - (gamestatus.level - 1); i--) { //레벨업보상으로 각 레벨-1의 수만큼 아랫쪽 줄을 지워줌 
             for (j = 1; j < MAIN_X - 1; j++) {
-                gamestatus.main_org[i][j] = INACTIVE_BLOCK; // 줄을 블록으로 모두 채우고 
+                gamestatus.board_org[i][j] = INACTIVE_BLOCK; // 줄을 블록으로 모두 채우고 
                 gotoxy(MAIN_X_ADJ + j, MAIN_Y_ADJ + i); // 별을 찍어줌.. 이뻐보이게 
                 printf("★");
                 Sleep(20);
@@ -604,7 +605,7 @@ void check_game_over(void) {
     int y = 5;
 
     for (i = 1; i < BOARD_X - 2; i++) {
-        if (gamestatus.main_org[3][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
+        if (gamestatus.board_org[3][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
             gotoxy(x, y + 0); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤"); //게임오버 메세지 
             gotoxy(x, y + 1); printf("▤                              ▤");
             gotoxy(x, y + 2); printf("▤  +-----------------------+   ▤");
