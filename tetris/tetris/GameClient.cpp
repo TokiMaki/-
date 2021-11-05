@@ -30,3 +30,8 @@ void GameClient::err_display(char* msg)
     printf("[%s] %s", msg, (char*)lpMsgBuf);
     LocalFree(lpMsgBuf);
 }
+
+void GameClient::ChangeScene(Scene* pScene) {
+    delete m_pScene;
+    m_pScene = pScene;
+}

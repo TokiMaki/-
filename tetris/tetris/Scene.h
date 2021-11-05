@@ -3,11 +3,8 @@
 class Scene
 {
 public:
-
     Scene();
     ~Scene();
-
-    void update();
 };
 
 class TitleScene : public Scene {
