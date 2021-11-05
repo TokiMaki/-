@@ -1,8 +1,8 @@
 #pragma once
 
-#include<stdio.h>
 #include<winsock2.h>
 #include<windows.h>
+#include<stdio.h>
 #include<conio.h>
 #include<time.h>
 #include<stdlib.h>
@@ -32,14 +32,6 @@
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
 #define MAX_PLAYER 3 // 최대 인원수
 
-class GlobalGameData //CommThread와 클라이언트 간의 소켓, 게임 업데이트의 입력 및 출력에 쓰이는 데이터
-{
-private:
-    SOCKET m_sockets[MAX_PLAYER];            //통신하고 있는 소켓들을 저장
-    Gamestatus m_gamestatus[MAX_PLAYER]; //캐릭터 상태 저장
-    KeyInput m_keyInput[MAX_PLAYER];         //각 클라이언트 키 입력 저장
-};
-
 struct KeyInput {
     bool left = false;      //←
     bool right = false;     //→
@@ -65,3 +57,16 @@ struct Gamestatus {
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target;
 };
+struct CGameTimer
+{
+
+};
+
+class GlobalGameData //CommThread와 클라이언트 간의 소켓, 게임 업데이트의 입력 및 출력에 쓰이는 데이터
+{
+private:
+    SOCKET m_sockets[MAX_PLAYER];            //통신하고 있는 소켓들을 저장
+    Gamestatus m_gamestatus[MAX_PLAYER]; //캐릭터 상태 저장
+    KeyInput m_keyInput[MAX_PLAYER];         //각 클라이언트 키 입력 저장
+};
+
