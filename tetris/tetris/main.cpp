@@ -22,32 +22,6 @@ int blocks[7][4][4][4] = {
  {0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0},{0,0,0,0,0,1,0,0,1,1,0,0,0,1,0,0}}
 }; //블록모양 저장 4*4공간에 블록을 표현 blcoks[b_type][b_rotation][i][j]로 사용
 
-//struct KeyInput {
-//    bool left = false;      //←
-//    bool right = false;     //→
-//    bool up = false;        //↑
-//    bool down = false;      //←
-//    bool space = false;     //hard drop space(한번에 맨 밑으로 내리기)
-//};
-//
-//struct Gamestatus {
-//    int bx, by; //이동중인 블록의 게임판상의 x,y좌표
-//    int b_type; //블록 종류
-//    int b_rotation; //블록 회전값
-//    int b_type_next; //다음 블록값
-//    int level; //현재 level
-//    float speed; //블럭이 내려오는 속도 1이면 1초마다 한칸씩 내려옴
-//    float fDropBlockTime = 0.0f;
-//    int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 board_cpy로 복사됨 
-//    int board_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
-//                                  //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림) 
-//                                  //board_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
-//    int item;       // 0 키 반전
-//                    // 1 상대 일시적 스피드 업
-//                    // 2 내려오고 있는 블록 모양 바꾸기
-//    int target;
-//};
-
 struct Flag {
     bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
     bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag 
@@ -84,10 +58,6 @@ void check_level_up(void); //레벨목표가 달성되었는지를 판단하고 levelup시킴
 void check_game_over(void); //게임오버인지 판단하고 게임오버를 진행 
 void pause(void);//게임을 일시정지시킴
 
-void gotoxy(int x, int y) { //gotoxy함수 
-    COORD pos = { 2 * x,y };
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
 
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //커서숨기는 함수에 사용되는 열거형 
 void setcursortype(CURSOR_TYPE c) { //커서숨기는 함수 
@@ -211,11 +181,10 @@ void reset(void) {
     system("cls"); //화면지움
     reset_main(); // gamestatus.board_org를 초기화
     draw_map(); // 게임화면을 그림
-    draw_main(); // 게임판을 그림 
+    draw_main(); // 게임판을 그림
 
     gamestatus.b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성 
     new_block(); //새로운 블록을 하나 만듦  
-
 }
 
 void reset_main(void) { //게임판을 초기화  

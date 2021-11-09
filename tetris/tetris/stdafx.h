@@ -64,3 +64,8 @@ struct Gamestatus {
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target;
 };
+
+inline void gotoxy(int x, int y) { //gotoxy함수 
+    COORD pos = { 2 * x,y };
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
