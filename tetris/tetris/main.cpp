@@ -161,11 +161,10 @@ void reset(void) {
     system("cls"); //화면지움
     reset_main(); // gamestatus.board_org를 초기화
     draw_map(); // 게임화면을 그림
-    draw_main(); // 게임판을 그림 
+    draw_main(); // 게임판을 그림
 
     gamestatus.b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성 
     new_block(); //새로운 블록을 하나 만듦  
-
 }
 
 void reset_main(void) { //게임판을 초기화  

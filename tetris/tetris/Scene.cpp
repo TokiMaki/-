@@ -7,7 +7,7 @@ Scene::~Scene() {}
 TitleScene::TitleScene() {}
 TitleScene::~TitleScene() {}
 
-void TitleScene::update() {
+void TitleScene::draw() {
     int x = 5; //타이틀화면이 표시되는 x좌표 
     int y = 4; //타이틀화면이 표시되는 y좌표 
     int cnt; //타이틀 프레임을 세는 변수  
@@ -36,7 +36,7 @@ void TitleScene::update() {
         Sleep(10); // 00.1초 딜레이  
     }
 
-    while (kbhit()) getch(); //버퍼에 기록된 키값을 버림 
+    while (kbhit()) getch(); //버퍼에 기록된 키값을 버림
 
 }
 
@@ -45,3 +45,7 @@ WaitScene::~WaitScene() {}
 
 PlayScene::PlayScene() {}
 PlayScene::~PlayScene() {}
+
+void PlayScene::draw_main() { //게임판 그리는 함수
+    
+}

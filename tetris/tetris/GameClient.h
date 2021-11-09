@@ -17,6 +17,7 @@ public:
 	GameClient();    //생성 시 윈속초기화, 소켓 생성, connect를 수행
 	~GameClient(); //소멸 시 closesocket 과 윈속종료 수행
 	Scene* m_pScene;
+	// Scene* arr_pScene;
 
 	void ChangeScene(Scene* pScene);
 	void Update(float fTimeElapsed);
