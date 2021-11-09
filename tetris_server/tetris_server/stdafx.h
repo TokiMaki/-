@@ -7,9 +7,13 @@
 #include<time.h>
 #include<stdlib.h>
 #include<iostream>
-#include<queue>
+#include<vector>
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "ws2_32")
+
+#define SERVERIP   "127.0.0.1"
+#define SERVERPORT 9000
+#define BUF_SIZE 512
 
 #define LEFT 75 //좌로 이동    //키보드값들 
 #define RIGHT 77 //우로 이동 
