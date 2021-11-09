@@ -5,9 +5,6 @@
 #include "GameServer.h"
 using namespace std;
 
-#define SERVERIP   "127.0.0.1"
-#define SERVERPORT 9000
-
 vector<SOCKET> MatchMakingQ; //대기 중인 클라이언트 소켓을 저장
 
 // 사용자 정의 데이터 수신 함수
