@@ -4,7 +4,9 @@ class Scene;
 
 class GamePlayScene : public Scene {
 
+public:
     GamePlayScene();
+    GamePlayScene(SceneNum num, GameClient* const pGameClient);
     ~GamePlayScene();
 
     void update();

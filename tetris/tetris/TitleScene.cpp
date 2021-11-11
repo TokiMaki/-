@@ -3,6 +3,10 @@
 #include "stdafx.h"
 
 TitleScene::TitleScene() {}
+TitleScene::TitleScene(SceneNum num, GameClient* const pGameClient) {
+    m_SceneNum = num;
+    m_pGameClient = pGameClient;
+}
 TitleScene::~TitleScene() {}
 
 void TitleScene::draw() {

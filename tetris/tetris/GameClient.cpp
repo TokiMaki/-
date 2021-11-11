@@ -1,6 +1,12 @@
 #include "GameClient.h"
+#include "TitleScene.h"
+#include "WaitScene.h"
+#include "GamePlayScene.h"
 
-GameClient::GameClient() {}
+GameClient::GameClient() {
+    BuildScene();
+    ChangeScene(Scene::SceneNum::Title);
+}
 
 GameClient::~GameClient() {}
 
@@ -31,11 +37,17 @@ void GameClient::err_display(char* msg)
     LocalFree(lpMsgBuf);
 }
 
-void GameClient::ChangeScene(Scene* pScene) {
-    delete m_pScene;
-    m_pScene = pScene;
+void GameClient::BuildScene() {
+    m_arrScene[Scene::SceneNum::Title] = new TitleScene(Scene::SceneNum::Title, this);
+    m_arrScene[Scene::SceneNum::Wait] = new WaitScene(Scene::SceneNum::Wait, this);
+    m_arrScene[Scene::SceneNum::GamePlay] = new GamePlayScene(Scene::SceneNum::GamePlay, this);
+}
+
+void GameClient::ChangeScene(Scene::SceneNum tag) {
+    m_pScene = m_arrScene[tag];
 }
 
 void GameClient::Update(float fTimeElapsed) {
     m_GameTimer.Tick(0.0f);
+
 }

@@ -20,9 +20,11 @@ public:
 	GameClient();    //생성 시 윈속초기화, 소켓 생성, connect를 수행
 	~GameClient(); //소멸 시 closesocket 과 윈속종료 수행
 	Scene* m_pScene;
-	// Scene* arr_pScene;
+	Scene* m_arrScene[Scene::SceneNum::Scene_Count];
 
-	void ChangeScene(Scene* pScene);
+
+	void ChangeScene(Scene::SceneNum tag);
+	void BuildScene();
 	void Update(float fTimeElapsed);
 //public:
 //	void TitleSceneSend(enum MSG_MathcingSystem);
