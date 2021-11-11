@@ -340,20 +340,20 @@ void check_key(void) {
 
 void drop_block(float fTimeElapsed) {
     int i, j;
-    if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
-        for (i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘 
-            for (j = 0; j < BOARD_X; j++) {
-                if (gamestatus.board_org[i][j] == ACTIVE_BLOCK) gamestatus.board_org[i][j] = INACTIVE_BLOCK;
-            }
-        }
-        flag.crush_on = 0; //flag를 끔 
-        check_line(); //라인체크를 함 
-        flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
-        return; //함수 종료 
-    }
     if (fTimeElapsed >= gamestatus.speed) {
         if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == true) flag.crush_on = 0; //밑이 비어있으면 crush flag 끔
-        if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == true) move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동 
+        if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == true) move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동
+        if (flag.crush_on && check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+            for (i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘 
+                for (j = 0; j < BOARD_X; j++) {
+                    if (gamestatus.board_org[i][j] == ACTIVE_BLOCK) gamestatus.board_org[i][j] = INACTIVE_BLOCK;
+                }
+            }
+            flag.crush_on = 0; //flag를 끔 
+            check_line(); //라인체크를 함 
+            flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
+            return; //함수 종료 
+        }
         if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) flag.crush_on++; //밑으로 이동이 안되면  crush flag를 켬
         gamestatus.fDropBlockTime = 0.0f;
     }

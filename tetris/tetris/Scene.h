@@ -1,5 +1,7 @@
 #pragma once
 
+class GameClient;
+
 class Scene
 {
 public:
@@ -11,21 +13,12 @@ public:
     };
 
     Scene();
-    // Scene(SceneNum num, GameClient* const pGameClient);
+    Scene(SceneNum num, GameClient* const pGameClient);
     ~Scene();
 
 protected:
-    // SceneNum m_SceneNum;
-    // GameClient* m_pGameClient;
-};
-
-class TitleScene : public Scene {
-
-    TitleScene();
-    ~TitleScene();
-
-    void draw();
-    void update();
+    SceneNum m_SceneNum;
+    GameClient* m_pGameClient;
 };
 
 
