@@ -1,15 +1,17 @@
 #pragma once
 
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "ws2_32")
+
 #include<winsock2.h>
 #include<windows.h>
+#include<stdlib.h>
 #include<stdio.h>
 #include<conio.h>
 #include<time.h>
-#include<stdlib.h>
 #include<iostream>
+#include<string.h>
 
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "ws2_32")
 
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
@@ -36,6 +38,7 @@
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
 #define MAX_PLAYER 3 // 최대 인원수
+
 
 
 
