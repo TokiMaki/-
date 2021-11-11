@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "Scene.h"
+#include "Timer.h"
 
 class GameClient
 {
@@ -9,7 +10,9 @@ private:
 	// SOCKET sock;
 	KeyInput m_keys;                                //클라이언트의 키입력을 저장
 	Gamestatus m_gamestatus[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
-                                                   
+
+	CGameTimer m_GameTimer;
+
 	void err_quit(char* msg);                       //에러 발생 시 해당 내용 출력
 	void err_display(char* msg);
 

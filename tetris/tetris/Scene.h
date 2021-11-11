@@ -11,7 +11,6 @@ public:
         GamePlay,
         Scene_Count
     };
-
     Scene();
     Scene(SceneNum num, GameClient* const pGameClient);
     ~Scene();

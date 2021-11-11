@@ -35,3 +35,7 @@ void GameClient::ChangeScene(Scene* pScene) {
     delete m_pScene;
     m_pScene = pScene;
 }
+
+void GameClient::Update(float fTimeElapsed) {
+    m_GameTimer.Tick(0.0f);
+}

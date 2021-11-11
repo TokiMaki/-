@@ -110,8 +110,8 @@ int main() {
         gamestatus.fDropBlockTime += fTimeElapsed;
         fTimeElapsed = 0.0f;
         drop_block(gamestatus.fDropBlockTime); // 블록을 한칸 내림
-        check_level_up(); // 레벨업을 체크
-        check_game_over(); //게임오버를 체크
+        check_level_up();  // 레벨업을 체크
+        check_game_over(); // 게임오버를 체크
         if (flag.new_block_on == 1) new_block(); // 뉴 블럭 flag가 있는 경우 새로운 블럭 생성
     }
 }
@@ -354,7 +354,7 @@ void drop_block(float fTimeElapsed) {
             flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
             return; //함수 종료 
         }
-        if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) flag.crush_on++; //밑으로 이동이 안되면  crush flag를 켬
+        if (check_crush(gamestatus.bx, gamestatus.by + 1, gamestatus.b_rotation) == false) flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
         gamestatus.fDropBlockTime = 0.0f;
     }
     return;
