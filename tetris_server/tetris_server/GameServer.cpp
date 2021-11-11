@@ -10,11 +10,28 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	SOCKET pSocket = (SOCKET)arg;
 	newRoomData.pClients.emplace_back(&pSocket);
 	//matchmakingThread로부터 소켓을 받온 후 실행하는 함수
+
+
 	return 0;
 }
 DWORD WINAPI CommThread(LPVOID arg)
 {
-	std::cout << "Connect Client success\n" << std::endl;
+	SOCKET client_sock = (SOCKET)arg;
+	int retval;
+	SOCKADDR_IN clientaddr;
+	int addrlen;
+	int temp_num;
+	char buf[BUFSIZE + 1];
+	std::cout << "commThread running\n" << std::endl;
+	addrlen = sizeof(clientaddr);
+	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
+	int recv_Msg;
+	while (1)
+	{
+		
+	}
+
+
 	return 0;
 }
 
