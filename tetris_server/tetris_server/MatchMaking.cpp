@@ -4,7 +4,7 @@
 
 DWORD WINAPI MatchMakingThread(LPVOID arg)
 {
-	std::queue<SOCKADDR>* MatchMakingQ = (std::queue<SOCKADDR>*)arg;
+	std::vector<SOCKET>* MatchMakingQ = (std::vector<SOCKET>*)arg;
 	
 	return 0;
 }

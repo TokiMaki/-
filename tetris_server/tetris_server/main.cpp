@@ -5,10 +5,7 @@
 #include "GameServer.h"
 using namespace std;
 
-#define SERVERIP   "127.0.0.1"
-#define SERVERPORT 9000
-
-queue<SOCKADDR> MatchMakingQ; //대기 중인 클라이언트 소켓을 저장
+vector<SOCKET> MatchMakingQ; //대기 중인 클라이언트 소켓을 저장
 
 // 사용자 정의 데이터 수신 함수
 int recvn(SOCKET s, char* buf, int len, int flags)
@@ -71,6 +68,9 @@ int main(int argc, char* argv[])
             err_display("accept()");
             break;
         }
+        MatchMakingQ.push_back(client_sock);
+        printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
+            inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
     }
 
     // closesocket()
