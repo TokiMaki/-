@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include"socket_err.h"
+#include"socket_function.h"
 
 
 // 소켓 함수 오류 출력 후 종료
@@ -27,4 +27,24 @@ void err_display(char* msg)
         (LPTSTR)&lpMsgBuf, 0, NULL);
     printf("[%s] %s", msg, (char*)lpMsgBuf);
     LocalFree(lpMsgBuf);
+}
+
+// 사용자 정의 데이터 수신 함수
+int recvn(SOCKET s, char* buf, int len, int flags)
+{
+    int received;
+    char* ptr = buf;
+    int left = len;
+
+    while (left > 0) {
+        received = recv(s, ptr, left, flags);
+        if (received == SOCKET_ERROR)
+            return SOCKET_ERROR;
+        else if (received == 0)
+            break;
+        left -= received;
+        ptr += received;
+    }
+
+    return (len - left);
 }
