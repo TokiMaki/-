@@ -19,9 +19,3 @@ enum MSG_MatchMaking //매치매이킹 시스템에서 사용할 메시지
 	Msg_PlayInGame,		//서버가 클라이언트에게 게임이 시작 됐음을 알려줌
 	Msg_WaitGame		//서버가 클라이언트에게 아직 매칭이 되지 않았음을 알려줌
 };
-
-struct MatchSockets {
-	SOCKET client1;
-	SOCKET client2;
-	SOCKET client3;
-};

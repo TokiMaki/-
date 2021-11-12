@@ -1,3 +1,4 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS // 최신 VC++ 컴파일 시 경고 방지
 #include "stdafx.h"
 #include "MatchMaking.h"
 
@@ -14,7 +15,7 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 			CreateGameServerThread();
 			MatchMakingQ_DeQ();
 		}
-		else {
+		else if(!MatchMakingQ->empty()) {
 			// 대기하라 알려줌
 			for (auto client : *MatchMakingQ) {
 				addrlen = sizeof(clientaddr);
