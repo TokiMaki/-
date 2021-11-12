@@ -9,7 +9,7 @@ private:
 	// WSADATA wsa;
 	// SOCKET sock;
 	KeyInput m_keys;                                //클라이언트의 키입력을 저장
-	Gamestatus m_gamestatus[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
+	Gamestatus m_gamestatus;  	        //내 클라이언트의 게임 상태
 	CGameTimer m_GameTimer;
 
 	void err_quit(char* msg);                       //에러 발생 시 해당 내용 출력
@@ -21,10 +21,9 @@ public:
 	Scene* m_pScene;
 	Scene* m_arrScene[Scene::SceneNum::Scene_Count];
 
-
 	void ChangeScene(Scene::SceneNum tag);
 	void BuildScene();
-	void Update(float fTimeElapsed);
+	void Update();
 //public:
 //	void TitleSceneSend(enum MSG_MathcingSystem);
 //	//Msg_Ready 나 Msg_ReadyCancel 를 MatchingThread 에 전송

@@ -4,10 +4,13 @@
     <ClCompile Include="GameClient.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\..\Downloads\MultithreadTCPServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="socket_err.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\Downloads\TCPClient_FixedVariable.cpp">
@@ -16,20 +19,17 @@
     <ClCompile Include="Timer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="GamePlayScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
+    <ClCompile Include="WaitScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="TitleScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="WaitScene.cpp">
+    <ClCompile Include="Scene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="socket_err.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="GamePlayScene.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,14 +62,14 @@
     <Filter Include="리소스 파일">
       <UniqueIdentifier>{7797d47b-9128-46c3-a1fd-40ab748494f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일">
-      <UniqueIdentifier>{42776c80-c42f-42e0-873a-cfb340fa43c0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="헤더 파일">
       <UniqueIdentifier>{b229f7fb-138f-463f-a12d-434aa98511d2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene">
+    <Filter Include="소스 파일">
       <UniqueIdentifier>{316dff1a-ae5d-4c18-9270-da15363c6b6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{42776c80-c42f-42e0-873a-cfb340fa43c0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -39,9 +39,6 @@
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
 #define MAX_PLAYER 3 // 최대 인원수
 
-
-
-
 struct KeyInput {
     bool left = false;      //←
     bool right = false;     //→
@@ -68,7 +65,37 @@ struct Gamestatus {
     int target;
 };
 
+struct Flag {
+    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
+    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag 
+    bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag 
+    bool space_key_on = 0; //hard drop상태임을 알려주는 flag 
+    bool game_reset = 0; // 게임이 리셋됨을 알려주는 flag
+};
+
 inline void gotoxy(int x, int y) { //gotoxy함수 
     COORD pos = { 2 * x,y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
+typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //커서숨기는 함수에 사용되는 열거형 
+
+inline void setcursortype(CURSOR_TYPE c) { //커서숨기는 함수 
+    CONSOLE_CURSOR_INFO CurInfo;
+
+    switch (c) {
+    case NOCURSOR:
+        CurInfo.dwSize = 1;
+        CurInfo.bVisible = FALSE;
+        break;
+    case SOLIDCURSOR:
+        CurInfo.dwSize = 100;
+        CurInfo.bVisible = TRUE;
+        break;
+    case NORMALCURSOR:
+        CurInfo.dwSize = 20;
+        CurInfo.bVisible = TRUE;
+        break;
+    }
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
 }

@@ -9,6 +9,5 @@ public:
     TitleScene(SceneNum num, GameClient* const pGameClient);
     ~TitleScene();
 
-    void draw();
-    void update();
+    void Update(float fTimeElapsed) override;
 };
