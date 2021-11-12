@@ -1,5 +1,4 @@
 #include "GameClient.h"
-#include "socket_err.h"
 #include "Timer.h"
 
 //int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
@@ -97,26 +96,7 @@ void title(void) {
     int x = 5; //타이틀화면이 표시되는 x좌표 
     int y = 4; //타이틀화면이 표시되는 y좌표 
     int cnt; //타이틀 프레임을 세는 변수  
-    int retval;
-
-    // 윈속 초기화
-    WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-        return;
-
-    // socket()
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == INVALID_SOCKET) err_quit("socket()");
-
-    // connect()
-    SOCKADDR_IN serveraddr;
-    ZeroMemory(&serveraddr, sizeof(serveraddr));
-    serveraddr.sin_family = AF_INET;
-    serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
-    serveraddr.sin_port = htons(SERVERPORT);
-    retval = connect(sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-    if (retval == SOCKET_ERROR) err_quit("connect()");
-
+   
     gotoxy(x, y + 0); printf("■□□□■■■□□■■□□■■"); Sleep(100);
     gotoxy(x, y + 1); printf("■■■□  ■□□    ■■□□■"); Sleep(100);
     gotoxy(x, y + 2); printf("□□□■              □■  ■"); Sleep(100);

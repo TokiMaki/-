@@ -1,7 +1,7 @@
 #pragma once
 DWORD WINAPI MatchMakingThread(LPVOID arg); //매치매이킹 관리 스레드로, 최초 프로세스 시작 시 서버와 함께 실행
 
-bool isMatchMakingQFull();
+bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ);
 //현재 MatchMakingQ에서 대기하는 클라이언트의 개수를 파악해 MAX_PLAYER 미만인 경우 MatchMakingQ에 추가되어 있는 클라이언트들에게 Msg_wait을 보냄 
 //MAX_PLAYER 이상인 경우 MatchMakingQ에 추가되어 있는 순서대로 MAX_PLAYER개의 클라이언트에게 Msg_PlayInGame을 보내주고 CreateGameServerThread와 MatchMakingQ_DeQ를 실행
 

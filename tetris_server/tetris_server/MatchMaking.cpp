@@ -10,13 +10,12 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 	std::vector<SOCKET>*MatchMakingQ = (std::vector<SOCKET>*)arg;
 
 	while (1) {
-		if (isMatchMakingQFull()) {
-			// ∏≈ƒ™ º∫∏≥ æÀ∑¡¡‹
+		// ∏≈ƒ™ º∫∏≥ æÀ∑¡¡‹
+		if (isMatchMakingQFull(MatchMakingQ)) {
 			CreateGameServerThread();
 			MatchMakingQ_DeQ();
 		}
 		else if(!MatchMakingQ->empty()) {
-			// ¥Î±‚«œ∂Û æÀ∑¡¡‹
 			for (auto client : *MatchMakingQ) {
 				addrlen = sizeof(clientaddr);
 				getpeername(client, (SOCKADDR*)&clientaddr, &addrlen);
@@ -30,15 +29,21 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 	return 0;
 }
 
-bool isMatchMakingQFull()
+bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ)
 {
-	return false;
+	if (MatchMakingQ->size() >= MAX_PLAYER){
+		std::cout << "There are more than 3 Waiting Clients.\n";
+		return true;
+	}
+	else return false;
 }
 
 void CreateGameServerThread()
 {
+	std::cout << "Called CreateGameServerThread().\n";
 }
 
 void MatchMakingQ_DeQ()
 {
+	std::cout << "Called MatchMakingQ_DeQ().\n";
 }
