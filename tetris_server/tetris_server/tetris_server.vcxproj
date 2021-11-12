@@ -142,12 +142,12 @@
     <ClCompile Include="GameServer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MatchMaking.cpp" />
-    <ClCompile Include="socket_err.cpp" />
+    <ClCompile Include="socket_function.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameServer.h" />
     <ClInclude Include="MatchMaking.h" />
-    <ClInclude Include="socket_err.h" />
+    <ClInclude Include="socket_function.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
