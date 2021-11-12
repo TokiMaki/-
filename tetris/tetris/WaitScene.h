@@ -9,5 +9,5 @@ public:
     WaitScene(SceneNum num, GameClient* const pGameClient);
     ~WaitScene();
 
-    void update();
+    void Update(float fTimeElapsed) override;
 };

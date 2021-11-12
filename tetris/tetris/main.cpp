@@ -1,5 +1,6 @@
 #include "GameClient.h"
 #include "socket_err.h"
+#include "Timer.h"
 
 //int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
 int STATUS_Y_LEVEL; //LEVEL 정보표시위치Y 좌표 저장
@@ -22,20 +23,13 @@ int blocks[7][4][4][4] = {
  {0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0},{0,0,0,0,0,1,0,0,1,1,0,0,0,1,0,0}}
 }; //블록모양 저장 4*4공간에 블록을 표현 blcoks[b_type][b_rotation][i][j]로 사용
 
-struct Flag {
-    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
-    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag 
-    bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag 
-    bool space_key_on = 0; //hard drop상태임을 알려주는 flag 
-};
-
+GameClient gameClient;
 
 Gamestatus gamestatus;
 Flag flag;
 KeyInput keydownbuffer;
 
 int key; //키보드로 입력받은 키값을 저장
-
 
 int level_goal; //다음레벨로 넘어가기 위한 목표점수
 int cnt; //현재 레벨에서 제거한 줄 수를 저장
@@ -59,61 +53,43 @@ void check_game_over(void); //게임오버인지 판단하고 게임오버를 진행
 void pause(void);//게임을 일시정지시킴
 
 
-typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //커서숨기는 함수에 사용되는 열거형 
-void setcursortype(CURSOR_TYPE c) { //커서숨기는 함수 
-    CONSOLE_CURSOR_INFO CurInfo;
-
-    switch (c) {
-    case NOCURSOR:
-        CurInfo.dwSize = 1;
-        CurInfo.bVisible = FALSE;
-        break;
-    case SOLIDCURSOR:
-        CurInfo.dwSize = 100;
-        CurInfo.bVisible = TRUE;
-        break;
-    case NORMALCURSOR:
-        CurInfo.dwSize = 20;
-        CurInfo.bVisible = TRUE;
-        break;
-    }
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &CurInfo);
-}
-
 int main() {
-    int i;
+    //int i;
 
-    srand((unsigned)time(NULL)); //난수표생성 
-    setcursortype(NOCURSOR); //커서 없앰 
-    title(); //메인타이틀 호출 
-    reset(); //게임판 리셋
-    __int64 LastTime = ::timeGetTime();
-    __int64 CurrentTime;
-    float fTimeScale = 0.001f;
-    float fTimeElapsed = 0.0f;
+    //srand((unsigned)time(NULL)); //난수표생성 
+    //setcursortype(NOCURSOR); //커서 없앰 
+    //title(); //메인타이틀 호출 
+    //reset(); //게임판 리셋
+    //__int64 LastTime = ::timeGetTime();
+    //__int64 CurrentTime;
+    //float fTimeScale = 0.001f;
+    //float fTimeElapsed = 0.0f;
 
+    //while (1) {
+    //    for (i = 0; i < 5; i++) { //블록이 한칸떨어지는동안 5번 키입력받을 수 있음
+    //        check_key(); //키입력확인
+    //        // if (flag.crush_on && check_crush(bx, by + 1, b_rotation) == false);
+    //        //블록이 충돌중인경우 추가로 이동및 회전할 시간을 갖음
+    //        if (flag.space_key_on == 1) { //스페이스바를 누른경우(hard drop) 추가로 이동및 회전할수 없음 break;
+    //            flag.space_key_on = 0;
+    //            break;
+    //        }
+    //    }
+    //    draw_main(); //화면을 그림
+    //    while (fTimeElapsed < (1.0f / 60.0f)) {
+    //        CurrentTime = ::timeGetTime();
+    //        fTimeElapsed = (CurrentTime - LastTime) * fTimeScale;
+    //    }
+    //    LastTime = CurrentTime;
+    //    gamestatus.fDropBlockTime += fTimeElapsed;
+    //    fTimeElapsed = 0.0f;
+    //    drop_block(gamestatus.fDropBlockTime); // 블록을 한칸 내림
+    //    check_level_up();  // 레벨업을 체크
+    //    check_game_over(); // 게임오버를 체크
+    //    if (flag.new_block_on == 1) new_block(); // 뉴 블럭 flag가 있는 경우 새로운 블럭 생성
+    //}
     while (1) {
-        for (i = 0; i < 5; i++) { //블록이 한칸떨어지는동안 5번 키입력받을 수 있음
-            check_key(); //키입력확인
-            // if (flag.crush_on && check_crush(bx, by + 1, b_rotation) == false);
-            //블록이 충돌중인경우 추가로 이동및 회전할 시간을 갖음
-            if (flag.space_key_on == 1) { //스페이스바를 누른경우(hard drop) 추가로 이동및 회전할수 없음 break;
-                flag.space_key_on = 0;
-                break;
-            }
-        }
-        draw_main(); //화면을 그림
-        while (fTimeElapsed < (1.0f / 60.0f)) {
-            CurrentTime = ::timeGetTime();
-            fTimeElapsed = (CurrentTime - LastTime) * fTimeScale;
-        }
-        LastTime = CurrentTime;
-        gamestatus.fDropBlockTime += fTimeElapsed;
-        fTimeElapsed = 0.0f;
-        drop_block(gamestatus.fDropBlockTime); // 블록을 한칸 내림
-        check_level_up();  // 레벨업을 체크
-        check_game_over(); // 게임오버를 체크
-        if (flag.new_block_on == 1) new_block(); // 뉴 블럭 flag가 있는 경우 새로운 블럭 생성
+        gameClient.Update();
     }
 }
 

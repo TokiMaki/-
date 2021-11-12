@@ -47,7 +47,7 @@ void GameClient::ChangeScene(Scene::SceneNum tag) {
     m_pScene = m_arrScene[tag];
 }
 
-void GameClient::Update(float fTimeElapsed) {
-    m_GameTimer.Tick(0.0f);
-
+void GameClient::Update() {
+    m_GameTimer.Tick(60.0f);
+    m_pScene->Update(m_GameTimer.GetTimeElapsed());
 }

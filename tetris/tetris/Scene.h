@@ -15,6 +15,8 @@ public:
     Scene(SceneNum num, GameClient* const pGameClient);
     ~Scene();
 
+    virtual void Update(float fTimeElapsed) = 0;
+
 protected:
     SceneNum m_SceneNum;
     GameClient* m_pGameClient;

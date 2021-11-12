@@ -8,3 +8,7 @@ WaitScene::WaitScene(SceneNum num, GameClient* const pGameClient) {
     m_pGameClient = pGameClient;
 }
 WaitScene::~WaitScene() {}
+
+void WaitScene::Update(float fTimeElapsed) {
+
+}
