@@ -61,6 +61,11 @@ struct Gamestatus {
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target;
 };
+
+struct MatchSockets {
+    SOCKET client[MAX_PLAYER];
+};
+
 struct CGameTimer
 {
 
