@@ -13,12 +13,16 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		//각 socket별 커뮤 쓰레드 작성
 		//CreateThread();
-		//방 정보에 해당 클라이언트 소켓을 추가 해놓는다.
-		newRoomData.pClients.emplace_back(match_sockets->client);
-
-		//각 클라의 커뮤쓰레드에서 받은 데이터들을 저장용 player데이터 추가
+		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
+		newRoomData.pClients.emplace_back(match_sockets->client[i]);
+		//newRoomData.pPlayers.emplace_back();
 	}
+	// 각 클라의 커뮤쓰레드에서 받은 데이터들을 저장용 player데이터 추가
+	HANDLE Makecomm = CreateThread(NULL, 0, CommThread, &newRoomData, 0, NULL);
+	while (1)
+	{
 
+	}
 	return 0;
 }
 DWORD WINAPI CommThread(LPVOID arg)
@@ -30,6 +34,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	int temp_num;
 	char buf[BUFSIZE + 1];
 	std::cout << "commThread running\n" << std::endl;
+	//클라이언트 정보 출력
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 	int recv_Msg;
