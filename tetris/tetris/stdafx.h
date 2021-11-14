@@ -69,7 +69,6 @@ struct Flag {
     bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
     bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag 
     bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag 
-    bool space_key_on = 0; //hard drop상태임을 알려주는 flag 
     bool game_reset = 0; // 게임이 리셋됨을 알려주는 flag
 };
 

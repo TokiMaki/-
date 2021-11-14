@@ -37,7 +37,10 @@ private:
     int cnt; //현재 레벨에서 제거한 줄 수를 저장
     int score; //현재 점수
 
+    //int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
     int STATUS_Y_LEVEL; //LEVEL 정보표시위치Y 좌표 저장
+    //int STATUS_Y_SCORE; //SCORE 정보표시위치Y 좌표 저장
+
 
     int blocks[7][4][4][4] = {
     {{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭
