@@ -54,16 +54,16 @@ void MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ, SOCKET client)
 int SendMsgtoClient(int Msg, SOCKET client)
 {
 	int retval;
+	int sendMsg = htonl(Msg);
 
 	int MSG_len = htonl(sizeof(int));
-	int MSG = MSG_MatchMaking::Msg_WaitGame;
 	retval = send(client, (char*)&MSG_len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		return SOCKET_ERROR;
 	}
 
-	retval = send(client, (char*)&MSG, sizeof(int), 0);
+	retval = send(client, (char*)&sendMsg, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		return SOCKET_ERROR;
