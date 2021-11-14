@@ -68,4 +68,6 @@ int SendMsgtoClient(int Msg, SOCKET client)
 		err_display("send()");
 		return SOCKET_ERROR;
 	}
+
+	return 0;
 }
