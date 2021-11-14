@@ -39,5 +39,4 @@ public:
 //	//서버에서 받은 데이터로 현재 클라이언트의 데이터를 업데이트
 //	void SetKeyInput(KeyInput* keyinput)
 //	//보내야 할 클라이언트의 키 값을 받아서 저장
-
 };

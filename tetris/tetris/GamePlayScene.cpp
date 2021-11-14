@@ -11,30 +11,20 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
+
     if (flag.game_reset == 0) {
         srand((unsigned)time(NULL)); //난수표생성 
         setcursortype(NOCURSOR); //커서 없앰
         reset(); //게임판 리셋
         flag.game_reset = 1;
     }
-    /*__int64 LastTime = ::timeGetTime();
-    __int64 CurrentTime;
-    float fTimeScale = 0.001f;
-    float fTimeElapsed = 0.0f;*/
 
     check_key(); //키입력확인
-    // if (flag.crush_on && check_crush(bx, by + 1, b_rotation) == false);
-    ////블록이 충돌중인경우 추가로 이동및 회전할 시간을 갖음
-    //if (flag.space_key_on == 1) { //스페이스바를 누른경우(hard drop) 추가로 이동및 회전할수 없음 break;
-    //    flag.space_key_on = 0;
-    //    break;
-    //}
+    if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
+        // 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
+        // 조금더 충분히 생각해 보고 추가하거나 아예 삭제하는 쪽으로 할 예정
+    };
     draw_main(); //화면을 그림
-    /*while (fTimeElapsed < (1.0f / 60.0f)) {
-        CurrentTime = ::timeGetTime();
-        fTimeElapsed = (CurrentTime - LastTime) * fTimeScale;
-    }
-    LastTime = CurrentTime;*/
     m_gamestatus.fDropBlockTime += fTimeElapsed;
     drop_block(); // 블록을 한칸 내림
     check_level_up();  // 레벨업을 체크
@@ -61,31 +51,29 @@ void GamePlayScene::reset(void) {
 }
 
 void GamePlayScene::reset_main(void) { //게임판을 초기화  
-    int i, j;
 
-    for (i = 0; i < BOARD_Y; i++) { // 게임판을 0으로 초기화  
-        for (j = 0; j < BOARD_X; j++) {
+    for (int i = 0; i < BOARD_Y; i++) { // 게임판을 0으로 초기화  
+        for (int j = 0; j < BOARD_X; j++) {
             m_gamestatus.board_org[i][j] = 0;
             m_gamestatus.board_cpy[i][j] = 100;
         }
     }
-    for (j = 1; j < BOARD_X; j++) { //y값이 3인 위치에 천장을 만듦
-        m_gamestatus.board_org[3][j] = CEILLING;
+    for (int j = 1; j < BOARD_X; j++) { //y값이 3인 위치에 천장을 만듦
+        m_gamestatus.board_org[CEILLING_Y][j] = CEILLING;
     }
-    for (i = 1; i < BOARD_Y - 1; i++) { //좌우 벽을 만듦  
+    for (int i = 1; i < BOARD_Y - 1; i++) { //좌우 벽을 만듦  
         m_gamestatus.board_org[i][0] = WALL;
         m_gamestatus.board_org[i][BOARD_X - 1] = WALL;
     }
-    for (j = 0; j < BOARD_X; j++) { //바닥벽을 만듦 
+    for (int j = 0; j < BOARD_X; j++) { //바닥벽을 만듦 
         m_gamestatus.board_org[BOARD_Y - 1][j] = WALL;
     }
 }
 
 void GamePlayScene::reset_main_cpy(void) { //m_gamestatus.board_cpy를 초기화 
-    int i, j;
 
-    for (i = 0; i < BOARD_Y; i++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음 
-        for (j = 0; j < BOARD_X; j++) {  //이는 m_gamestatus.board_org와 같은 숫자가 없게 하기 위함 
+    for (int i = 0; i < BOARD_Y; i++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음 
+        for (int j = 0; j < BOARD_X; j++) {  //이는 m_gamestatus.board_org와 같은 숫자가 없게 하기 위함 
             m_gamestatus.board_cpy[i][j] = 100;
         }
     }
@@ -102,6 +90,14 @@ void GamePlayScene::draw_map(void) { //게임 상태 표시를 나타내는 함수
     gotoxy(STATUS_X_ADJ, y + 5); printf("│            │");
     gotoxy(STATUS_X_ADJ, y + 6); printf("│            │");
     gotoxy(STATUS_X_ADJ, y + 7); printf("└────────────┘");
+
+    gotoxy(STATUS_X_ADJ, y + 9); printf("┌    ITEM    ┐");
+    gotoxy(STATUS_X_ADJ, y + 10); printf("│            │");
+    gotoxy(STATUS_X_ADJ, y + 11); printf("│            │");
+    gotoxy(STATUS_X_ADJ, y + 12); printf("│            │");
+    gotoxy(STATUS_X_ADJ, y + 13); printf("│            │");
+    gotoxy(STATUS_X_ADJ, y + 14); printf("└────────────┘");
+
     /*
     gotoxy(STATUS_X_ADJ, y + 8); printf(" YOUR SCORE :");
     gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE = y + 9); printf("        %6d", score);
@@ -116,13 +112,12 @@ void GamePlayScene::draw_map(void) { //게임 상태 표시를 나타내는 함수
 }
 
 void GamePlayScene::draw_main(void) { //게임판 그리는 함수 
-    int i, j;
 
-    for (j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌 
-        if (m_gamestatus.board_org[3][j] == EMPTY) m_gamestatus.board_org[3][j] = CEILLING;
+    for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌 
+        if (m_gamestatus.board_org[CEILLING_Y][j] == EMPTY) m_gamestatus.board_org[CEILLING_Y][j] = CEILLING;
     }
-    for (i = 0; i < BOARD_Y; i++) {
-        for (j = 0; j < BOARD_X; j++) {
+    for (int i = 0; i < BOARD_Y; i++) {
+        for (int j = 0; j < BOARD_X; j++) {
             if (m_gamestatus.board_cpy[i][j] != m_gamestatus.board_org[i][j]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
                                                 //이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
                 gotoxy(BOARD_X_ADJ + j, BOARD_Y_ADJ + i);
@@ -146,8 +141,8 @@ void GamePlayScene::draw_main(void) { //게임판 그리는 함수
             }
         }
     }
-    for (i = 0; i < BOARD_Y; i++) { //게임판을 그린 후 m_gamestatus.board_cpy에 복사  
-        for (j = 0; j < BOARD_X; j++) {
+    for (int i = 0; i < BOARD_Y; i++) { //게임판을 그린 후 m_gamestatus.board_cpy에 복사  
+        for (int j = 0; j < BOARD_X; j++) {
             m_gamestatus.board_cpy[i][j] = m_gamestatus.board_org[i][j];
         }
     }
@@ -449,7 +444,7 @@ void GamePlayScene::check_game_over(void) {
     int y = 5;
 
     for (i = 1; i < BOARD_X - 2; i++) {
-        if (m_gamestatus.board_org[3][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
+        if (m_gamestatus.board_org[CEILLING_Y][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
             gotoxy(x, y + 0); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤"); //게임오버 메세지 
             gotoxy(x, y + 1); printf("▤                              ▤");
             gotoxy(x, y + 2); printf("▤  +-----------------------+   ▤");
@@ -461,7 +456,6 @@ void GamePlayScene::check_game_over(void) {
             gotoxy(x, y + 8); printf("▤                              ▤");
             gotoxy(x, y + 9); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤");
 
-            Sleep(1000);
             while (kbhit()) getch();
             key = getch();
             reset();
