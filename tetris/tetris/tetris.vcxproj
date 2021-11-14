@@ -151,7 +151,7 @@
     <ClCompile Include="GamePlayScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="socket_err.cpp" />
+    <ClCompile Include="socket_function.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="WaitScene.cpp" />
@@ -160,7 +160,7 @@
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GamePlayScene.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="socket_err.h" />
+    <ClInclude Include="socket_function.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />

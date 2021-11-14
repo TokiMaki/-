@@ -51,3 +51,13 @@ void GameClient::Update() {
     m_GameTimer.Tick(60.0f);
     m_pScene->Update(m_GameTimer.GetTimeElapsed());
 }
+
+void GameClient::SetSOCKET(SOCKET arg)
+{
+    sock = arg;
+}
+
+SOCKET GameClient::GetSOCKET()
+{
+    return sock;
+}

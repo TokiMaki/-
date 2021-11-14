@@ -211,11 +211,9 @@ void GamePlayScene::check_key(void) {
         else { //방향키가 아닌경우 
             switch (key) {
             case SPACE: //스페이스키 눌렀을때 
-                flag.space_key_on = 1; //스페이스키 flag를 띄움 
-                while (flag.crush_on == 0) { //바닥에 닿을때까지 이동시킴
-                    hard_drop_block();
-                    score += m_gamestatus.level; // hard drop 보너스
-                }
+                //바닥에 닿을때까지 이동시킴
+                hard_drop_block();
+                score += m_gamestatus.level; // hard drop 보너스
                 break;
             case ESC: //ESC눌렀을때 
                 system("cls"); //화면을 지우고 
@@ -248,22 +246,23 @@ void GamePlayScene::drop_block() {
 }
 
 void GamePlayScene::hard_drop_block() {
-	if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true) flag.crush_on = 0; //밑이 비어있으면 crush flag 끔
-	if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true) move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동
-    if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
-        for (int i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘
-            for (int j = 0; j < BOARD_X; j++) {
-                if (m_gamestatus.board_org[i][j] == ACTIVE_BLOCK) m_gamestatus.board_org[i][j] = INACTIVE_BLOCK;
+    while (1) {
+        if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true) flag.crush_on = 0; //밑이 비어있으면 crush flag 끔
+        if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true) move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동
+        if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+            for (int i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘
+                for (int j = 0; j < BOARD_X; j++) {
+                    if (m_gamestatus.board_org[i][j] == ACTIVE_BLOCK) m_gamestatus.board_org[i][j] = INACTIVE_BLOCK;
+                }
             }
+            flag.crush_on = 0; //flag를 끔 
+            check_line(); //라인체크를 함 
+            flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
+            return; //함수 종료
         }
-        flag.crush_on = 0; //flag를 끔 
-        check_line(); //라인체크를 함 
-        flag.new_block_on = 1; //새로운 블럭생성 flag를 켬
-        return; //함수 종료
+        if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
+        m_gamestatus.fDropBlockTime = 0.0f;
     }
-	if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
-	m_gamestatus.fDropBlockTime = 0.0f;
-    return;
 }
 
 int GamePlayScene::check_crush(int bx, int by, int b_rotation) { //지정된 좌표와 회전값으로 충돌이 있는지 검사 
