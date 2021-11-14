@@ -15,6 +15,8 @@ void TitleScene::Update(float fTimeElapsed) {
     int y = 4; //타이틀화면이 표시되는 y좌표
     int cnt; //타이틀 프레임을 세는 변수
 
+    setcursortype(NOCURSOR);
+
     gotoxy(x, y + 0); printf("■□□□■■■□□■■□□■■");
     gotoxy(x, y + 1); printf("■■■□  ■□□    ■■□□■");
     gotoxy(x, y + 2); printf("□□□■              □■  ■");
@@ -40,7 +42,7 @@ void TitleScene::Update(float fTimeElapsed) {
     if (kbhit()) {
         while (kbhit()) getch(); //버퍼에 기록된 키값을 버림
         m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
-    }; //키입력이 있으면 무한루프 종료
+    }; //키입력이 게임 플레이 신으로
     while (kbhit()) getch(); //버퍼에 기록된 키값을 버림
 
 }
