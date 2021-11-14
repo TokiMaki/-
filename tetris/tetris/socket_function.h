@@ -5,3 +5,5 @@ void err_quit(char* msg);
 
 // 소켓 함수 오류 출력
 void err_display(char* msg);
+
+int recvn(SOCKET s, char* buf, int len, int flags);
