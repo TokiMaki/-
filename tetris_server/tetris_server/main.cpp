@@ -1,31 +1,11 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS // 최신 VC++ 컴파일 시 경고 방지
 #include "stdafx.h"
-#include "socket_err.h"
+#include "socket_function.h"
 #include "MatchMaking.h"
 #include "GameServer.h"
 using namespace std;
 
 vector<SOCKET> MatchMakingQ; //대기 중인 클라이언트 소켓을 저장
-
-// 사용자 정의 데이터 수신 함수
-int recvn(SOCKET s, char* buf, int len, int flags)
-{
-    int received;
-    char* ptr = buf;
-    int left = len;
-
-    while (left > 0) {
-        received = recv(s, ptr, left, flags);
-        if (received == SOCKET_ERROR)
-            return SOCKET_ERROR;
-        else if (received == 0)
-            break;
-        left -= received;
-        ptr += received;
-    }
-
-    return (len - left);
-}
 
 int main(int argc, char* argv[])
 {
