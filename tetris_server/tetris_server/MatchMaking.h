@@ -8,6 +8,9 @@ bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ);
 void CreateGameServerThread(std::vector<SOCKET>* MatchMakingQ);
 //GameServerThread를 생성하며, MatchMakingQ의 소켓들을 전달
 
+void MatchMakingQ_CloseSocket(std::vector<SOCKET>* MatchMakingQ, SOCKET client);
+//MatchMakingQ에 해당되는 클라이언트 소켓을 제거
+
 void MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ, SOCKET client);
 //MatchMakingQ에 해당되는 클라이언트 소켓을 제거
 

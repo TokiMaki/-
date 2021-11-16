@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "socket_function.h"
 #include "MatchMaking.h"
+#include "GameServer.h"
 
 
 DWORD WINAPI MatchMakingThread(LPVOID arg)
@@ -20,7 +21,7 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 		else if(!MatchMakingQ->empty()) {
 			for (auto client : *MatchMakingQ) {
 				if (SendMsgtoClient(MSG_MatchMaking::Msg_WaitGame, client) == SOCKET_ERROR) {
-					MatchMakingQ_DeQ(MatchMakingQ, client);
+					MatchMakingQ_CloseSocket(MatchMakingQ, client);
 				}
 			}
 			//printf("\n");
@@ -41,14 +42,21 @@ bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ)
 
 void CreateGameServerThread(std::vector<SOCKET>* MatchMakingQ)
 {
+	CreateThread(NULL, 0, GameServerThread, NULL, 0, NULL);
 	std::cout << "Called CreateGameServerThread().\n";
+}
+
+void MatchMakingQ_CloseSocket(std::vector<SOCKET>* MatchMakingQ, SOCKET client)
+{
+	MatchMakingQ->erase(std::remove_if(MatchMakingQ->begin(), MatchMakingQ->end(),
+		[client](SOCKET target) {return target == client; }));
+	closesocket(client);
 }
 
 void MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ, SOCKET client)
 {
 	MatchMakingQ->erase(std::remove_if(MatchMakingQ->begin(), MatchMakingQ->end(),
 		[client](SOCKET target) {return target == client; }));
-	closesocket(client);
 }
 
 int SendMsgtoClient(int Msg, SOCKET client)
