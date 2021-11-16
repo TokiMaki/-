@@ -19,7 +19,7 @@ void GamePlayScene::Update(float fTimeElapsed) {
 		flag.game_reset = 1;
 	}
 
-	check_key2(fTimeElapsed); //키입력확인
+	check_key(); //키입력확인
 	KeyUpdate(fTimeElapsed);
 	if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
 		// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
@@ -181,48 +181,7 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 	}
 }
 
-void GamePlayScene::check_key(void) {
-	key = 0; //키값 초기화  
-
-	if (kbhit()) { //키입력이 있는 경우  
-		key = getch(); //키값을 받음
-		if (key == 224) { //방향키인경우 
-			do { key = getch(); } while (key == 224);//방향키지시값을 버림 
-			switch (key) {
-			case LEFT: //왼쪽키 눌렀을때
-				if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
-					if (check_crush(m_gamestatus.bx - 1, m_gamestatus.by, m_gamestatus.b_rotation) == true) move_block(LEFT);
-				}
-				break;                            //왼쪽으로 갈 수 있는지 체크 후 가능하면 이동
-			case RIGHT: //오른쪽 방향키 눌렀을때- 위와 동일하게 처리됨 
-				if (check_crush(m_gamestatus.bx + 1, m_gamestatus.by, m_gamestatus.b_rotation) == true) move_block(RIGHT);
-				break;
-			case DOWN: //아래쪽 방향키 눌렀을때-위와 동일하게 처리됨 
-				if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true) move_block(DOWN);
-				break;
-			case UP: //위쪽 방향키 눌렀을때
-				if (check_crush(m_gamestatus.bx, m_gamestatus.by, (m_gamestatus.b_rotation + 1) % 4) == true) move_block(UP);
-				//회전할 수 있는지 체크 후 가능하면 회전
-				else if (flag.crush_on == 1 && check_crush(m_gamestatus.bx, m_gamestatus.by - 1, (m_gamestatus.b_rotation + 1) % 4) == true) move_block(100);
-			}   //바닥에 닿은 경우 위쪽으로 한칸띄워서 회전이 가능하면 그렇게 함(특수동작)
-		}
-		else { //방향키가 아닌경우 
-			switch (key) {
-			case SPACE: //스페이스키 눌렀을때 
-				//바닥에 닿을때까지 이동시킴
-				hard_drop_block();
-				score += m_gamestatus.level; // hard drop 보너스
-				break;
-			case ESC: //ESC눌렀을때 
-				system("cls"); //화면을 지우고 
-				exit(0); //게임종료 
-			}
-		}
-	}
-	while (kbhit()) getch(); //키버퍼를 비움 
-}
-
-void GamePlayScene::check_key2(float fTimeElapsed) {
+void GamePlayScene::check_key() {
 	// 왼쪽키 트리거
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
 		m_keys.left = true;

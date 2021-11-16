@@ -19,7 +19,6 @@ public:
     void draw_map();
     void draw_main();
     void check_key();
-    void check_key2(float fTimeElapsed);
     void KeyUpdate(float fTimeElapsed);
     void drop_block(float fTimeElapsed);
     void hard_drop_block();
