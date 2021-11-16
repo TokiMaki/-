@@ -26,6 +26,11 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 			for (auto client : *MatchMakingQ) {
 				if (SendMsgtoClient(MSG_MatchMaking::Msg_WaitGame, client) == SOCKET_ERROR) {
 					MatchMakingQ_CloseSocket(MatchMakingQ, client);
+					continue;
+				}
+				if (RecvMsgfromClient(client) == SOCKET_ERROR) {
+					MatchMakingQ_CloseSocket(MatchMakingQ, client);
+					continue;
 				}
 			}
 			//printf("\n");
@@ -81,6 +86,35 @@ int SendMsgtoClient(int Msg, SOCKET client)
 		err_display("send()");
 		return SOCKET_ERROR;
 	}
+
+	return 0;
+}
+
+int RecvMsgfromClient(SOCKET client)
+{
+	int retval;
+	int len = 0;
+	int Msg;
+	SOCKET client_sock = (SOCKET)client;
+
+	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+		return SOCKET_ERROR;
+	}
+	else if (retval == 0)
+		return 0;
+	len = ntohl(len);
+
+	retval = recvn(client_sock, (char*)&Msg, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+		return SOCKET_ERROR;
+	}
+	else if (retval == 0)
+		return 0;
+	Msg = ntohl(Msg);
+	printf("%d\n", Msg);
 
 	return 0;
 }

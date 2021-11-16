@@ -17,6 +17,8 @@ SOCKET MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ);
 int SendMsgtoClient(int Msg, SOCKET client);
 // 클라이언트에게 메세지 전송
 
+int RecvMsgfromClient(SOCKET client);
+
 
 enum MSG_MatchMaking //매치매이킹 시스템에서 사용할 메시지
 {
