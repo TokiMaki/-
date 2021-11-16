@@ -15,8 +15,7 @@ void WaitScene::Update(float fTimeElapsed) {
     int retval;
 
     // 윈속 초기화
-    WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+    if (m_pGameClient->InitWSA() != 0) 
         return;
 
     // socket()
@@ -65,6 +64,22 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
             break;
         Msg = ntohl(Msg);
         printf("%d\n", Msg);
+
+        Msg = 0;
+        int sendMsg = htonl(Msg);
+
+        int MSG_len = htonl(sizeof(int));
+        retval = send(client_sock, (char*)&MSG_len, sizeof(int), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("send()");
+            break;
+        }
+
+        retval = send(client_sock, (char*)&sendMsg, sizeof(int), 0);
+        if (retval == SOCKET_ERROR) {
+            err_display("send()");
+            break;
+        }
     }
     return 0;
 }

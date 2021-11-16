@@ -6,7 +6,7 @@
 class GameClient
 {
 private:
-	// WSADATA wsa;
+	WSADATA wsa;
 	SOCKET sock;
 	KeyInput m_keys;                                //클라이언트의 키입력을 저장
 	Gamestatus m_gamestatus;  	        //내 클라이언트의 게임 상태
@@ -27,6 +27,8 @@ public:
 
 	void SetSOCKET(SOCKET);
 	SOCKET GetSOCKET();
+
+	int InitWSA();
 //public:
 //	void TitleSceneSend(enum MSG_MathcingSystem);
 //	//Msg_Ready 나 Msg_ReadyCancel 를 MatchingThread 에 전송
