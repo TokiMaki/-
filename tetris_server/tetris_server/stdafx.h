@@ -35,6 +35,7 @@
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
 #define MAX_PLAYER 3 // 최대 인원수
+#define BUFSIZE    2048
 
 struct KeyInput {
     bool left = false;      //←
