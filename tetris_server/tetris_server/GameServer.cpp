@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "GameServer.h"
 #include "MatchMaking.h"
+#include "socket_function.h"
 
 
 
@@ -17,11 +18,12 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newRoomData.pClients.emplace_back(&match_sockets->client[i]);
 		//newRoomData.pPlayers.emplace_back();
 	}
-	// 각 클라의 커뮤쓰레드에서 받은 데이터들을 저장용 player데이터 추가
-	HANDLE Makecomm = CreateThread(NULL, 0, CommThread, &newRoomData, 0, NULL);
+	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
+	newRoomData.CreateCommThread();
 	while (1)
 	{
-
+		//event사용?
+		//받은 데이터들 모아서 업데이트 하기
 	}
 	return 0;
 }
@@ -40,7 +42,17 @@ DWORD WINAPI CommThread(LPVOID arg)
 	int recv_Msg;
 	while (1)
 	{
-		
+		//데이터 주고 받기
+		int now_recv_data;
+		Player playdata;
+		retval = recvn(client_sock,(char*)&playdata,sizeof(Player),0);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0)
+			break;
+
 	}
 
 
@@ -50,5 +62,9 @@ DWORD WINAPI CommThread(LPVOID arg)
 void GameServerThreadData::CreateCommThread(void)
 {
 	//GameServerThread에 들어온 클라이언트들을 배열로 제작
-	HANDLE newCommThread = CreateThread(NULL, 0, CommThread, &pClients[0], 0, NULL);
+	for (int i = 0; i < MAX_PLAYER; ++i)
+	{
+		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, &pClients[i], 0, NULL);
+	}
+	
 }
