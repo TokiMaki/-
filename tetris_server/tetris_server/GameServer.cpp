@@ -14,7 +14,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//각 socket별 커뮤 쓰레드 작성
 		//CreateThread();
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
-		newRoomData.pClients.emplace_back(match_sockets->client[i]);
+		newRoomData.pClients.emplace_back(&match_sockets->client[i]);
 		//newRoomData.pPlayers.emplace_back();
 	}
 	// 각 클라의 커뮤쓰레드에서 받은 데이터들을 저장용 player데이터 추가
