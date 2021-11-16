@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "socket_function.h"
 #include "MatchMaking.h"
+#include "GameServer.h"
 
 
 DWORD WINAPI MatchMakingThread(LPVOID arg)
@@ -14,13 +15,22 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 	while (1) {
 		// ¸ÅÄª ¼º¸³ ¾Ë·ÁÁÜ
 		if (isMatchMakingQFull(MatchMakingQ)) {
-			CreateGameServerThread(MatchMakingQ);
+			MatchSockets* send = new MatchSockets;
+			for (int i = 0; i < MAX_PLAYER; ++i) {
+				send->client[i] = MatchMakingQ_DeQ(MatchMakingQ);
+				}
+			CreateGameServerThread(send);
 			//MatchMakingQ_DeQ(MatchMakingQ);
 		}
 		else if(!MatchMakingQ->empty()) {
 			for (auto client : *MatchMakingQ) {
 				if (SendMsgtoClient(MSG_MatchMaking::Msg_WaitGame, client) == SOCKET_ERROR) {
-					MatchMakingQ_DeQ(MatchMakingQ, client);
+					MatchMakingQ_CloseSocket(MatchMakingQ, client);
+					continue;
+				}
+				if (RecvMsgfromClient(client) == SOCKET_ERROR) {
+					MatchMakingQ_CloseSocket(MatchMakingQ, client);
+					continue;
 				}
 			}
 			//printf("\n");
@@ -39,16 +49,24 @@ bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ)
 	else return false;
 }
 
-void CreateGameServerThread(std::vector<SOCKET>* MatchMakingQ)
+void CreateGameServerThread(MatchSockets* target)
 {
+	CreateThread(NULL, 0, GameServerThread, target, 0, NULL);
 	std::cout << "Called CreateGameServerThread().\n";
 }
 
-void MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ, SOCKET client)
+void MatchMakingQ_CloseSocket(std::vector<SOCKET>* MatchMakingQ, SOCKET client)
 {
 	MatchMakingQ->erase(std::remove_if(MatchMakingQ->begin(), MatchMakingQ->end(),
 		[client](SOCKET target) {return target == client; }));
 	closesocket(client);
+}
+
+SOCKET MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ)
+{
+	SOCKET target = *MatchMakingQ->begin();
+	MatchMakingQ->erase(MatchMakingQ->begin());
+	return target;
 }
 
 int SendMsgtoClient(int Msg, SOCKET client)
@@ -68,6 +86,35 @@ int SendMsgtoClient(int Msg, SOCKET client)
 		err_display("send()");
 		return SOCKET_ERROR;
 	}
+
+	return 0;
+}
+
+int RecvMsgfromClient(SOCKET client)
+{
+	int retval;
+	int len = 0;
+	int Msg;
+	SOCKET client_sock = (SOCKET)client;
+
+	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+		return SOCKET_ERROR;
+	}
+	else if (retval == 0)
+		return 0;
+	len = ntohl(len);
+
+	retval = recvn(client_sock, (char*)&Msg, len, 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("recv()");
+		return SOCKET_ERROR;
+	}
+	else if (retval == 0)
+		return 0;
+	Msg = ntohl(Msg);
+	printf("%d\n", Msg);
 
 	return 0;
 }
