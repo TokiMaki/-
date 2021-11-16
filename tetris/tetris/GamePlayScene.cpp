@@ -13,30 +13,30 @@ GamePlayScene::~GamePlayScene() {}
 void GamePlayScene::Update(float fTimeElapsed) {
 
 	if (flag.game_reset == 0) {
-		srand((unsigned)time(NULL)); //³­¼öÇ¥»ı¼º
-		setcursortype(NOCURSOR); //Ä¿¼­ ¾ø¾Ú
-		reset(); //°ÔÀÓÆÇ ¸®¼Â
+		srand((unsigned)time(NULL)); //ë‚œìˆ˜í‘œìƒì„±
+		setcursortype(NOCURSOR); //ì»¤ì„œ ì—†ì•°
+		reset(); //ê²Œì„íŒ ë¦¬ì…‹
 		flag.game_reset = 1;
 	}
 
-	check_key(); //Å°ÀÔ·ÂÈ®ÀÎ
+	check_key(); //í‚¤ì…ë ¥í™•ì¸
 	KeyUpdate(fTimeElapsed);
 	if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
-		// ºí·ÏÀÌ Ãæµ¹ÇßÀ» ¶§ ¾à°£ÀÇ Ãß°¡ ½Ã°£À» ºÎ¿©ÇØÁÖ´Â ºÎºĞÀÎµ¥ ·ÎÁ÷ÀÌ »ı°¢ÀÌ ¾È³ª¼­ ÀÏµı ºñ¿ö³õÀ½
-		// Á¶±İ´õ ÃæºĞÈ÷ »ı°¢ÇØ º¸°í Ãß°¡ÇÏ°Å³ª ¾Æ¿¹ »èÁ¦ÇÏ´Â ÂÊÀ¸·Î ÇÒ ¿¹Á¤
+		// ë¸”ë¡ì´ ì¶©ëŒí–ˆì„ ë•Œ ì•½ê°„ì˜ ì¶”ê°€ ì‹œê°„ì„ ë¶€ì—¬í•´ì£¼ëŠ” ë¶€ë¶„ì¸ë° ë¡œì§ì´ ìƒê°ì´ ì•ˆë‚˜ì„œ ì¼ë”´ ë¹„ì›Œë†“ìŒ
+		// ì¡°ê¸ˆë” ì¶©ë¶„íˆ ìƒê°í•´ ë³´ê³  ì¶”ê°€í•˜ê±°ë‚˜ ì•„ì˜ˆ ì‚­ì œí•˜ëŠ” ìª½ìœ¼ë¡œ í•  ì˜ˆì •
 	};
 
-	draw_main(); //È­¸éÀ» ±×¸²
+	draw_main(); //í™”ë©´ì„ ê·¸ë¦¼
 	if (flag.down_flag == 0) {
-		drop_block(fTimeElapsed); // ºí·ÏÀ» ÇÑÄ­ ³»¸²
+		drop_block(fTimeElapsed); // ë¸”ë¡ì„ í•œì¹¸ ë‚´ë¦¼
 	}
-	check_level_up();  // ·¹º§¾÷À» Ã¼Å©
-	check_game_over(); // °ÔÀÓ¿À¹ö¸¦ Ã¼Å©
-	if (flag.new_block_on == 1) new_block(); // ´º ºí·° flag°¡ ÀÖ´Â °æ¿ì »õ·Î¿î ºí·° »ı¼º
+	check_level_up();  // ë ˆë²¨ì—…ì„ ì²´í¬
+	check_game_over(); // ê²Œì„ì˜¤ë²„ë¥¼ ì²´í¬
+	if (flag.new_block_on == 1) new_block(); // ë‰´ ë¸”ëŸ­ flagê°€ ìˆëŠ” ê²½ìš° ìƒˆë¡œìš´ ë¸”ëŸ­ ìƒì„±
 }
 
 void GamePlayScene::reset(void) {
-	m_gamestatus.level = 1; //°¢Á¾º¯¼ö ÃÊ±âÈ­
+	m_gamestatus.level = 1; //ê°ì¢…ë³€ìˆ˜ ì´ˆê¸°í™”
 	score = 0;
 	level_goal = 1000;
 	key = 0;
@@ -44,62 +44,62 @@ void GamePlayScene::reset(void) {
 	cnt = 0;
 	m_gamestatus.speed = 1;
 
-	system("cls"); //È­¸éÁö¿ò
-	reset_main(); // m_gamestatus.board_org¸¦ ÃÊ±âÈ­
-	draw_map(); // °ÔÀÓÈ­¸éÀ» ±×¸²
-	draw_main(); // °ÔÀÓÆÇÀ» ±×¸²
+	system("cls"); //í™”ë©´ì§€ì›€
+	reset_main(); // m_gamestatus.board_orgë¥¼ ì´ˆê¸°í™”
+	draw_map(); // ê²Œì„í™”ë©´ì„ ê·¸ë¦¼
+	draw_main(); // ê²Œì„íŒì„ ê·¸ë¦¼
 
-	m_gamestatus.b_type_next = rand() % 7; //´ÙÀ½¹ø¿¡ ³ª¿Ã ºí·Ï Á¾·ù¸¦ ·£´ıÇÏ°Ô »ı¼º
-	new_block(); //»õ·Î¿î ºí·ÏÀ» ÇÏ³ª ¸¸µê
+	m_gamestatus.b_type_next = rand() % 7; //ë‹¤ìŒë²ˆì— ë‚˜ì˜¬ ë¸”ë¡ ì¢…ë¥˜ë¥¼ ëœë¤í•˜ê²Œ ìƒì„±
+	new_block(); //ìƒˆë¡œìš´ ë¸”ë¡ì„ í•˜ë‚˜ ë§Œë“¦
 }
 
-void GamePlayScene::reset_main(void) { //°ÔÀÓÆÇÀ» ÃÊ±âÈ­  
+void GamePlayScene::reset_main(void) { //ê²Œì„íŒì„ ì´ˆê¸°í™”  
 
-	for (int i = 0; i < BOARD_Y; i++) { // °ÔÀÓÆÇÀ» 0À¸·Î ÃÊ±âÈ­
+	for (int i = 0; i < BOARD_Y; i++) { // ê²Œì„íŒì„ 0ìœ¼ë¡œ ì´ˆê¸°í™”
 		for (int j = 0; j < BOARD_X; j++) {
 			m_gamestatus.board_org[i][j] = 0;
 			m_gamestatus.board_cpy[i][j] = 100;
 		}
 	}
-	for (int j = 1; j < BOARD_X; j++) { //y°ªÀÌ 3ÀÎ À§Ä¡¿¡ ÃµÀåÀ» ¸¸µê
+	for (int j = 1; j < BOARD_X; j++) { //yê°’ì´ 3ì¸ ìœ„ì¹˜ì— ì²œì¥ì„ ë§Œë“¦
 		m_gamestatus.board_org[CEILLING_Y][j] = CEILLING;
 	}
-	for (int i = 1; i < BOARD_Y - 1; i++) { //ÁÂ¿ì º®À» ¸¸µê
+	for (int i = 1; i < BOARD_Y - 1; i++) { //ì¢Œìš° ë²½ì„ ë§Œë“¦
 		m_gamestatus.board_org[i][0] = WALL;
 		m_gamestatus.board_org[i][BOARD_X - 1] = WALL;
 	}
-	for (int j = 0; j < BOARD_X; j++) { //¹Ù´Úº®À» ¸¸µê 
+	for (int j = 0; j < BOARD_X; j++) { //ë°”ë‹¥ë²½ì„ ë§Œë“¦ 
 		m_gamestatus.board_org[BOARD_Y - 1][j] = WALL;
 	}
 }
 
-void GamePlayScene::reset_main_cpy(void) { //m_gamestatus.board_cpy¸¦ ÃÊ±âÈ­ 
+void GamePlayScene::reset_main_cpy(void) { //m_gamestatus.board_cpyë¥¼ ì´ˆê¸°í™” 
 
-	for (int i = 0; i < BOARD_Y; i++) {         //°ÔÀÓÆÇ¿¡ °ÔÀÓ¿¡ »ç¿ëµÇÁö ¾Ê´Â ¼ıÀÚ¸¦ ³ÖÀ½ 
-		for (int j = 0; j < BOARD_X; j++) {  //ÀÌ´Â m_gamestatus.board_org¿Í °°Àº ¼ıÀÚ°¡ ¾ø°Ô ÇÏ±â À§ÇÔ 
+	for (int i = 0; i < BOARD_Y; i++) {         //ê²Œì„íŒì— ê²Œì„ì— ì‚¬ìš©ë˜ì§€ ì•ŠëŠ” ìˆ«ìë¥¼ ë„£ìŒ 
+		for (int j = 0; j < BOARD_X; j++) {  //ì´ëŠ” m_gamestatus.board_orgì™€ ê°™ì€ ìˆ«ìê°€ ì—†ê²Œ í•˜ê¸° ìœ„í•¨ 
 			m_gamestatus.board_cpy[i][j] = 100;
 		}
 	}
 }
 
-void GamePlayScene::draw_map(void) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö  
-	int y = 3;           // m_gamestatus.level, goal, score¸¸ °ÔÀÓÁß¿¡ °ªÀÌ ¹Ù²ğ¼ö µµ ÀÖÀ½ ±× y°ªÀ» µû·Î ÀúÀåÇØµÒ 
-						 // ±×·¡¼­ È¤½Ã °ÔÀÓ »óÅÂ Ç¥½Ã À§Ä¡°¡ ¹Ù²î¾îµµ ±× ÇÔ¼ö¿¡¼­ ¾È¹Ù²ãµµ µÇ°Ô
+void GamePlayScene::draw_map(void) { //ê²Œì„ ìƒíƒœ í‘œì‹œë¥¼ ë‚˜íƒ€ë‚´ëŠ” í•¨ìˆ˜  
+	int y = 3;           // m_gamestatus.level, goal, scoreë§Œ ê²Œì„ì¤‘ì— ê°’ì´ ë°”ë€”ìˆ˜ ë„ ìˆìŒ ê·¸ yê°’ì„ ë”°ë¡œ ì €ì¥í•´ë‘  
+						 // ê·¸ë˜ì„œ í˜¹ì‹œ ê²Œì„ ìƒíƒœ í‘œì‹œ ìœ„ì¹˜ê°€ ë°”ë€Œì–´ë„ ê·¸ í•¨ìˆ˜ì—ì„œ ì•ˆë°”ê¿”ë„ ë˜ê²Œ
 	gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL = y); printf(" LEVEL : %5d", m_gamestatus.level);
 	// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL = y + 1); printf(" GOAL  : %5d", 10 - cnt);
-	gotoxy(STATUS_X_ADJ, y + 2); printf("¦£    NEXT    ¦¤");
-	gotoxy(STATUS_X_ADJ, y + 3); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 4); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 5); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 6); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 7); printf("¦¦¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¥");
+	gotoxy(STATUS_X_ADJ, y + 2); printf("â”Œ    NEXT    â”");
+	gotoxy(STATUS_X_ADJ, y + 3); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 4); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 5); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 6); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 7); printf("â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜");
 
-	gotoxy(STATUS_X_ADJ, y + 9); printf("¦£    ITEM    ¦¤");
-	gotoxy(STATUS_X_ADJ, y + 10); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 11); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 12); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 13); printf("¦¢            ¦¢");
-	gotoxy(STATUS_X_ADJ, y + 14); printf("¦¦¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¡¦¥");
+	gotoxy(STATUS_X_ADJ, y + 9); printf("â”Œ    ITEM    â”");
+	gotoxy(STATUS_X_ADJ, y + 10); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 11); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 12); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 13); printf("â”‚            â”‚");
+	gotoxy(STATUS_X_ADJ, y + 14); printf("â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜");
 
 	/*
 	gotoxy(STATUS_X_ADJ, y + 8); printf(" YOUR SCORE :");
@@ -108,70 +108,70 @@ void GamePlayScene::draw_map(void) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
 	gotoxy(STATUS_X_ADJ, y + 11); printf("        %6d", last_score);
 	gotoxy(STATUS_X_ADJ, y + 12); printf(" BEST SCORE :");
 	gotoxy(STATUS_X_ADJ, y + 13); printf("        %6d", best_score);
-	gotoxy(STATUS_X_ADJ, y + 15); printf("  ¡â   : Shift        SPACE : Hard Drop");
-	gotoxy(STATUS_X_ADJ, y + 16); printf("¢·  ¢¹ : Left / Right   P   : Pause");
-	gotoxy(STATUS_X_ADJ, y + 17); printf("  ¡ä   : Soft Drop     ESC  : Quit");
+	gotoxy(STATUS_X_ADJ, y + 15); printf("  â–³   : Shift        SPACE : Hard Drop");
+	gotoxy(STATUS_X_ADJ, y + 16); printf("â—  â–· : Left / Right   P   : Pause");
+	gotoxy(STATUS_X_ADJ, y + 17); printf("  â–½   : Soft Drop     ESC  : Quit");
 	*/
 }
 
-void GamePlayScene::draw_main(void) { //°ÔÀÓÆÇ ±×¸®´Â ÇÔ¼ö 
+void GamePlayScene::draw_main(void) { //ê²Œì„íŒ ê·¸ë¦¬ëŠ” í•¨ìˆ˜ 
 
-	for (int j = 1; j < BOARD_X - 1; j++) { //ÃµÀåÀº °è¼Ó »õ·Î¿îºí·°ÀÌ Áö³ª°¡¼­ Áö¿öÁö¸é »õ·Î ±×·ÁÁÜ 
+	for (int j = 1; j < BOARD_X - 1; j++) { //ì²œì¥ì€ ê³„ì† ìƒˆë¡œìš´ë¸”ëŸ­ì´ ì§€ë‚˜ê°€ì„œ ì§€ì›Œì§€ë©´ ìƒˆë¡œ ê·¸ë ¤ì¤Œ 
 		if (m_gamestatus.board_org[CEILLING_Y][j] == EMPTY) m_gamestatus.board_org[CEILLING_Y][j] = CEILLING;
 	}
 	for (int i = 0; i < BOARD_Y; i++) {
 		for (int j = 0; j < BOARD_X; j++) {
-			if (m_gamestatus.board_cpy[i][j] != m_gamestatus.board_org[i][j]) { //cpy¶û ºñ±³ÇØ¼­ °ªÀÌ ´Ş¶óÁø ºÎºĞ¸¸ »õ·Î ±×·ÁÁÜ.
-												//ÀÌ°Ô ¾øÀ¸¸é °ÔÀÓÆÇÀüÃ¼¸¦ °è¼Ó ±×·Á¼­ ´À·ÁÁö°í ¹İÂ¦°Å¸²
+			if (m_gamestatus.board_cpy[i][j] != m_gamestatus.board_org[i][j]) { //cpyë‘ ë¹„êµí•´ì„œ ê°’ì´ ë‹¬ë¼ì§„ ë¶€ë¶„ë§Œ ìƒˆë¡œ ê·¸ë ¤ì¤Œ.
+												//ì´ê²Œ ì—†ìœ¼ë©´ ê²Œì„íŒì „ì²´ë¥¼ ê³„ì† ê·¸ë ¤ì„œ ëŠë ¤ì§€ê³  ë°˜ì§ê±°ë¦¼
 				gotoxy(BOARD_X_ADJ + j, BOARD_Y_ADJ + i);
 				switch (m_gamestatus.board_org[i][j]) {
-				case EMPTY: //ºóÄ­¸ğ¾ç 
+				case EMPTY: //ë¹ˆì¹¸ëª¨ì–‘ 
 					printf("  ");
 					break;
-				case CEILLING: //ÃµÀå¸ğ¾ç 
+				case CEILLING: //ì²œì¥ëª¨ì–‘ 
 					printf(". ");
 					break;
-				case WALL: //º®¸ğ¾ç 
-					printf("¢Ì");
+				case WALL: //ë²½ëª¨ì–‘ 
+					printf("â–©");
 					break;
-				case INACTIVE_BLOCK: //±»Àº ºí·° ¸ğ¾ç  
-					printf("¡à");
+				case INACTIVE_BLOCK: //êµ³ì€ ë¸”ëŸ­ ëª¨ì–‘  
+					printf("â–¡");
 					break;
-				case ACTIVE_BLOCK: //¿òÁ÷ÀÌ°íÀÖ´Â ºí·° ¸ğ¾ç
-					printf("¡á");
+				case ACTIVE_BLOCK: //ì›€ì§ì´ê³ ìˆëŠ” ë¸”ëŸ­ ëª¨ì–‘
+					printf("â– ");
 					break;
 				}
 			}
 		}
 	}
-	for (int i = 0; i < BOARD_Y; i++) { //°ÔÀÓÆÇÀ» ±×¸° ÈÄ m_gamestatus.board_cpy¿¡ º¹»ç  
+	for (int i = 0; i < BOARD_Y; i++) { //ê²Œì„íŒì„ ê·¸ë¦° í›„ m_gamestatus.board_cpyì— ë³µì‚¬  
 		for (int j = 0; j < BOARD_X; j++) {
 			m_gamestatus.board_cpy[i][j] = m_gamestatus.board_org[i][j];
 		}
 	}
 }
 
-void GamePlayScene::new_block(void) { //»õ·Î¿î ºí·Ï »ı¼º  
+void GamePlayScene::new_block(void) { //ìƒˆë¡œìš´ ë¸”ë¡ ìƒì„±  
 	int i, j;
 
-	m_gamestatus.bx = (BOARD_X / 2) - 1; //ºí·Ï »ı¼º À§Ä¡xÁÂÇ¥(°ÔÀÓÆÇÀÇ °¡¿îµ¥) 
-	m_gamestatus.by = 0;  //ºí·Ï »ı¼ºÀ§Ä¡ yÁÂÇ¥(Á¦ÀÏ À§) 
-	m_gamestatus.b_type = m_gamestatus.b_type_next; //´ÙÀ½ºí·°°ªÀ» °¡Á®¿È 
-	m_gamestatus.b_type_next = rand() % 7; //´ÙÀ½ ºí·°À» ¸¸µê 
-	m_gamestatus.b_rotation = 0;  //È¸ÀüÀº 0¹øÀ¸·Î °¡Á®¿È 
+	m_gamestatus.bx = (BOARD_X / 2) - 1; //ë¸”ë¡ ìƒì„± ìœ„ì¹˜xì¢Œí‘œ(ê²Œì„íŒì˜ ê°€ìš´ë°) 
+	m_gamestatus.by = 0;  //ë¸”ë¡ ìƒì„±ìœ„ì¹˜ yì¢Œí‘œ(ì œì¼ ìœ„) 
+	m_gamestatus.b_type = m_gamestatus.b_type_next; //ë‹¤ìŒë¸”ëŸ­ê°’ì„ ê°€ì ¸ì˜´ 
+	m_gamestatus.b_type_next = rand() % 7; //ë‹¤ìŒ ë¸”ëŸ­ì„ ë§Œë“¦ 
+	m_gamestatus.b_rotation = 0;  //íšŒì „ì€ 0ë²ˆìœ¼ë¡œ ê°€ì ¸ì˜´ 
 
-	flag.new_block_on = 0; //new_block flag¸¦ ²û  
+	flag.new_block_on = 0; //new_block flagë¥¼ ë”  
 
-	for (i = 0; i < 4; i++) { //°ÔÀÓÆÇ bx, byÀ§Ä¡¿¡ ºí·°»ı¼º  
+	for (i = 0; i < 4; i++) { //ê²Œì„íŒ bx, byìœ„ì¹˜ì— ë¸”ëŸ­ìƒì„±  
 		for (j = 0; j < 4; j++) {
 			if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = ACTIVE_BLOCK;
 		}
 	}
-	for (i = 1; i < 3; i++) { //°ÔÀÓ»óÅÂÇ¥½Ã¿¡ ´ÙÀ½¿¡ ³ª¿Ãºí·°À» ±×¸² 
+	for (i = 1; i < 3; i++) { //ê²Œì„ìƒíƒœí‘œì‹œì— ë‹¤ìŒì— ë‚˜ì˜¬ë¸”ëŸ­ì„ ê·¸ë¦¼ 
 		for (j = 0; j < 4; j++) {
 			if (blocks[m_gamestatus.b_type_next][0][i][j] == 1) {
 				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("¡á");
+				printf("â– ");
 			}
 			else {
 				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
@@ -182,7 +182,7 @@ void GamePlayScene::new_block(void) { //»õ·Î¿î ºí·Ï »ı¼º
 }
 
 void GamePlayScene::check_key() {
-	// ¿ŞÂÊÅ° Æ®¸®°Å
+	// ì™¼ìª½í‚¤ íŠ¸ë¦¬ê±°
 	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
 		m_keys.left = true;
 	}
@@ -191,7 +191,7 @@ void GamePlayScene::check_key() {
 		flag.left_flag = false;
 	}
 
-	// ¿À¸¥ÂÊÅ° Æ®¸®°Å
+	// ì˜¤ë¥¸ìª½í‚¤ íŠ¸ë¦¬ê±°
 	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
 		m_keys.right = true;
 	}
@@ -200,7 +200,7 @@ void GamePlayScene::check_key() {
 		flag.right_flag = false;
 	}
 
-	// ¾Æ·¡Å° Æ®¸®°Å
+	// ì•„ë˜í‚¤ íŠ¸ë¦¬ê±°
 	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
 		m_keys.down = true;
 	}
@@ -209,7 +209,7 @@ void GamePlayScene::check_key() {
 		flag.down_flag = false;
 	}
 
-	// À§Å° Æ®¸®°Å
+	// ìœ„í‚¤ íŠ¸ë¦¬ê±°
 	if (GetAsyncKeyState(VK_UP) & 0x8000) {
 		m_keys.up = true;
 	}
@@ -218,7 +218,7 @@ void GamePlayScene::check_key() {
 		flag.up_flag = false;
 	}
 
-	// ½ºÆäÀÌ½ºÅ° Æ®¸®°Å
+	// ìŠ¤í˜ì´ìŠ¤í‚¤ íŠ¸ë¦¬ê±°
 	if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
 		m_keys.space = true;
 	}
@@ -228,10 +228,10 @@ void GamePlayScene::check_key() {
 	}
 
 	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
-		system("cls"); //È­¸éÀ» Áö¿ì°í 
-		exit(0); //°ÔÀÓÁ¾·á 
+		system("cls"); //í™”ë©´ì„ ì§€ìš°ê³  
+		exit(0); //ê²Œì„ì¢…ë£Œ 
 	}
-	while (kbhit()) getch(); //Å°¹öÆÛ¸¦ ºñ¿ò 
+	while (kbhit()) getch(); //í‚¤ë²„í¼ë¥¼ ë¹„ì›€ 
 }
 
 void GamePlayScene::KeyUpdate(float fTimeElapsed) {
@@ -264,10 +264,10 @@ void GamePlayScene::KeyUpdate(float fTimeElapsed) {
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by, (m_gamestatus.b_rotation + 1) % 4) == true) { 
 			move_block(UP);
 		}
-		//È¸ÀüÇÒ ¼ö ÀÖ´ÂÁö Ã¼Å© ÈÄ °¡´ÉÇÏ¸é È¸Àü
+		//íšŒì „í•  ìˆ˜ ìˆëŠ”ì§€ ì²´í¬ í›„ ê°€ëŠ¥í•˜ë©´ íšŒì „
 		else if (flag.crush_on == true && check_crush(m_gamestatus.bx, m_gamestatus.by - 1, (m_gamestatus.b_rotation + 1) % 4) == true) 
 			move_block(100);
-		//¹Ù´Ú¿¡ ´êÀº °æ¿ì À§ÂÊÀ¸·Î ÇÑÄ­¶ç¿ö¼­ È¸ÀüÀÌ °¡´ÉÇÏ¸é ±×·¸°Ô ÇÔ(Æ¯¼öµ¿ÀÛ)
+		//ë°”ë‹¥ì— ë‹¿ì€ ê²½ìš° ìœ„ìª½ìœ¼ë¡œ í•œì¹¸ë„ì›Œì„œ íšŒì „ì´ ê°€ëŠ¥í•˜ë©´ ê·¸ë ‡ê²Œ í•¨(íŠ¹ìˆ˜ë™ì‘)
 		flag.up_flag = true;
 	}
 
@@ -295,7 +295,7 @@ void GamePlayScene::KeyUpdate(float fTimeElapsed) {
 
 	if (m_keys.space == true && flag.space_flag == 0) {
 		hard_drop_block();
-		score += m_gamestatus.level; // hard drop º¸³Ê½º
+		score += m_gamestatus.level; // hard drop ë³´ë„ˆìŠ¤
 		flag.space_flag = 1;
 	}
 }
@@ -303,22 +303,22 @@ void GamePlayScene::KeyUpdate(float fTimeElapsed) {
 void GamePlayScene::drop_block(float fTimeElapsed) {
 	m_gamestatus.fDropBlockTime += fTimeElapsed;
 	if (m_gamestatus.fDropBlockTime >= m_gamestatus.speed) {
-		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //¹ØÀÌ ºñ¾îÀÖÁö¾Ê°í crush flag°¡ ÄÑÀúÀÖÀ¸¸é
-			for (int i = 0; i < BOARD_Y; i++) { //ÇöÀç Á¶ÀÛÁßÀÎ ºí·°À» ±»Èû
+		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //ë°‘ì´ ë¹„ì–´ìˆì§€ì•Šê³  crush flagê°€ ì¼œì €ìˆìœ¼ë©´
+			for (int i = 0; i < BOARD_Y; i++) { //í˜„ì¬ ì¡°ì‘ì¤‘ì¸ ë¸”ëŸ­ì„ êµ³í˜
 				for (int j = 0; j < BOARD_X; j++) {
 					if (m_gamestatus.board_org[i][j] == ACTIVE_BLOCK) 
 						m_gamestatus.board_org[i][j] = INACTIVE_BLOCK;
 				}
 			}
-			flag.crush_on = false; //flag¸¦ ²û
-			check_line(); //¶óÀÎÃ¼Å©¸¦ ÇÔ
-			flag.new_block_on = true; //»õ·Î¿î ºí·°»ı¼º flag¸¦ ÄÔ
+			flag.crush_on = false; //flagë¥¼ ë”
+			check_line(); //ë¼ì¸ì²´í¬ë¥¼ í•¨
+			flag.new_block_on = true; //ìƒˆë¡œìš´ ë¸”ëŸ­ìƒì„± flagë¥¼ ì¼¬
 			return;
 		}
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true)
-			move_block(DOWN); //¹ØÀÌ ºñ¾îÀÖÀ¸¸é ¹ØÀ¸·Î ÇÑÄ­ ÀÌµ¿
+			move_block(DOWN); //ë°‘ì´ ë¹„ì–´ìˆìœ¼ë©´ ë°‘ìœ¼ë¡œ í•œì¹¸ ì´ë™
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false)
-			flag.crush_on = true; //¹ØÀ¸·Î ÀÌµ¿ÀÌ ¾ÈµÇ¸é  crush flag¸¦ ÄÔ
+			flag.crush_on = true; //ë°‘ìœ¼ë¡œ ì´ë™ì´ ì•ˆë˜ë©´  crush flagë¥¼ ì¼¬
 		m_gamestatus.fDropBlockTime = 0.0f;
 	}
 	return;
@@ -326,54 +326,54 @@ void GamePlayScene::drop_block(float fTimeElapsed) {
 
 void GamePlayScene::hard_drop_block() {
 	while (1) {
-		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //¹ØÀÌ ºñ¾îÀÖÁö¾Ê°í crush flag°¡ ÄÑÀúÀÖÀ¸¸é
-			for (int i = 0; i < BOARD_Y; i++) { //ÇöÀç Á¶ÀÛÁßÀÎ ºí·°À» ±»Èû
+		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //ë°‘ì´ ë¹„ì–´ìˆì§€ì•Šê³  crush flagê°€ ì¼œì €ìˆìœ¼ë©´
+			for (int i = 0; i < BOARD_Y; i++) { //í˜„ì¬ ì¡°ì‘ì¤‘ì¸ ë¸”ëŸ­ì„ êµ³í˜
 				for (int j = 0; j < BOARD_X; j++) {
 					if (m_gamestatus.board_org[i][j] == ACTIVE_BLOCK)
 						m_gamestatus.board_org[i][j] = INACTIVE_BLOCK;
 				}
 			}
-			flag.crush_on = false; //flag¸¦ ²û
-			check_line(); //¶óÀÎÃ¼Å©¸¦ ÇÔ
-			flag.new_block_on = true; //»õ·Î¿î ºí·°»ı¼º flag¸¦ ÄÔ
+			flag.crush_on = false; //flagë¥¼ ë”
+			check_line(); //ë¼ì¸ì²´í¬ë¥¼ í•¨
+			flag.new_block_on = true; //ìƒˆë¡œìš´ ë¸”ëŸ­ìƒì„± flagë¥¼ ì¼¬
 			return;
 		}
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true)
-			move_block(DOWN); //¹ØÀÌ ºñ¾îÀÖÀ¸¸é ¹ØÀ¸·Î ÇÑÄ­ ÀÌµ¿
+			move_block(DOWN); //ë°‘ì´ ë¹„ì–´ìˆìœ¼ë©´ ë°‘ìœ¼ë¡œ í•œì¹¸ ì´ë™
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false)
-			flag.crush_on = true; //¹ØÀ¸·Î ÀÌµ¿ÀÌ ¾ÈµÇ¸é  crush flag¸¦ ÄÔ
+			flag.crush_on = true; //ë°‘ìœ¼ë¡œ ì´ë™ì´ ì•ˆë˜ë©´  crush flagë¥¼ ì¼¬
 		m_gamestatus.fDropBlockTime = 0.0f;
 	}
 }
 
-int GamePlayScene::check_crush(int bx, int by, int b_rotation) { //ÁöÁ¤µÈ ÁÂÇ¥¿Í È¸Àü°ªÀ¸·Î Ãæµ¹ÀÌ ÀÖ´ÂÁö °Ë»ç 
+int GamePlayScene::check_crush(int bx, int by, int b_rotation) { //ì§€ì •ëœ ì¢Œí‘œì™€ íšŒì „ê°’ìœ¼ë¡œ ì¶©ëŒì´ ìˆëŠ”ì§€ ê²€ì‚¬ 
 	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) { //ÁöÁ¤µÈ À§Ä¡ÀÇ °ÔÀÓÆÇ°ú ºí·°¸ğ¾çÀ» ºñ±³ÇØ¼­ °ãÄ¡¸é false¸¦ ¸®ÅÏ 
+		for (int j = 0; j < 4; j++) { //ì§€ì •ëœ ìœ„ì¹˜ì˜ ê²Œì„íŒê³¼ ë¸”ëŸ­ëª¨ì–‘ì„ ë¹„êµí•´ì„œ ê²¹ì¹˜ë©´ falseë¥¼ ë¦¬í„´ 
 			if (blocks[m_gamestatus.b_type][b_rotation][i][j] == 1 && m_gamestatus.board_org[by + i][bx + j] > 0) return false;
 		}
 	}
-	return true; //ÇÏ³ªµµ ¾È°ãÄ¡¸é true¸®ÅÏ 
+	return true; //í•˜ë‚˜ë„ ì•ˆê²¹ì¹˜ë©´ trueë¦¬í„´ 
 };
 
-void GamePlayScene::move_block(int dir) { //ºí·ÏÀ» ÀÌµ¿½ÃÅ´ 
+void GamePlayScene::move_block(int dir) { //ë¸”ë¡ì„ ì´ë™ì‹œí‚´ 
 	int i, j;
 
 	switch (dir) {
-	case LEFT: //¿ŞÂÊ¹æÇâ 
-		for (i = 0; i < 4; i++) { //ÇöÀçÁÂÇ¥ÀÇ ºí·°À» Áö¿ò 
+	case LEFT: //ì™¼ìª½ë°©í–¥ 
+		for (i = 0; i < 4; i++) { //í˜„ì¬ì¢Œí‘œì˜ ë¸”ëŸ­ì„ ì§€ì›€ 
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = EMPTY;
 			}
 		}
-		for (i = 0; i < 4; i++) { //¿ŞÂÊÀ¸·Î ÇÑÄ­°¡¼­ active blockÀ» ÂïÀ½ 
+		for (i = 0; i < 4; i++) { //ì™¼ìª½ìœ¼ë¡œ í•œì¹¸ê°€ì„œ active blockì„ ì°ìŒ 
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j - 1] = ACTIVE_BLOCK;
 			}
 		}
-		m_gamestatus.bx--; //ÁÂÇ¥°ª ÀÌµ¿ 
+		m_gamestatus.bx--; //ì¢Œí‘œê°’ ì´ë™ 
 		break;
 
-	case RIGHT:    //¿À¸¥ÂÊ ¹æÇâ. ¿ŞÂÊ¹æÇâÀÌ¶û °°Àº ¿ø¸®·Î µ¿ÀÛ 
+	case RIGHT:    //ì˜¤ë¥¸ìª½ ë°©í–¥. ì™¼ìª½ë°©í–¥ì´ë‘ ê°™ì€ ì›ë¦¬ë¡œ ë™ì‘ 
 		for (i = 0; i < 4; i++) {
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = EMPTY;
@@ -387,7 +387,7 @@ void GamePlayScene::move_block(int dir) { //ºí·ÏÀ» ÀÌµ¿½ÃÅ´
 		m_gamestatus.bx++;
 		break;
 
-	case DOWN:    //¾Æ·¡ÂÊ ¹æÇâ. ¿ŞÂÊ¹æÇâÀÌ¶û °°Àº ¿ø¸®·Î µ¿ÀÛ
+	case DOWN:    //ì•„ë˜ìª½ ë°©í–¥. ì™¼ìª½ë°©í–¥ì´ë‘ ê°™ì€ ì›ë¦¬ë¡œ ë™ì‘
 		for (i = 0; i < 4; i++) {
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = EMPTY;
@@ -401,22 +401,22 @@ void GamePlayScene::move_block(int dir) { //ºí·ÏÀ» ÀÌµ¿½ÃÅ´
 		m_gamestatus.by++;
 		break;
 
-	case UP: //Å°º¸µå À§ÂÊ ´­·¶À»¶§ È¸Àü½ÃÅ´. 
-		for (i = 0; i < 4; i++) { //ÇöÀçÁÂÇ¥ÀÇ ºí·°À» Áö¿ò  
+	case UP: //í‚¤ë³´ë“œ ìœ„ìª½ ëˆŒë €ì„ë•Œ íšŒì „ì‹œí‚´. 
+		for (i = 0; i < 4; i++) { //í˜„ì¬ì¢Œí‘œì˜ ë¸”ëŸ­ì„ ì§€ì›€  
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = EMPTY;
 			}
 		}
-		m_gamestatus.b_rotation = (m_gamestatus.b_rotation + 1) % 4; //È¸Àü°ªÀ» 1Áõ°¡½ÃÅ´(3¿¡¼­ 4°¡ µÇ´Â °æ¿ì´Â 0À¸·Î µÇµ¹¸²) 
-		for (i = 0; i < 4; i++) { //È¸ÀüµÈ ºí·ÏÀ» ÂïÀ½ 
+		m_gamestatus.b_rotation = (m_gamestatus.b_rotation + 1) % 4; //íšŒì „ê°’ì„ 1ì¦ê°€ì‹œí‚´(3ì—ì„œ 4ê°€ ë˜ëŠ” ê²½ìš°ëŠ” 0ìœ¼ë¡œ ë˜ëŒë¦¼) 
+		for (i = 0; i < 4; i++) { //íšŒì „ëœ ë¸”ë¡ì„ ì°ìŒ 
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = ACTIVE_BLOCK;
 			}
 		}
 		break;
 
-	case 100: //ºí·ÏÀÌ ¹Ù´Ú, È¤Àº ´Ù¸¥ ºí·Ï°ú ´êÀº »óÅÂ¿¡¼­ ÇÑÄ­À§·Î ¿Ã·Á È¸ÀüÀÌ °¡´ÉÇÑ °æ¿ì 
-			  //ÀÌ¸¦ µ¿ÀÛ½ÃÅ°´Â Æ¯¼öµ¿ÀÛ 
+	case 100: //ë¸”ë¡ì´ ë°”ë‹¥, í˜¹ì€ ë‹¤ë¥¸ ë¸”ë¡ê³¼ ë‹¿ì€ ìƒíƒœì—ì„œ í•œì¹¸ìœ„ë¡œ ì˜¬ë ¤ íšŒì „ì´ ê°€ëŠ¥í•œ ê²½ìš° 
+			  //ì´ë¥¼ ë™ì‘ì‹œí‚¤ëŠ” íŠ¹ìˆ˜ë™ì‘ 
 		for (i = 0; i < 4; i++) {
 			for (j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus.b_type][m_gamestatus.b_rotation][i][j] == 1) m_gamestatus.board_org[m_gamestatus.by + i][m_gamestatus.bx + j] = EMPTY;
@@ -436,37 +436,37 @@ void GamePlayScene::move_block(int dir) { //ºí·ÏÀ» ÀÌµ¿½ÃÅ´
 void GamePlayScene::check_line(void) {
 	int i, j, k, l;
 
-	int    block_amount; //ÇÑÁÙÀÇ ºí·Ï°¹¼ö¸¦ ÀúÀåÇÏ´Â º¯¼ö 
-	int combo = 0; //ÄŞº¸°¹¼ö ÀúÀåÇÏ´Â º¯¼ö ÁöÁ¤¹× ÃÊ±âÈ­ 
+	int    block_amount; //í•œì¤„ì˜ ë¸”ë¡ê°¯ìˆ˜ë¥¼ ì €ì¥í•˜ëŠ” ë³€ìˆ˜ 
+	int combo = 0; //ì½¤ë³´ê°¯ìˆ˜ ì €ì¥í•˜ëŠ” ë³€ìˆ˜ ì§€ì •ë° ì´ˆê¸°í™” 
 
-	for (i = BOARD_Y - 2; i > 3;) { //i=MAIN_Y-2 : ¹ØÂÊº®ÀÇ À­Ä­ºÎÅÍ,  i>3 : ÃµÀå(3)¾Æ·¡±îÁö °Ë»ç 
-		block_amount = 0; //ºí·Ï°¹¼ö ÀúÀå º¯¼ö ÃÊ±âÈ­ 
-		for (j = 1; j < BOARD_X - 1; j++) { //º®°ú º®»çÀÌÀÇ ºí·Ï°¹·ç¸¦ ¼À 
+	for (i = BOARD_Y - 2; i > 3;) { //i=MAIN_Y-2 : ë°‘ìª½ë²½ì˜ ìœ—ì¹¸ë¶€í„°,  i>3 : ì²œì¥(3)ì•„ë˜ê¹Œì§€ ê²€ì‚¬ 
+		block_amount = 0; //ë¸”ë¡ê°¯ìˆ˜ ì €ì¥ ë³€ìˆ˜ ì´ˆê¸°í™” 
+		for (j = 1; j < BOARD_X - 1; j++) { //ë²½ê³¼ ë²½ì‚¬ì´ì˜ ë¸”ë¡ê°¯ë£¨ë¥¼ ì…ˆ 
 			if (m_gamestatus.board_org[i][j] > 0) block_amount++;
 		}
-		if (block_amount == BOARD_X - 2) { //ºí·ÏÀÌ °¡µæ Âù °æ¿ì 
-			if (flag.level_up_on == 0) { //·¹º§¾÷»óÅÂ°¡ ¾Æ´Ñ °æ¿ì¿¡(·¹º§¾÷ÀÌ µÇ¸é ÀÚµ¿ ÁÙ»èÁ¦°¡ ÀÖÀ½) 
-				score += 100 * m_gamestatus.level; //Á¡¼öÃß°¡ 
-				cnt++; //Áö¿î ÁÙ °¹¼ö Ä«¿îÆ® Áõ°¡ 
-				combo++; //ÄŞº¸¼ö Áõ°¡  
+		if (block_amount == BOARD_X - 2) { //ë¸”ë¡ì´ ê°€ë“ ì°¬ ê²½ìš° 
+			if (flag.level_up_on == 0) { //ë ˆë²¨ì—…ìƒíƒœê°€ ì•„ë‹Œ ê²½ìš°ì—(ë ˆë²¨ì—…ì´ ë˜ë©´ ìë™ ì¤„ì‚­ì œê°€ ìˆìŒ) 
+				score += 100 * m_gamestatus.level; //ì ìˆ˜ì¶”ê°€ 
+				cnt++; //ì§€ìš´ ì¤„ ê°¯ìˆ˜ ì¹´ìš´íŠ¸ ì¦ê°€ 
+				combo++; //ì½¤ë³´ìˆ˜ ì¦ê°€  
 			}
-			for (k = i; k > 1; k--) { //À­ÁÙÀ» ÇÑÄ­¾¿ ¸ğµÎ ³»¸²(À­ÁÙÀÌ ÃµÀåÀÌ ¾Æ´Ñ °æ¿ì¿¡¸¸) 
+			for (k = i; k > 1; k--) { //ìœ—ì¤„ì„ í•œì¹¸ì”© ëª¨ë‘ ë‚´ë¦¼(ìœ—ì¤„ì´ ì²œì¥ì´ ì•„ë‹Œ ê²½ìš°ì—ë§Œ) 
 				for (l = 1; l < BOARD_X - 1; l++) {
 					if (m_gamestatus.board_org[k - 1][l] != CEILLING) m_gamestatus.board_org[k][l] = m_gamestatus.board_org[k - 1][l];
 					if (m_gamestatus.board_org[k - 1][l] == CEILLING) m_gamestatus.board_org[k][l] = EMPTY;
-					//À­ÁÙÀÌ ÃµÀåÀÎ °æ¿ì¿¡´Â ÃµÀåÀ» ÇÑÄ­ ³»¸®¸é ¾ÈµÇ´Ï±î ºóÄ­À» ³ÖÀ½ 
+					//ìœ—ì¤„ì´ ì²œì¥ì¸ ê²½ìš°ì—ëŠ” ì²œì¥ì„ í•œì¹¸ ë‚´ë¦¬ë©´ ì•ˆë˜ë‹ˆê¹Œ ë¹ˆì¹¸ì„ ë„£ìŒ 
 				}
 			}
 		}
 		else i--;
 	}
-	if (combo) { //ÁÙ »èÁ¦°¡ ÀÖ´Â °æ¿ì Á¡¼ö¿Í ·¹º§ ¸ñÇ¥¸¦ »õ·Î Ç¥½ÃÇÔ  
-		if (combo > 1) { //2ÄŞº¸ÀÌ»óÀÎ °æ¿ì °æ¿ì º¸³Ê½º¹× ¸Ş¼¼Áö¸¦ °ÔÀÓÆÇ¿¡ ¶ç¿ü´Ù°¡ Áö¿ò 
+	if (combo) { //ì¤„ ì‚­ì œê°€ ìˆëŠ” ê²½ìš° ì ìˆ˜ì™€ ë ˆë²¨ ëª©í‘œë¥¼ ìƒˆë¡œ í‘œì‹œí•¨  
+		if (combo > 1) { //2ì½¤ë³´ì´ìƒì¸ ê²½ìš° ê²½ìš° ë³´ë„ˆìŠ¤ë° ë©”ì„¸ì§€ë¥¼ ê²Œì„íŒì— ë„ì› ë‹¤ê°€ ì§€ì›€ 
 			gotoxy(BOARD_X_ADJ + (BOARD_X / 2) - 1, BOARD_Y_ADJ + m_gamestatus.by - 2); printf("%d COMBO!", combo);
 			// Sleep(500);
 			// score += (combo * m_gamestatus.level * 100);
-			reset_main_cpy(); //ÅØ½ºÆ®¸¦ Áö¿ì±â À§ÇØ m_gamestatus.board_cpyÀ» ÃÊ±âÈ­.
-		//(m_gamestatus.board_cpy¿Í m_gamestatus.board_org°¡ ÀüºÎ ´Ù¸£¹Ç·Î ´ÙÀ½¹ø draw()È£Ãâ½Ã °ÔÀÓÆÇ ÀüÃ¼¸¦ »õ·Î ±×¸®°Ô µÊ) 
+			reset_main_cpy(); //í…ìŠ¤íŠ¸ë¥¼ ì§€ìš°ê¸° ìœ„í•´ m_gamestatus.board_cpyì„ ì´ˆê¸°í™”.
+		//(m_gamestatus.board_cpyì™€ m_gamestatus.board_orgê°€ ì „ë¶€ ë‹¤ë¥´ë¯€ë¡œ ë‹¤ìŒë²ˆ draw()í˜¸ì¶œì‹œ ê²Œì„íŒ ì „ì²´ë¥¼ ìƒˆë¡œ ê·¸ë¦¬ê²Œ ë¨) 
 		}
 		// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", (cnt <= 10) ? 10 - cnt : 0);
 		// gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE); printf("        %6d", score);
@@ -476,17 +476,17 @@ void GamePlayScene::check_line(void) {
 void GamePlayScene::check_level_up(void) {
 	int i, j;
 
-	if (cnt >= 10) { //·¹º§º°·Î 10ÁÙ¾¿ ¾ø¾Ö¾ßÇÔ. 10ÁÙÀÌ»ó ¾ø¾Ø °æ¿ì 
+	if (cnt >= 10) { //ë ˆë²¨ë³„ë¡œ 10ì¤„ì”© ì—†ì• ì•¼í•¨. 10ì¤„ì´ìƒ ì—†ì•¤ ê²½ìš° 
 		draw_main();
-		flag.level_up_on = 1; //·¹º§¾÷ flag¸¦ ¶ç¿ò
-		m_gamestatus.level += 1; //·¹º§À» 1 ¿Ã¸²
-		cnt = 0; //Áö¿î ÁÙ¼ö ÃÊ±âÈ­  
+		flag.level_up_on = 1; //ë ˆë²¨ì—… flagë¥¼ ë„ì›€
+		m_gamestatus.level += 1; //ë ˆë²¨ì„ 1 ì˜¬ë¦¼
+		cnt = 0; //ì§€ìš´ ì¤„ìˆ˜ ì´ˆê¸°í™”  
 
-		reset_main_cpy(); //ÅØ½ºÆ®¸¦ Áö¿ì±â À§ÇØ m_gamestatus.board_cpyÀ» ÃÊ±âÈ­.
-		//(m_gamestatus.board_cpy¿Í m_gamestatus.board_org°¡ ÀüºÎ ´Ù¸£¹Ç·Î ´ÙÀ½¹ø draw()È£Ãâ½Ã °ÔÀÓÆÇ ÀüÃ¼¸¦ »õ·Î ±×¸®°Ô µÊ) 
+		reset_main_cpy(); //í…ìŠ¤íŠ¸ë¥¼ ì§€ìš°ê¸° ìœ„í•´ m_gamestatus.board_cpyì„ ì´ˆê¸°í™”.
+		//(m_gamestatus.board_cpyì™€ m_gamestatus.board_orgê°€ ì „ë¶€ ë‹¤ë¥´ë¯€ë¡œ ë‹¤ìŒë²ˆ draw()í˜¸ì¶œì‹œ ê²Œì„íŒ ì „ì²´ë¥¼ ìƒˆë¡œ ê·¸ë¦¬ê²Œ ë¨) 
 
-		//.check_line()ÇÔ¼ö ³»ºÎ¿¡¼­ m_gamestatus.level up flag°¡ ÄÑÁ®ÀÖ´Â °æ¿ì Á¡¼ö´Â ¾øÀ½.         
-		switch (m_gamestatus.level) { //·¹º§º°·Î ¼Óµµ¸¦ Á¶ÀıÇØÁÜ. 
+		//.check_line()í•¨ìˆ˜ ë‚´ë¶€ì—ì„œ m_gamestatus.level up flagê°€ ì¼œì ¸ìˆëŠ” ê²½ìš° ì ìˆ˜ëŠ” ì—†ìŒ.         
+		switch (m_gamestatus.level) { //ë ˆë²¨ë³„ë¡œ ì†ë„ë¥¼ ì¡°ì ˆí•´ì¤Œ. 
 		case 2:
 			m_gamestatus.speed = 0.9;
 			break;
@@ -515,10 +515,10 @@ void GamePlayScene::check_level_up(void) {
 			m_gamestatus.speed = 0.1;
 			break;
 		}
-		flag.level_up_on = 0; //·¹º§¾÷ flag²¨ÁÜ
+		flag.level_up_on = 0; //ë ˆë²¨ì—… flagêº¼ì¤Œ
 
-		gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL); printf(" LEVEL : %5d", m_gamestatus.level); //·¹º§Ç¥½Ã 
-		// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", 10 - cnt); // ·¹º§¸ñÇ¥ Ç¥½Ã 
+		gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL); printf(" LEVEL : %5d", m_gamestatus.level); //ë ˆë²¨í‘œì‹œ 
+		// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", 10 - cnt); // ë ˆë²¨ëª©í‘œ í‘œì‹œ 
 
 	}
 }
@@ -530,17 +530,17 @@ void GamePlayScene::check_game_over(void) {
 	int y = 5;
 
 	for (i = 1; i < BOARD_X - 2; i++) {
-		if (m_gamestatus.board_org[CEILLING_Y][i] > 0) { //ÃµÀå(À§¿¡¼­ ¼¼¹øÂ° ÁÙ)¿¡ inactive°¡ »ı¼ºµÇ¸é °ÔÀÓ ¿À¹ö 
-			gotoxy(x, y + 0); printf("¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç"); //°ÔÀÓ¿À¹ö ¸Ş¼¼Áö 
-			gotoxy(x, y + 1); printf("¢Ç                              ¢Ç");
-			gotoxy(x, y + 2); printf("¢Ç  +-----------------------+   ¢Ç");
-			gotoxy(x, y + 3); printf("¢Ç  |  G A M E  O V E R..   |   ¢Ç");
-			gotoxy(x, y + 4); printf("¢Ç  +-----------------------+   ¢Ç");
-			gotoxy(x, y + 5); printf("¢Ç   YOUR SCORE: %6d         ¢Ç", score);
-			gotoxy(x, y + 6); printf("¢Ç                              ¢Ç");
-			gotoxy(x, y + 7); printf("¢Ç  Press any key to restart..  ¢Ç");
-			gotoxy(x, y + 8); printf("¢Ç                              ¢Ç");
-			gotoxy(x, y + 9); printf("¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç¢Ç");
+		if (m_gamestatus.board_org[CEILLING_Y][i] > 0) { //ì²œì¥(ìœ„ì—ì„œ ì„¸ë²ˆì§¸ ì¤„)ì— inactiveê°€ ìƒì„±ë˜ë©´ ê²Œì„ ì˜¤ë²„ 
+			gotoxy(x, y + 0); printf("â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤"); //ê²Œì„ì˜¤ë²„ ë©”ì„¸ì§€ 
+			gotoxy(x, y + 1); printf("â–¤                              â–¤");
+			gotoxy(x, y + 2); printf("â–¤  +-----------------------+   â–¤");
+			gotoxy(x, y + 3); printf("â–¤  |  G A M E  O V E R..   |   â–¤");
+			gotoxy(x, y + 4); printf("â–¤  +-----------------------+   â–¤");
+			gotoxy(x, y + 5); printf("â–¤   YOUR SCORE: %6d         â–¤", score);
+			gotoxy(x, y + 6); printf("â–¤                              â–¤");
+			gotoxy(x, y + 7); printf("â–¤  Press any key to restart..  â–¤");
+			gotoxy(x, y + 8); printf("â–¤                              â–¤");
+			gotoxy(x, y + 9); printf("â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤â–¤");
 
 			while (kbhit()) getch();
 			key = getch();
