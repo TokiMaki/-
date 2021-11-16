@@ -15,8 +15,7 @@ void WaitScene::Update(float fTimeElapsed) {
     int retval;
 
     // 윈속 초기화
-    WSADATA wsa;
-    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+    if (m_pGameClient->InitWSA() != 0) 
         return;
 
     // socket()

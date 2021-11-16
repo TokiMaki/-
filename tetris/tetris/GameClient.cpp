@@ -61,3 +61,11 @@ SOCKET GameClient::GetSOCKET()
 {
     return sock;
 }
+
+int GameClient::InitWSA()
+{
+    WSADATA wsa;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+        return -1;
+    return 0;
+}
