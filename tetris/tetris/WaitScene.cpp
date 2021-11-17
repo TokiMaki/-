@@ -33,28 +33,26 @@ void WaitScene::InitScene() {
 void WaitScene::Update(float fTimeElapsed) {
     static float WaitTimer = 0.f;
     WaitTimer += fTimeElapsed;
-    std::cout << "Waiting";
-    for (int i = 0; i < 3; ++i) {
-        if (WaitTimer >= i * 0.5) {
-            std::cout << ".";
-        }
-    }
-    if (WaitTimer >= 1.5) {
-        system("cls");
-        WaitTimer = 0;
-    }
-    std::cout << "\r";
-}
 
-DWORD __stdcall WaitScene::TestThread(LPVOID arg)
-{
     int retval;
     int len = 0;
-    int Msg;
-    SOCKET client_sock = (SOCKET)arg;
+    int Msg = 0;
 
     while (1) {
-        retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+
+        //std::cout << "Waiting";
+        for (int i = 0; i < 3; ++i) {
+            if (WaitTimer >= i * 0.5) {
+                //std::cout << ".";
+            }
+        }
+        if (WaitTimer >= 1.5) {
+            system("cls");
+            WaitTimer = 0;
+        }
+        std::cout << "\r";
+
+        retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
         if (retval == SOCKET_ERROR) {
             err_quit("recv()");
             break;
@@ -63,7 +61,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
             break;
         len = ntohl(len);
 
-        retval = recvn(client_sock, (char*)&Msg, len, 0);
+        retval = recvn(m_pGameClient->GetSOCKET(), (char*)&Msg, len, 0);
         if (retval == SOCKET_ERROR) {
             err_quit("recv()");
             break;
@@ -71,24 +69,34 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
         else if (retval == 0)
             break;
         Msg = ntohl(Msg);
-        // printf("%d\n", Msg);
+        printf("%d\n", Msg);
+
+        if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
+            m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+            break;
+        }
 
         Msg = 0;
         int sendMsg = htonl(Msg);
 
         int MSG_len = htonl(sizeof(int));
-        retval = send(client_sock, (char*)&MSG_len, sizeof(int), 0);
+        retval = send(m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
         if (retval == SOCKET_ERROR) {
             err_display("send()");
             break;
         }
 
-        retval = send(client_sock, (char*)&sendMsg, sizeof(int), 0);
+        retval = send(m_pGameClient->GetSOCKET(), (char*)&sendMsg, sizeof(int), 0);
         if (retval == SOCKET_ERROR) {
             err_display("send()");
             break;
         }
     }
+
+}
+
+DWORD __stdcall WaitScene::TestThread(LPVOID arg)
+{
     return 0;
 }
 
