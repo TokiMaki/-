@@ -15,8 +15,9 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//각 socket별 커뮤 쓰레드 작성
 		//CreateThread();
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
-		newRoomData.pClients.emplace_back(&match_sockets->client[i]);
-		//newRoomData.pPlayers.emplace_back();
+		Player newplayerdata;
+		newplayerdata.clientSocket = match_sockets->client[i];
+		newRoomData.pPlayers.emplace_back(newplayerdata);
 	}
 	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
 	newRoomData.CreateCommThread();
@@ -24,12 +25,14 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
+
 	}
 	return 0;
 }
 DWORD WINAPI CommThread(LPVOID arg)
 {
-	SOCKET client_sock = (SOCKET)arg;
+	Player* playdata = (Player*)arg;
+	SOCKET client_sock = playdata->clientSocket;
 	int retval;
 	SOCKADDR_IN clientaddr;
 	int addrlen;
@@ -44,7 +47,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 	{
 		//데이터 주고 받기
 		int now_recv_data;
-		Player playdata;
 		retval = recvn(client_sock,(char*)&playdata,sizeof(Player),0);
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
@@ -62,9 +64,10 @@ DWORD WINAPI CommThread(LPVOID arg)
 void GameServerThreadData::CreateCommThread(void)
 {
 	//GameServerThread에 들어온 클라이언트들을 배열로 제작
+	//소켓만 보내지 말고 Player struct를 보내기
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
-		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, &pClients[i], 0, NULL);
+		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, pPlayers[i], 0, NULL);
 	}
 	
 }
