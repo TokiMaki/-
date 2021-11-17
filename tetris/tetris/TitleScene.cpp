@@ -33,7 +33,11 @@ void TitleScene::Update(float fTimeElapsed) {
     gotoxy(x, y + 16); printf("BONUS FOR HARD DROPS / COMBOS");
 
     if (GetAsyncKeyState(VK_RETURN) & 0x8000) {
-        m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+        m_pGameClient->ChangeScene(Scene::SceneNum::Wait);
     }; //키입력이 게임 플레이 신으로
     while (kbhit()) getch(); //버퍼에 기록된 키값을 버림
+}
+
+void TitleScene::InitScene() {
+
 }

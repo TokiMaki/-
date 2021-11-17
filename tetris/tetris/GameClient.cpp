@@ -45,6 +45,7 @@ void GameClient::BuildScene() {
 
 void GameClient::ChangeScene(Scene::SceneNum tag) {
     m_pScene = m_arrScene[tag];
+    m_pScene->InitScene();
 }
 
 void GameClient::Update() {
@@ -62,10 +63,14 @@ SOCKET GameClient::GetSOCKET()
     return sock;
 }
 
-int GameClient::InitWSA()
+bool GameClient::InitWSA()
 {
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-        return -1;
-    return 0;
+        return false;
+    return true;
+}
+
+void GameClient::TitleSceneSend(enum SceneMsg tag) {
+
 }

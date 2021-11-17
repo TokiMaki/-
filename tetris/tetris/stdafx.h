@@ -83,12 +83,20 @@ struct Flag {
     bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
 };
 
+enum SceneMsg {
+    Msg_Ready,
+    Msg_ReadyCancel,
+    Msg_ConfirmReadyCancel,
+    Msg_WaitGame,
+    Msg_PlayInGame
+};
+
+typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //커서숨기는 함수에 사용되는 열거형
+
 inline void gotoxy(int x, int y) { //gotoxy함수 
     COORD pos = { 2 * x,y };
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
-
-typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //커서숨기는 함수에 사용되는 열거형 
 
 inline void setcursortype(CURSOR_TYPE c) { //커서숨기는 함수 
     CONSOLE_CURSOR_INFO CurInfo;

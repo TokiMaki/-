@@ -11,11 +11,13 @@ WaitScene::WaitScene(SceneNum num, GameClient* const pGameClient) {
 }
 WaitScene::~WaitScene() {}
 
-void WaitScene::Update(float fTimeElapsed) {
+void WaitScene::InitScene() {
+    system("cls");
+
     int retval;
 
     // 윈속 초기화
-    if (m_pGameClient->InitWSA() != 0) 
+    if (m_pGameClient->InitWSA() != 0)
         return;
 
     // socket()
@@ -31,11 +33,23 @@ void WaitScene::Update(float fTimeElapsed) {
     retval = connect(m_pGameClient->GetSOCKET(), (SOCKADDR*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("connect()");
 
-    std::cout << "Waiting\n";
     CreateThread(NULL, 0, TestThread, (LPVOID)m_pGameClient->GetSOCKET(), 0, NULL);
-    while (1) {
-        
+}
+
+void WaitScene::Update(float fTimeElapsed) {
+    static float WaitTimer = 0.f;
+    WaitTimer += fTimeElapsed;
+    std::cout << "Waiting";
+    for (int i = 0; i < 3; ++i) {
+        if (WaitTimer >= i * 0.5) {
+            std::cout << ".";
+        }
     }
+    if (WaitTimer >= 1.5) {
+        system("cls");
+        WaitTimer = 0;
+    }
+    std::cout << "\r";
 }
 
 DWORD __stdcall WaitScene::TestThread(LPVOID arg)
