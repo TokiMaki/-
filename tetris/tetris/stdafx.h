@@ -83,12 +83,13 @@ struct Flag {
     bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
 };
 
-enum SceneMsg {
-    Msg_Ready,
-    Msg_ReadyCancel,
-    Msg_ConfirmReadyCancel,
-    Msg_WaitGame,
-    Msg_PlayInGame
+enum MSG_MatchMaking //매치매이킹 시스템에서 사용할 메시지
+{
+    Msg_Ready,			//클라이언트가 서버에게 대기중임을 알림
+    Msg_ReadyCancel,	//클라이언트가 서버에게 대기 취소를 알림
+    Msg_ConfirmCancel,	//서버가 클라이언트에게 대기 취소 받았음을 돌려줌
+    Msg_PlayInGame,		//서버가 클라이언트에게 게임이 시작 됐음을 알려줌
+    Msg_WaitGame		//서버가 클라이언트에게 아직 매칭이 되지 않았음을 알려줌
 };
 
 typedef enum { NOCURSOR, SOLIDCURSOR, NORMALCURSOR } CURSOR_TYPE; //커서숨기는 함수에 사용되는 열거형

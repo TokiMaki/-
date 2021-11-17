@@ -81,6 +81,6 @@ void GameClient::ConnetServer()
     if (retval == SOCKET_ERROR) err_quit("connect()");
 }
 
-void GameClient::TitleSceneSend(enum SceneMsg tag) {
+void GameClient::TitleSceneSend(enum MSG_MatchMaking tag) {
 
 }
