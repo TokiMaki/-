@@ -17,21 +17,15 @@ void WaitScene::InitScene() {
     int retval;
 
     // 윈속 초기화
-    if (m_pGameClient->InitWSA() != 0)
-        return;
+    if (m_pGameClient->InitWSA() != true)
+        exit(1);
 
     // socket()
     m_pGameClient->SetSOCKET(socket(AF_INET, SOCK_STREAM, 0));
     if (m_pGameClient->GetSOCKET() == INVALID_SOCKET) err_quit("socket()");
 
     // connect()
-    SOCKADDR_IN serveraddr;
-    ZeroMemory(&serveraddr, sizeof(serveraddr));
-    serveraddr.sin_family = AF_INET;
-    serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
-    serveraddr.sin_port = htons(SERVERPORT);
-    retval = connect(m_pGameClient->GetSOCKET(), (SOCKADDR*)&serveraddr, sizeof(serveraddr));
-    if (retval == SOCKET_ERROR) err_quit("connect()");
+    m_pGameClient->ConnetServer();
 
     CreateThread(NULL, 0, TestThread, (LPVOID)m_pGameClient->GetSOCKET(), 0, NULL);
 }
@@ -77,7 +71,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
         else if (retval == 0)
             break;
         Msg = ntohl(Msg);
-        printf("%d\n", Msg);
+        // printf("%d\n", Msg);
 
         Msg = 0;
         int sendMsg = htonl(Msg);

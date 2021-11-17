@@ -30,6 +30,9 @@ public:
 	SOCKET GetSOCKET();
 
 	bool InitWSA();
+
+	void ConnetServer();
+
 	Scene* m_pScene;
 	Scene* m_arrScene[Scene::SceneNum::Scene_Count];
 

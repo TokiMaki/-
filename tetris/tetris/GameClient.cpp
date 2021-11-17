@@ -71,6 +71,16 @@ bool GameClient::InitWSA()
     return true;
 }
 
+void GameClient::ConnetServer()
+{
+    ZeroMemory(&serveraddr, sizeof(serveraddr));
+    serveraddr.sin_family = AF_INET;
+    serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+    serveraddr.sin_port = htons(SERVERPORT);
+    retval = connect(GetSOCKET(), (SOCKADDR*)&serveraddr, sizeof(serveraddr));
+    if (retval == SOCKET_ERROR) err_quit("connect()");
+}
+
 void GameClient::TitleSceneSend(enum SceneMsg tag) {
 
 }
