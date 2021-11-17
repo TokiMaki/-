@@ -18,9 +18,9 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 			MatchSockets* send = new MatchSockets;
 			for (int i = 0; i < MAX_PLAYER; ++i) {
 				send->client[i] = MatchMakingQ_DeQ(MatchMakingQ);
-				}
+				SendMsgtoClient(MSG_MatchMaking::Msg_PlayInGame, send->client[i]);
+			}
 			CreateGameServerThread(send);
-			//MatchMakingQ_DeQ(MatchMakingQ);
 		}
 		else if(!MatchMakingQ->empty()) {
 			for (auto client : *MatchMakingQ) {
@@ -28,13 +28,19 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 					MatchMakingQ_CloseSocket(MatchMakingQ, client);
 					continue;
 				}
-				if (RecvMsgfromClient(client) == SOCKET_ERROR) {
+
+				switch (RecvMsgfromClient(client))
+				{
+				case SOCKET_ERROR:
+				case MSG_MatchMaking::Msg_ReadyCancel:
 					MatchMakingQ_CloseSocket(MatchMakingQ, client);
 					continue;
+				default:
+					break;
 				}
 			}
-			//printf("\n");
 		}
+		printf("대기인원 %d\n", MatchMakingQ->size());
 		Sleep(1000);
 	}
 	return 0;
@@ -114,7 +120,6 @@ int RecvMsgfromClient(SOCKET client)
 	else if (retval == 0)
 		return 0;
 	Msg = ntohl(Msg);
-	printf("%d\n", Msg);
 
-	return 0;
+	return Msg;
 }
