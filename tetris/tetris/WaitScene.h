@@ -8,6 +8,7 @@ public:
     WaitScene(SceneNum num, GameClient* const pGameClient);
     ~WaitScene();
 
+    void InitScene() override;
     void Update(float fTimeElapsed) override;
     static DWORD WINAPI TestThread(LPVOID arg);
 };

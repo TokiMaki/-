@@ -11,6 +11,8 @@ public:
     GamePlayScene(SceneNum num, GameClient* const pGameClient);
     ~GamePlayScene();
 
+    void InitScene();
+
     void Update(float fTimeElapsed) override;
     void reset();
     void reset_main();

@@ -547,3 +547,7 @@ void GamePlayScene::check_game_over(void) {
 		}
 	}
 }
+
+void GamePlayScene::InitScene() {
+
+}

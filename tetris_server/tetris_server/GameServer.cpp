@@ -2,8 +2,6 @@
 #include "GameServer.h"
 #include "MatchMaking.h"
 
-
-
 DWORD WINAPI GameServerThread(LPVOID arg)
 {
 	GameServerThreadData newRoomData;
