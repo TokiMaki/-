@@ -3,21 +3,30 @@
 #include "MatchMaking.h"
 #include "socket_function.h"
 
+HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
+HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
+
 DWORD WINAPI GameServerThread(LPVOID arg)
 {
 	GameServerThreadData newRoomData;
 	MatchSockets* match_sockets = (MatchSockets*)arg;
-
+	hupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
+	if (hupdate == NULL)
+	{
+		return 1;
+	}
+	hcheckupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (hcheckupdate == NULL)
+	{
+		return 1;
+	}
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
-		//각 socket별 커뮤 쓰레드 작성
-		//CreateThread();
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
-		/*
 		Player newplayerdata;
 		newplayerdata.clientSocket = match_sockets->client[i];
-		newRoomData.pPlayers.emplace_back(newplayerdata);
-		*/
+		newRoomData.pPlayers.emplace_back(&newplayerdata);
+		
 	}
 	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
 	newRoomData.CreateCommThread();
@@ -25,13 +34,12 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
-
+		
 	}
 	return 0;
 }
 DWORD WINAPI CommThread(LPVOID arg)
 {
-	/*
 	Player* playdata = (Player*)arg;
 	SOCKET client_sock = playdata->clientSocket;
 	int retval;
@@ -47,10 +55,11 @@ DWORD WINAPI CommThread(LPVOID arg)
 	while (1)
 	{
 		//데이터 주고 받기
+		Player tempP;
+		int len = 0;
 
 
 	}
-	*/
 
 	return 0;
 }
