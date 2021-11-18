@@ -11,7 +11,7 @@ struct Player
 struct GameServerThreadData
 {
 	std::vector<SOCKET*> pClients; //MatchingThread에서 넘겨 받은 클라이언트 소켓들
-	std::vector<Player*> pPlayers; //플레이어 개개인의 상태
+	std::vector<Player> pPlayers; //플레이어 개개인의 상태
 	//CGameTimer m_timer; //업데이트에서 프레임 시간 연산 시 사용
 	void CreateCommThread(void); //클라이언트와 통신할 쓰레드생성
 };
