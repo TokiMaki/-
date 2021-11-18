@@ -3,35 +3,53 @@
 #include "MatchMaking.h"
 #include "socket_function.h"
 
+HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
+HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
+GlobalGameData roomdata;
+
+
 DWORD WINAPI GameServerThread(LPVOID arg)
 {
 	GameServerThreadData newRoomData;
 	MatchSockets* match_sockets = (MatchSockets*)arg;
-
+	
+	hupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
+	if (hupdate == NULL)
+	{
+		return 1;
+	}
+	hcheckupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (hcheckupdate == NULL)
+	{
+		return 1;
+	}
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
-		//각 socket별 커뮤 쓰레드 작성
-		//CreateThread();
-		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
-		/*
 		Player newplayerdata;
+		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
 		newplayerdata.clientSocket = match_sockets->client[i];
-		newRoomData.pPlayers.emplace_back(newplayerdata);
-		*/
+		std::cout << match_sockets->client[i] << ", " << newplayerdata.clientSocket << std::endl;
+		newRoomData.pPlayers.push_back(newplayerdata);
 	}
+	for (auto i:newRoomData.pPlayers)
+	{
+		std::cout << i.clientSocket << std::endl;
+	}
+	std::cout << newRoomData.pPlayers.size()<< std::endl;
 	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
 	newRoomData.CreateCommThread();
 	while (1)
 	{
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
-
+		
+		
 	}
+	delete match_sockets;
 	return 0;
 }
 DWORD WINAPI CommThread(LPVOID arg)
 {
-	/*
 	Player* playdata = (Player*)arg;
 	SOCKET client_sock = playdata->clientSocket;
 	int retval;
@@ -40,6 +58,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	int temp_num;
 	char buf[BUFSIZE + 1];
 	std::cout << "commThread running\n" << std::endl;
+	std::cout << client_sock << std::endl;
 	//클라이언트 정보 출력
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
@@ -47,10 +66,11 @@ DWORD WINAPI CommThread(LPVOID arg)
 	while (1)
 	{
 		//데이터 주고 받기
+		Player tempP;
+		int len = 0;
 
 
 	}
-	*/
 
 	return 0;
 }
@@ -61,7 +81,8 @@ void GameServerThreadData::CreateCommThread(void)
 	//소켓만 보내지 말고 Player struct를 보내기
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
-		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, pPlayers[i], 0, NULL);
+		std::cout << pPlayers[i].clientSocket << std::endl;
+		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, &pPlayers[i], 0, NULL);
 	}
 	
 }
