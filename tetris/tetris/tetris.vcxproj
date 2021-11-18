@@ -141,10 +141,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Downloads\MultithreadTCPServer.cpp">
+    <ClCompile Include="..\..\..\..\..\Desktop\겅부\넷겜플\과제 6\2017182021 양현석 GUITCPClinet\GUITCPClient.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Downloads\TCPClient_FixedVariable.cpp">
+    <ClCompile Include="..\..\..\..\..\Desktop\겅부\넷겜플\과제 6\2017182021 양현석 GUITCPServer\GUITCPServer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="GameClient.cpp" />
