@@ -7,7 +7,6 @@ HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
 HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
 GlobalGameData roomdata;
 
-
 DWORD WINAPI GameServerThread(LPVOID arg)
 {
 	GameServerThreadData newRoomData;
@@ -74,7 +73,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 
 	return 0;
 }
-
 void GameServerThreadData::CreateCommThread(void)
 {
 	//GameServerThread에 들어온 클라이언트들을 배열로 제작
