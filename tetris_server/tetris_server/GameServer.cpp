@@ -68,7 +68,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		return 0;
 	}
 	len = ntohl(len);
-	retval = recvn(client_sock, (char*)&tempstatus, len, 0);
+	retval = recvn(client_sock, (char*)&tempstatus, sizeof(Gamestatus), 0);
 	if (retval == SOCKET_ERROR)
 	{
 		err_display("recv()");
@@ -85,7 +85,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 			break;
 		}
 		len = ntohl(len);
-		retval = recvn(client_sock, (char*)&tempKey, len, 0);
+		retval = recvn(client_sock, (char*)&tempKey, sizeof(KeyInput), 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");

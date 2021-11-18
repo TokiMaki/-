@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "socket_function.h"
 
-HANDLE hReadEvent; // 이벤트
+HANDLE hReadEvent, hWriteEvent; // 이벤트
 
 GamePlayScene::GamePlayScene() {}
 GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
@@ -14,10 +14,8 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
-	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
 	check_key(); //키입력확인
-
-	PlaySceneSend();
+	WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
 	KeyUpdate(fTimeElapsed);
 
 	//if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
@@ -229,6 +227,7 @@ void GamePlayScene::check_key() {
 		exit(0); //게임종료 
 	}
 	while (kbhit()) getch(); //키버퍼를 비움 
+	SetEvent(hWriteEvent);
 }
 
 void GamePlayScene::KeyUpdate(float fTimeElapsed) {
@@ -551,7 +550,9 @@ void GamePlayScene::InitScene() {
 	setcursortype(NOCURSOR); //커서 없앰
 	reset(); //게임판 리셋
 	int retval;
-	int len = 0;
+	int len = htonl(sizeof(Gamestatus));
+
+	// 초기 게임 데이터 보내기
 	retval = send(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
@@ -560,6 +561,17 @@ void GamePlayScene::InitScene() {
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
+
+	// 이벤트 생성
+	hReadEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	if (hReadEvent == NULL) {
+		exit(1);
+	}
+	hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	if (hWriteEvent == NULL) {
+		exit(1);
+	}
+	CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
 
 DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
@@ -569,6 +581,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
 
 	while (1) {
+		WaitForSingleObject(hWriteEvent, INFINITE);
 		KeyInput keys = pGamePlayScene->m_keys;
 		//retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		//if (retval == SOCKET_ERROR) {
