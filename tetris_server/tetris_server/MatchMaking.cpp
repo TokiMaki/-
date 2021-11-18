@@ -28,7 +28,6 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 					MatchMakingQ_CloseSocket(MatchMakingQ, client);
 					continue;
 				}
-
 				switch (RecvMsgfromClient(client))
 				{
 				case SOCKET_ERROR:
@@ -40,7 +39,7 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 				}
 			}
 		}
-		printf("대기인원 %d\n", MatchMakingQ->size());
+		std::cout << "대기인원 " << MatchMakingQ->size() << std::endl;
 		Sleep(1000);
 	}
 	return 0;

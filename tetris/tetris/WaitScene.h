@@ -11,5 +11,4 @@ public:
     void InitScene() override;
     void Update(float fTimeElapsed) override;
     static DWORD WINAPI TestThread(LPVOID arg);
-
 };
