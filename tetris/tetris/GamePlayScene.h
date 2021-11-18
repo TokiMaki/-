@@ -39,6 +39,7 @@ private:
     Gamestatus m_gamestatus;  	        //내 클라이언트의 게임 상태
     Flag flag;
 
+
     int key; //키보드로 입력받은 키값을 저장
 
     int level_goal; //다음레벨로 넘어가기 위한 목표점수

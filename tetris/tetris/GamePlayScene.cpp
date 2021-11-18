@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "socket_function.h"
 
+HANDLE hReadEvent; // 이벤트
+
 GamePlayScene::GamePlayScene() {}
 GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 	m_SceneNum = num;
@@ -12,12 +14,11 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
-
+	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
 	check_key(); //키입력확인
-	
 
-	KeyUpdate(fTimeElapsed);
 	PlaySceneSend();
+	KeyUpdate(fTimeElapsed);
 
 	//if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
 	//	// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
@@ -549,6 +550,16 @@ void GamePlayScene::InitScene() {
 	srand((unsigned)time(NULL)); //난수표생성
 	setcursortype(NOCURSOR); //커서 없앰
 	reset(); //게임판 리셋
+	int retval;
+	int len = 0;
+	retval = send(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+	retval = send(m_pGameClient->GetSOCKET(), (char*)&m_gamestatus, sizeof(Gamestatus), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
 }
 
 DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
@@ -595,6 +606,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_display("send()");
 			break;
 		}
+		SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
 	return 0;
 }
@@ -603,6 +615,7 @@ void GamePlayScene::PlaySceneSend() {
 	int retval;
 	int len = 0;
 	int Msg = 0;
+
 	int MSG_len = htonl(sizeof(KeyInput));
 
 	retval = send(m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);

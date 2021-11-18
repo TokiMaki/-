@@ -7,13 +7,7 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Downloads\MultithreadTCPServer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="socket_function.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Downloads\TCPClient_FixedVariable.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
@@ -30,6 +24,12 @@
     </ClCompile>
     <ClCompile Include="GamePlayScene.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\겅부\넷겜플\과제 6\2017182021 양현석 GUITCPServer\GUITCPServer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\..\Desktop\겅부\넷겜플\과제 6\2017182021 양현석 GUITCPClinet\GUITCPClient.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

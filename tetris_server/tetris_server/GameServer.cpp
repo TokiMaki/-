@@ -35,8 +35,6 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
-		
-		
 	}
 	delete match_sockets;
 	return 0;

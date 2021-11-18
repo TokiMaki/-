@@ -91,6 +91,6 @@ class GlobalGameData //CommThread와 클라이언트 간의 소켓, 게임 업데이트의 입력 �
 {
 private:
     SOCKET m_sockets[MAX_PLAYER];            //통신하고 있는 소켓들을 저장
-    Gamestatus m_gamestatus[MAX_PLAYER]; //캐릭터 상태 저장
+    Gamestatus m_gamestatus[MAX_PLAYER];     //캐릭터 상태 저장
     KeyInput m_keyInput[MAX_PLAYER];         //각 클라이언트 키 입력 저장
 };
