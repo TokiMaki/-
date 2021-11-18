@@ -29,6 +29,11 @@ public:
     void check_line(void);
     void check_level_up(void);
     void check_game_over(void);
+
+    void PlaySceneSend(); //KeyInput m_keys 의 값을 Commthread 에 전송
+    // void PlaySceneRecv(); //GameServer 에서 연산된 값을 CommThread 로부터
+
+    static DWORD WINAPI GamePlayThread(LPVOID arg);
 private:
     KeyInput m_keys;                    //클라이언트의 키입력을 저장
     Gamestatus m_gamestatus;  	        //내 클라이언트의 게임 상태

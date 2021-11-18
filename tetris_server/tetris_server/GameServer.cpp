@@ -62,11 +62,12 @@ DWORD WINAPI CommThread(LPVOID arg)
 	addrlen = sizeof(clientaddr);
 	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
 	int recv_Msg;
+
+	Player tempP;
+	KeyInput tempKey;
 	while (1)
 	{
 		//데이터 주고 받기
-		Player tempP;
-		KeyInput tempKey;
 		int len = 0;
 		retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR)
@@ -74,14 +75,13 @@ DWORD WINAPI CommThread(LPVOID arg)
 			err_display("recv()");
 			break;
 		}
-		retval = recvn(client_sock, (char*)&tempKey, sizeof(KeyInput), 0);
+		len = ntohl(len);
+		retval = recvn(client_sock, (char*)&tempKey, len, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
 			break;
 		}
-		std::cout << tempKey.left << std::endl;
-		
 	}
 
 	return 0;
