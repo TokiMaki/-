@@ -52,11 +52,13 @@ struct Gamestatus {
     int b_type_next; //다음 블록값
     int level; //현재 level
     float speed; //블럭이 내려오는 속도 1이면 1초마다 한칸씩 내려옴
+    float fKeyMoveSpeed = 0.1f; //블럭이 키 입력이 됬을 때 좌우나 아래로 움직이는 속도
     float fDropBlockTime = 0.0f;
-    int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
-    int board_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음
-                                     //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림)
-                                     //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
+    float fMoveBlockTime = 0.0f;
+    int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨 
+    int board_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
+                                  //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림) 
+                                  //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
     int item;       // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
@@ -65,6 +67,19 @@ struct Gamestatus {
 
 struct MatchSockets {
     SOCKET client[MAX_PLAYER];
+};
+
+struct Flag {
+    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
+    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag 
+    bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag 
+    bool game_reset = 0; // 게임이 리셋됨을 알려주는
+
+    bool left_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool right_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool down_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool space_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
 };
 
 struct CGameTimer
