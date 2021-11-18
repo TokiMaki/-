@@ -1,35 +1,32 @@
 #include "Scene.h"
 #include "GamePlayScene.h"
+#include "GameClient.h"
 #include "stdafx.h"
+#include "socket_function.h"
 
 GamePlayScene::GamePlayScene() {}
 GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 	m_SceneNum = num;
 	m_pGameClient = pGameClient;
-
 }
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
 
-	if (flag.game_reset == 0) {
-		srand((unsigned)time(NULL)); //난수표생성
-		setcursortype(NOCURSOR); //커서 없앰
-		reset(); //게임판 리셋
-		flag.game_reset = 1;
-	}
-
 	check_key(); //키입력확인
-	KeyUpdate(fTimeElapsed);
-	if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
-		// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
-		// 조금더 충분히 생각해 보고 추가하거나 아예 삭제하는 쪽으로 할 예정
-	};
+	
 
-	draw_main(); //화면을 그림
+	KeyUpdate(fTimeElapsed);
+	PlaySceneSend();
+
+	//if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
+	//	// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
+	//	// 조금더 충분히 생각해 보고 추가하거나 아예 삭제하는 쪽으로 할 예정
+	//};
 	if (flag.down_flag == 0) {
 		drop_block(fTimeElapsed); // 블록을 한칸 내림
 	}
+	draw_main(); //화면을 그림
 	check_level_up();  // 레벨업을 체크
 	check_game_over(); // 게임오버를 체크
 	if (flag.new_block_on == 1) new_block(); // 뉴 블럭 flag가 있는 경우 새로운 블럭 생성
@@ -182,7 +179,7 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 
 void GamePlayScene::check_key() {
 	// 왼쪽키 트리거
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000) {
+	if (GetAsyncKeyState(VK_LEFT)) {
 		m_keys.left = true;
 	}
 	else {
@@ -191,7 +188,7 @@ void GamePlayScene::check_key() {
 	}
 
 	// 오른쪽키 트리거
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000) {
+	if (GetAsyncKeyState(VK_RIGHT)) {
 		m_keys.right = true;
 	}
 	else {
@@ -200,7 +197,7 @@ void GamePlayScene::check_key() {
 	}
 
 	// 아래키 트리거
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000) {
+	if (GetAsyncKeyState(VK_DOWN)) {
 		m_keys.down = true;
 	}
 	else {
@@ -209,7 +206,7 @@ void GamePlayScene::check_key() {
 	}
 
 	// 위키 트리거
-	if (GetAsyncKeyState(VK_UP) & 0x8000) {
+	if (GetAsyncKeyState(VK_UP)) {
 		m_keys.up = true;
 	}
 	else {
@@ -218,7 +215,7 @@ void GamePlayScene::check_key() {
 	}
 
 	// 스페이스키 트리거
-	if (GetAsyncKeyState(VK_SPACE) & 0x8000) {
+	if (GetAsyncKeyState(VK_SPACE)) {
 		m_keys.space = true;
 	}
 	else{
@@ -226,7 +223,7 @@ void GamePlayScene::check_key() {
 		flag.space_flag = false;
 	}
 
-	if (GetAsyncKeyState(VK_ESCAPE) & 0x8000) {
+	if (GetAsyncKeyState(VK_ESCAPE)) {
 		system("cls"); //화면을 지우고 
 		exit(0); //게임종료 
 	}
@@ -549,5 +546,71 @@ void GamePlayScene::check_game_over(void) {
 }
 
 void GamePlayScene::InitScene() {
+	srand((unsigned)time(NULL)); //난수표생성
+	setcursortype(NOCURSOR); //커서 없앰
+	reset(); //게임판 리셋
+}
 
+DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
+	int retval;
+	int len = 0;
+	int Msg = 0;
+	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
+
+	while (1) {
+		KeyInput keys = pGamePlayScene->m_keys;
+		//retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
+		//if (retval == SOCKET_ERROR) {
+		//	err_quit("recv()");
+		//	break;
+		// 
+		//else if (retval == 0)
+		//	break;
+		//len = ntohl(len);
+
+		//retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&Msg, len, 0);
+		//if (retval == SOCKET_ERROR) {
+		//	err_quit("recv()");
+		//	break;
+		//}
+		//else if (retval == 0)
+		//	break;
+		//Msg = ntohl(Msg);
+		//printf("%d\n", Msg);
+
+		//if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
+		//	pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+		//	break;
+		//}
+
+		int MSG_len = htonl(sizeof(KeyInput));
+
+		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+			break;
+		}
+		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&keys, sizeof(KeyInput), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display("send()");
+			break;
+		}
+	}
+	return 0;
+}
+
+void GamePlayScene::PlaySceneSend() {
+	int retval;
+	int len = 0;
+	int Msg = 0;
+	int MSG_len = htonl(sizeof(KeyInput));
+
+	retval = send(m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+	retval = send(m_pGameClient->GetSOCKET(), (char*)&m_keys, sizeof(KeyInput), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
 }
