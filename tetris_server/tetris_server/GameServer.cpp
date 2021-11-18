@@ -27,14 +27,8 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		Player newplayerdata;
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
 		newplayerdata.clientSocket = match_sockets->client[i];
-		//std::cout << match_sockets->client[i] << ", " << newplayerdata.clientSocket << std::endl;
 		newRoomData.pPlayers.push_back(newplayerdata);
 	}
-	//for (auto i:newRoomData.pPlayers)
-	//{
-	//	std::cout << i.clientSocket << std::endl;
-	//}
-	//std::cout << newRoomData.pPlayers.size()<< std::endl;
 	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
 	newRoomData.CreateCommThread();
 	while (1)
@@ -65,10 +59,27 @@ DWORD WINAPI CommThread(LPVOID arg)
 
 	Player tempP;
 	KeyInput tempKey;
+	Gamestatus tempstatus;
+	int len = 0;
+
+	//초기 게임 데이터 받기
+	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		return 0;
+	}
+	len = ntohl(len);
+	retval = recvn(client_sock, (char*)&tempstatus, len, 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		return 0;
+	}
+
 	while (1)
 	{
-		//데이터 주고 받기
-		int len = 0;
+		//키입력 데이터 주고 받기
 		retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR)
 		{

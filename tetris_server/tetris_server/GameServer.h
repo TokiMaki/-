@@ -5,7 +5,7 @@ DWORD WINAPI GameServerThread(LPVOID arg);
 struct Player
 {
 	SOCKET clientSocket;
-	KeyInput m_key[MAX_PLAYER];//클라이언트의 키입력 저장
+	KeyInput m_key;//클라이언트의 키입력 저장
 	Gamestatus m_gamestatus[MAX_PLAYER];//게임의 상태 저장
 };
 struct GameServerThreadData
