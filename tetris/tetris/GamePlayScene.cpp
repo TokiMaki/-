@@ -550,14 +550,25 @@ void GamePlayScene::InitScene() {
 	setcursortype(NOCURSOR); //커서 없앰
 	reset(); //게임판 리셋
 	int retval;
-	int len = htonl(sizeof(Gamestatus));
 
+	int len = htonl(sizeof(Gamestatus));
 	// 초기 게임 데이터 보내기
 	retval = send(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
 	retval = send(m_pGameClient->GetSOCKET(), (char*)&m_gamestatus, sizeof(Gamestatus), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+
+	// 내가 몇번인지 확인
+	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+	len = ntohf(len);
+	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&m_pGameClient->m_ClientNum, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
@@ -583,29 +594,6 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	while (1) {
 		WaitForSingleObject(hWriteEvent, INFINITE);
 		KeyInput keys = pGamePlayScene->m_keys;
-		//retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
-		//if (retval == SOCKET_ERROR) {
-		//	err_quit("recv()");
-		//	break;
-		// 
-		//else if (retval == 0)
-		//	break;
-		//len = ntohl(len);
-
-		//retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&Msg, len, 0);
-		//if (retval == SOCKET_ERROR) {
-		//	err_quit("recv()");
-		//	break;
-		//}
-		//else if (retval == 0)
-		//	break;
-		//Msg = ntohl(Msg);
-		//printf("%d\n", Msg);
-
-		//if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
-		//	pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
-		//	break;
-		//}
 
 		int MSG_len = htonl(sizeof(KeyInput));
 

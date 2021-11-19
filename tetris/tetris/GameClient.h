@@ -36,6 +36,8 @@ public:
 	Scene* m_pScene;
 	Scene* m_arrScene[Scene::SceneNum::Scene_Count];
 
+	int m_ClientNum = -1;
+
 	void TitleSceneSend(enum MSG_MatchMaking tag);
 //	//Msg_Ready 나 Msg_ReadyCancel 를 MatchingThread 에 전송
 	// int TitleSceneRecv();
