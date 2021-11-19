@@ -18,26 +18,22 @@ void GamePlayScene::Update(float fTimeElapsed) {
 	WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
 	KeyUpdate(fTimeElapsed);
 
-	//if (flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
+	//if (m_gamestatus.flag.crush_on && check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) {
 	//	// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
 	//	// 조금더 충분히 생각해 보고 추가하거나 아예 삭제하는 쪽으로 할 예정
 	//};
-	if (flag.down_flag == 0) {
+	if (m_gamestatus.flag.down_flag == 0) {
 		drop_block(fTimeElapsed); // 블록을 한칸 내림
 	}
 	draw_main(); //화면을 그림
-	check_level_up();  // 레벨업을 체크
+	// check_level_up();  // 레벨업을 체크
 	check_game_over(); // 게임오버를 체크
-	if (flag.new_block_on == 1) new_block(); // 뉴 블럭 flag가 있는 경우 새로운 블럭 생성
+	if (m_gamestatus.flag.new_block_on == 1) new_block(); // 뉴 블럭 m_gamestatus.flag가 있는 경우 새로운 블럭 생성
 }
 
 void GamePlayScene::reset(void) {
 	m_gamestatus.level = 1; //각종변수 초기화
-	score = 0;
-	level_goal = 1000;
-	key = 0;
-	flag.crush_on = 0;
-	cnt = 0;
+	m_gamestatus.flag.crush_on = 0;
 	m_gamestatus.speed = 1;
 
 	system("cls"); //화면지움
@@ -155,7 +151,7 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 	m_gamestatus.b_type_next = rand() % 7; //다음 블럭을 만듦 
 	m_gamestatus.b_rotation = 0;  //회전은 0번으로 가져옴 
 
-	flag.new_block_on = 0; //new_block flag를 끔  
+	m_gamestatus.flag.new_block_on = 0; //new_block m_gamestatus.flag를 끔  
 
 	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성  
 		for (j = 0; j < 4; j++) {
@@ -183,7 +179,7 @@ void GamePlayScene::check_key() {
 	}
 	else {
 		m_keys.left = false;
-		flag.left_flag = false;
+		m_gamestatus.flag.left_flag = false;
 	}
 
 	// 오른쪽키 트리거
@@ -192,7 +188,7 @@ void GamePlayScene::check_key() {
 	}
 	else {
 		m_keys.right = false;
-		flag.right_flag = false;
+		m_gamestatus.flag.right_flag = false;
 	}
 
 	// 아래키 트리거
@@ -201,7 +197,7 @@ void GamePlayScene::check_key() {
 	}
 	else {
 		m_keys.down = false;
-		flag.down_flag = false;
+		m_gamestatus.flag.down_flag = false;
 	}
 
 	// 위키 트리거
@@ -210,7 +206,7 @@ void GamePlayScene::check_key() {
 	}
 	else {
 		m_keys.up = false;
-		flag.up_flag = false;
+		m_gamestatus.flag.up_flag = false;
 	}
 
 	// 스페이스키 트리거
@@ -219,7 +215,7 @@ void GamePlayScene::check_key() {
 	}
 	else{
 		m_keys.space = false;
-		flag.space_flag = false;
+		m_gamestatus.flag.space_flag = false;
 	}
 
 	if (GetAsyncKeyState(VK_ESCAPE)) {
@@ -232,89 +228,89 @@ void GamePlayScene::check_key() {
 
 void GamePlayScene::KeyUpdate(float fTimeElapsed) {
 	m_gamestatus.fMoveBlockTime += fTimeElapsed;
-	if (m_keys.left == true && flag.left_flag == false) {
+	if (m_keys.left == true && m_gamestatus.flag.left_flag == false) {
 		if (check_crush(m_gamestatus.bx - 1, m_gamestatus.by, m_gamestatus.b_rotation) == true) {
 			move_block(LEFT);
-			flag.left_flag = true;
+			m_gamestatus.flag.left_flag = true;
 			m_gamestatus.fKeyMoveSpeed = 0.2f;
 			m_gamestatus.fMoveBlockTime = 0.0f;
 		}
 	}
-	if (m_keys.right == true && flag.right_flag == false) {
+	if (m_keys.right == true && m_gamestatus.flag.right_flag == false) {
 		if (check_crush(m_gamestatus.bx + 1, m_gamestatus.by, m_gamestatus.b_rotation) == true) {
 			move_block(RIGHT);
-			flag.right_flag = true;
+			m_gamestatus.flag.right_flag = true;
 			m_gamestatus.fKeyMoveSpeed = 0.2f;
 			m_gamestatus.fMoveBlockTime = 0.0f;
 		}
 	}
-	if (m_keys.down == true && flag.down_flag == false) {
+	if (m_keys.down == true && m_gamestatus.flag.down_flag == false) {
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true) {
 			drop_block(100);
-			flag.down_flag = true;
+			m_gamestatus.flag.down_flag = true;
 			m_gamestatus.fKeyMoveSpeed = 0.2f;
 			m_gamestatus.fMoveBlockTime = 0.0f;
 		}
 	}
-	if (m_keys.up == true && flag.up_flag == false) {
+	if (m_keys.up == true && m_gamestatus.flag.up_flag == false) {
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by, (m_gamestatus.b_rotation + 1) % 4) == true) { 
 			move_block(UP);
 		}
 		//회전할 수 있는지 체크 후 가능하면 회전
-		else if (flag.crush_on == true && check_crush(m_gamestatus.bx, m_gamestatus.by - 1, (m_gamestatus.b_rotation + 1) % 4) == true) 
+		else if (m_gamestatus.flag.crush_on == true && check_crush(m_gamestatus.bx, m_gamestatus.by - 1, (m_gamestatus.b_rotation + 1) % 4) == true) 
 			move_block(100);
 		//바닥에 닿은 경우 위쪽으로 한칸띄워서 회전이 가능하면 그렇게 함(특수동작)
-		flag.up_flag = true;
+		m_gamestatus.flag.up_flag = true;
 	}
 
 	if (m_gamestatus.fMoveBlockTime >= m_gamestatus.fKeyMoveSpeed) {
-		if (m_keys.left == true && flag.left_flag == 1) {
+		if (m_keys.left == true && m_gamestatus.flag.left_flag == 1) {
 			if (check_crush(m_gamestatus.bx - 1, m_gamestatus.by, m_gamestatus.b_rotation) == true) {
 				move_block(LEFT);
 				m_gamestatus.fKeyMoveSpeed = 0.05f;
 				m_gamestatus.fMoveBlockTime = 0.0f;
 			}
 		}
-		if (m_keys.right == true && flag.right_flag == 1) {
+		if (m_keys.right == true && m_gamestatus.flag.right_flag == 1) {
 			if (check_crush(m_gamestatus.bx + 1, m_gamestatus.by, m_gamestatus.b_rotation) == true) {
 				move_block(RIGHT);
 				m_gamestatus.fKeyMoveSpeed = 0.05f;
 				m_gamestatus.fMoveBlockTime = 0.0f;
 			}
 		}
-		if (m_keys.down == true && flag.down_flag == 1) {
+		if (m_keys.down == true && m_gamestatus.flag.down_flag == 1) {
 			drop_block(100);
 			m_gamestatus.fKeyMoveSpeed = 0.05f;
 			m_gamestatus.fMoveBlockTime = 0.0f;
 		}
 	}
 
-	if (m_keys.space == true && flag.space_flag == 0) {
+	if (m_keys.space == true && m_gamestatus.flag.space_flag == 0) {
 		hard_drop_block();
 		score += m_gamestatus.level; // hard drop 보너스
-		flag.space_flag = 1;
+		m_gamestatus.flag.space_flag = 1;
 	}
 }
 
 void GamePlayScene::drop_block(float fTimeElapsed) {
 	m_gamestatus.fDropBlockTime += fTimeElapsed;
 	if (m_gamestatus.fDropBlockTime >= m_gamestatus.speed) {
-		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush m_gamestatus.flag가 켜저있으면
 			for (int i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘
 				for (int j = 0; j < BOARD_X; j++) {
 					if (m_gamestatus.board_org[i][j] == ACTIVE_BLOCK) 
 						m_gamestatus.board_org[i][j] = INACTIVE_BLOCK;
 				}
 			}
-			flag.crush_on = false; //flag를 끔
+			m_gamestatus.flag.crush_on = false; //m_gamestatus.flag를 끔
 			check_line(); //라인체크를 함
-			flag.new_block_on = true; //새로운 블럭생성 flag를 켬
+			m_gamestatus.flag.new_block_on = true; //새로운 블럭생성 m_gamestatus.flag를 켬
 			return;
 		}
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true)
 			move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false)
-			flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
+			m_gamestatus.flag.crush_on = true; //밑으로 이동이 안되면  crush m_gamestatus.flag를 켬
 		m_gamestatus.fDropBlockTime = 0.0f;
 	}
 	return;
@@ -322,22 +318,22 @@ void GamePlayScene::drop_block(float fTimeElapsed) {
 
 void GamePlayScene::hard_drop_block() {
 	while (1) {
-		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false) { //밑이 비어있지않고 crush m_gamestatus.flag가 켜저있으면
 			for (int i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘
 				for (int j = 0; j < BOARD_X; j++) {
 					if (m_gamestatus.board_org[i][j] == ACTIVE_BLOCK)
 						m_gamestatus.board_org[i][j] = INACTIVE_BLOCK;
 				}
 			}
-			flag.crush_on = false; //flag를 끔
+			m_gamestatus.flag.crush_on = false; //m_gamestatus.flag를 끔
 			check_line(); //라인체크를 함
-			flag.new_block_on = true; //새로운 블럭생성 flag를 켬
+			m_gamestatus.flag.new_block_on = true; //새로운 블럭생성 m_gamestatus.flag를 켬
 			return;
 		}
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == true)
 			move_block(DOWN); //밑이 비어있으면 밑으로 한칸 이동
 		if (check_crush(m_gamestatus.bx, m_gamestatus.by + 1, m_gamestatus.b_rotation) == false)
-			flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
+			m_gamestatus.flag.crush_on = true; //밑으로 이동이 안되면  crush m_gamestatus.flag를 켬
 		m_gamestatus.fDropBlockTime = 0.0f;
 	}
 }
@@ -441,9 +437,9 @@ void GamePlayScene::check_line(void) {
 			if (m_gamestatus.board_org[i][j] > 0) block_amount++;
 		}
 		if (block_amount == BOARD_X - 2) { //블록이 가득 찬 경우 
-			if (flag.level_up_on == 0) { //레벨업상태가 아닌 경우에(레벨업이 되면 자동 줄삭제가 있음) 
+			if (m_gamestatus.flag.level_up_on == 0) { //레벨업상태가 아닌 경우에(레벨업이 되면 자동 줄삭제가 있음) 
 				score += 100 * m_gamestatus.level; //점수추가 
-				cnt++; //지운 줄 갯수 카운트 증가 
+				// cnt++; //지운 줄 갯수 카운트 증가 
 				combo++; //콤보수 증가  
 			}
 			for (k = i; k > 1; k--) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만) 
@@ -474,14 +470,14 @@ void GamePlayScene::check_level_up(void) {
 
 	if (cnt >= 10) { //레벨별로 10줄씩 없애야함. 10줄이상 없앤 경우 
 		draw_main();
-		flag.level_up_on = 1; //레벨업 flag를 띄움
+		m_gamestatus.flag.level_up_on = 1; //레벨업 m_gamestatus.flag를 띄움
 		m_gamestatus.level += 1; //레벨을 1 올림
 		cnt = 0; //지운 줄수 초기화  
 
 		reset_main_cpy(); //텍스트를 지우기 위해 m_gamestatus.board_cpy을 초기화.
 		//(m_gamestatus.board_cpy와 m_gamestatus.board_org가 전부 다르므로 다음번 draw()호출시 게임판 전체를 새로 그리게 됨) 
 
-		//.check_line()함수 내부에서 m_gamestatus.level up flag가 켜져있는 경우 점수는 없음.         
+		//.check_line()함수 내부에서 m_gamestatus.level up m_gamestatus.flag가 켜져있는 경우 점수는 없음.         
 		switch (m_gamestatus.level) { //레벨별로 속도를 조절해줌. 
 		case 2:
 			m_gamestatus.speed = 0.9;
@@ -511,7 +507,7 @@ void GamePlayScene::check_level_up(void) {
 			m_gamestatus.speed = 0.1;
 			break;
 		}
-		flag.level_up_on = 0; //레벨업 flag꺼줌
+		m_gamestatus.flag.level_up_on = 0; //레벨업 m_gamestatus.flag꺼줌
 
 		gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL); printf(" LEVEL : %5d", m_gamestatus.level); //레벨표시 
 		// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL); printf(" GOAL  : %5d", 10 - cnt); // 레벨목표 표시 
