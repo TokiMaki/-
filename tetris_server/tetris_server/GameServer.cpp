@@ -80,7 +80,8 @@ DWORD WINAPI CommThread(LPVOID arg)
 	}
 
 	playdata->m_gamestatus[playdata->m_GameClinetNum] = tempstatus;
-
+	
+	tempClientNum = playdata->m_GameClinetNum;
 	// 자신이 몇번째 인지 보내주기
 	len = sizeof(int);
 	len = htonl(len);
@@ -97,7 +98,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 		return 0;
 	}
 
-	playdata->m_GameClinetNum = tempClientNum;
 
 	while (1)
 	{
