@@ -126,7 +126,6 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
 			break;
 		}
-
 		Msg = 0;
 		int sendMsg = htonl(Msg);
 
