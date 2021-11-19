@@ -50,6 +50,19 @@ struct KeyInput {
     bool space = false;     //hard drop space(한번에 맨 밑으로 내리기)
 };
 
+struct Flag {
+    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag
+    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
+    bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag
+    bool game_reset = 0; // 게임이 리셋됨을 알려주는
+
+    bool left_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool right_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool down_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool space_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+};
+
 struct Gamestatus {
     int bx, by; //이동중인 블록의 게임판상의 x,y좌표
     int b_type; //블록 종류
@@ -70,19 +83,6 @@ struct Gamestatus {
     int target;
 
     Flag flag;
-};
-
-struct Flag {
-    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag
-    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
-    bool level_up_on = 0; //다음레벨로 진행(현재 레벨목표가 완료되었음을) 알리는 flag
-    bool game_reset = 0; // 게임이 리셋됨을 알려주는
-
-    bool left_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
-    bool right_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
-    bool down_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
-    bool space_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
-    bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
 };
 
 enum MSG_MatchMaking //매치매이킹 시스템에서 사용할 메시지
