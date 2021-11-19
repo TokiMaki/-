@@ -7,6 +7,7 @@ public:
     WaitScene();
     WaitScene(SceneNum num, GameClient* const pGameClient);
     ~WaitScene();
+    int Msg = 0;
 
     void InitScene() override;
     void Update(float fTimeElapsed) override;

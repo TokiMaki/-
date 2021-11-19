@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "socket_function.h"
 
+HANDLE hWaitReadEvent, hWaitWriteEvent; // ÀÌº¥Æ®
+
 WaitScene::WaitScene() {}
 WaitScene::WaitScene(SceneNum num, GameClient* const pGameClient) {
 	m_SceneNum = num;
@@ -27,6 +29,15 @@ void WaitScene::InitScene() {
 	// connect()
 	m_pGameClient->ConnetServer();
 
+	hWaitReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (hWaitReadEvent == NULL) {
+		exit(1);
+	}
+	hWaitWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	if (hWaitWriteEvent == NULL) {
+		exit(1);
+	}
+
 	CreateThread(NULL, 0, TestThread, (LPVOID)this, 0, NULL);
 }
 
@@ -36,7 +47,6 @@ void WaitScene::Update(float fTimeElapsed) {
 
 	int retval;
 	int len = 0;
-	int Msg = 0;
 
 	//while (1) {
 
@@ -51,6 +61,11 @@ void WaitScene::Update(float fTimeElapsed) {
 		WaitTimer = 0;
 	}
 	std::cout << "\r";
+	WaitForSingleObject(hWaitReadEvent, INFINITE);
+	if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
+		m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+	}
+	SetEvent(hWaitWriteEvent);
 
 	//    retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 	//    if (retval == SOCKET_ERROR) {
@@ -99,10 +114,10 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 {
 	int retval;
 	int len = 0;
-	int Msg = 0;
 	WaitScene* pWaitScene = (WaitScene*)arg;
 
 	while (1) {
+		WaitForSingleObject(hWaitWriteEvent, INFINITE);
 		retval = recvn(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("recv()");
@@ -112,22 +127,22 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 			break;
 		len = ntohl(len);
 
-		retval = recvn(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&Msg, len, 0);
+		retval = recvn(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&pWaitScene->Msg, len, 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("recv()");
 			break;
 		}
 		else if (retval == 0)
 			break;
-		Msg = ntohl(Msg);
-		printf("%d\n", Msg);
+		pWaitScene->Msg = ntohl(pWaitScene->Msg);
+		printf("%d\n", pWaitScene->Msg);
 
-		if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
-			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+		if (pWaitScene->Msg == MSG_MatchMaking::Msg_PlayInGame) {
+			SetEvent(hWaitReadEvent);
 			break;
 		}
-		Msg = 0;
-		int sendMsg = htonl(Msg);
+		pWaitScene->Msg = 0;
+		int sendMsg = htonl(pWaitScene->Msg);
 
 		int MSG_len = htonl(sizeof(int));
 		retval = send(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
@@ -141,6 +156,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 			err_display("send()");
 			break;
 		}
+		SetEvent(hWaitReadEvent);
 	}
 	return 0;
 }

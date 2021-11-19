@@ -45,7 +45,7 @@ void GamePlayScene::reset(void) {
 	new_block(); //새로운 블록을 하나 만듦
 }
 
-void GamePlayScene::reset_main(void) { //게임판을 초기화  
+void GamePlayScene::reset_main(void) { //게임판을 초기화
 
 	for (int i = 0; i < BOARD_Y; i++) { // 게임판을 0으로 초기화
 		for (int j = 0; j < BOARD_X; j++) {
@@ -543,8 +543,12 @@ void GamePlayScene::check_game_over(void) {
 
 void GamePlayScene::InitScene() {
 	srand((unsigned)time(NULL)); //난수표생성
-	setcursortype(NOCURSOR); //커서 없앰
-	reset(); //게임판 리셋
+	// reset(); //게임판 리셋
+	reset_main(); // m_gamestatus.board_org를 초기화
+	m_gamestatus.level = 1; //각종변수 초기화
+	m_gamestatus.flag.crush_on = 0;
+	m_gamestatus.speed = 1;
+
 	int retval;
 
 	int len = htonl(sizeof(Gamestatus));
@@ -568,16 +572,23 @@ void GamePlayScene::InitScene() {
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 	}
-
 	// 이벤트 생성
 	hReadEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
 	if (hReadEvent == NULL) {
 		exit(1);
 	}
-	hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	hWriteEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (hWriteEvent == NULL) {
 		exit(1);
 	}
+
+	setcursortype(NOCURSOR); //커서 없앰
+	draw_map(); // 게임화면을 그림
+	draw_main(); // 게임판을 그림
+
+	m_gamestatus.b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
+	new_block(); //새로운 블록을 하나 만듦
+
 	CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
 
