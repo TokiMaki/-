@@ -44,6 +44,7 @@ void GameClient::BuildScene() {
 }
 
 void GameClient::ChangeScene(Scene::SceneNum tag) {
+    system("cls"); //화면지움
     m_pScene = m_arrScene[tag];
     m_pScene->InitScene();
 }
