@@ -12,12 +12,12 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	GameServerThreadData newRoomData;
 	MatchSockets* match_sockets = (MatchSockets*)arg;
 	
-	hupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
+	hupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (hupdate == NULL)
 	{
 		return 1;
 	}
-	hcheckupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
+	hcheckupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
 	if (hcheckupdate == NULL)
 	{
 		return 1;
@@ -27,14 +27,17 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		Player newplayerdata;
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
 		newplayerdata.clientSocket = match_sockets->client[i];
+		newplayerdata.m_GameClinetNum = i;
 		newRoomData.pPlayers.push_back(newplayerdata);
 	}
 	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
 	newRoomData.CreateCommThread();
 	while (1)
 	{
+		WaitForSingleObject(hupdate, INFINITE); // 쓰기 완료 기다리기
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
+		SetEvent(hcheckupdate);
 	}
 	delete match_sockets;
 	return 0;
@@ -58,6 +61,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	Player tempP;
 	KeyInput tempKey;
 	Gamestatus tempstatus;
+	int tempClientNum = -1;
 	int len = 0;
 
 	//초기 게임 데이터 받기
@@ -75,8 +79,29 @@ DWORD WINAPI CommThread(LPVOID arg)
 		return 0;
 	}
 
+	playdata->m_gamestatus[playdata->m_GameClinetNum] = tempstatus;
+
+	// 자신이 몇번째 인지 보내주기
+	len = sizeof(int);
+	len = htonl(len);
+	retval = send(client_sock, (char*)&len, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		return 0;
+	}
+	retval = send(client_sock, (char*)&tempClientNum, sizeof(int), 0);
+	if (retval == SOCKET_ERROR)
+	{
+		err_display("recv()");
+		return 0;
+	}
+
+	playdata->m_GameClinetNum = tempClientNum;
+
 	while (1)
 	{
+		WaitForSingleObject(hcheckupdate, INFINITE);
 		//키입력 데이터 주고 받기
 		retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR)
@@ -91,6 +116,8 @@ DWORD WINAPI CommThread(LPVOID arg)
 			err_display("recv()");
 			break;
 		}
+		playdata->m_key = tempKey;
+		SetEvent(hupdate); // 쓰기 완료
 	}
 
 	return 0;
