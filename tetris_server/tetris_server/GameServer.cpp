@@ -27,7 +27,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		Player newplayerdata;
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
 		newplayerdata.clientSocket = match_sockets->client[i];
-		newplayerdata.m_GameClinetNum = i;
+		newplayerdata.m_GameClientNum = i;
 		newRoomData.pPlayers.push_back(newplayerdata);
 	}
 	// 각 클라이언트의 소켓들과 소통할 커뮤쓰레드 생성
@@ -79,9 +79,9 @@ DWORD WINAPI CommThread(LPVOID arg)
 		return 0;
 	}
 
-	playdata->m_gamestatus[playdata->m_GameClinetNum] = tempstatus;
+	playdata->m_gamestatus[playdata->m_GameClientNum] = tempstatus;
 	
-	tempClientNum = playdata->m_GameClinetNum;
+	tempClientNum = playdata->m_GameClientNum;
 	// 자신이 몇번째 인지 보내주기
 	len = sizeof(int);
 	len = htonl(len);
@@ -136,10 +136,10 @@ void GameServerThreadData::CreateCommThread(void)
 
 void GameServerThreadData::reset(void) {
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].level = 1; //각종변수 초기화
-		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].flag.crush_on = 0;
-		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].speed = 1;
-		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
+		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].level = 1; //각종변수 초기화
+		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].flag.crush_on = 0;
+		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].speed = 1;
+		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
 	}
 	system("cls"); //화면지움
 	reset_main(); // m_gamestatus.board_org를 초기화
@@ -155,19 +155,19 @@ void GameServerThreadData::reset_main(void) { //게임판을 초기화
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		for (int j = 0; j < BOARD_Y; j++) { // 게임판을 0으로 초기화
 			for (int k = 0; k < BOARD_X; k++) {
-				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_org[j][k] = 0;
-				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_cpy[j][k] = 100;
+				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][k] = 0;
+				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_cpy[j][k] = 100;
 			}
 		}
 		for (int k = 1; k < BOARD_X; k++) { //y값이 3인 위치에 천장을 만듦
-			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_org[CEILLING_Y][k] = CEILLING;
+			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[CEILLING_Y][k] = CEILLING;
 		}
 		for (int j = 1; j < BOARD_Y - 1; j++) { //좌우 벽을 만듦
-			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_org[j][0] = WALL;
-			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_org[j][BOARD_X - 1] = WALL;
+			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][0] = WALL;
+			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][BOARD_X - 1] = WALL;
 		}
 		for (int k = 0; k < BOARD_X; k++) { //바닥벽을 만듦 
-			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_org[BOARD_Y - 1][k] = WALL;
+			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[BOARD_Y - 1][k] = WALL;
 		}
 	}
 }
@@ -177,7 +177,7 @@ void GameServerThreadData::reset_main_cpy(void) { //m_gamestatus.board_cpy를 초�
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		for (int j = 0; j < BOARD_Y; j++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음 
 			for (int k = 0; k < BOARD_X; k++) {  //이는 m_gamestatus.board_org와 같은 숫자가 없게 하기 위함 
-				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClinetNum].board_cpy[j][k] = 100;
+				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_cpy[j][k] = 100;
 			}
 		}
 	}
@@ -252,7 +252,7 @@ void GameServerThreadData::reset_main_cpy(void) { //m_gamestatus.board_cpy를 초�
 //}
 
 void GameServerThreadData::new_block(int ClientNum) { //새로운 블록 생성
-	int GameClientNum = pPlayers[ClientNum].m_GameClinetNum;
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	pPlayers[ClientNum].m_gamestatus[GameClientNum].bx = (BOARD_X / 2) - 1; //블록 생성 위치x좌표(게임판의 가운데)
 	pPlayers[ClientNum].m_gamestatus[GameClientNum].by = 0;  //블록 생성위치 y좌표(제일 위)
 	pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type = pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type_next; //다음블럭값을 가져옴 
@@ -284,7 +284,7 @@ void GameServerThreadData::new_block(int ClientNum) { //새로운 블록 생성
 void GameServerThreadData::check_key() {
 	// 왼쪽키 트리거
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClinetNum;
+		int GameClientNum = pPlayers[i].m_GameClientNum;
 		if (pPlayers[i].m_keys.left != true) {
 			pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag = false;
 		}
@@ -317,7 +317,7 @@ void GameServerThreadData::check_key() {
 
 void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClinetNum;
+		int GameClientNum = pPlayers[i].m_GameClientNum;
 		pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime += fTimeElapsed;
 
 		if (pPlayers[i].m_keys.left == true && pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag == false) {
@@ -389,7 +389,7 @@ void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 void GameServerThreadData::drop_block(float fTimeElapsed) {
 
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClinetNum;
+		int GameClientNum = pPlayers[i].m_GameClientNum;
 		pPlayers[i].m_gamestatus[GameClientNum].fDropBlockTime += fTimeElapsed;
 		if (pPlayers[i].m_gamestatus[GameClientNum].fDropBlockTime >= pPlayers[i].m_gamestatus[GameClientNum].speed) {
 			if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by + 1, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
@@ -417,7 +417,7 @@ void GameServerThreadData::drop_block(float fTimeElapsed) {
 }
 
 void GameServerThreadData::hard_drop_block(int ClientNum) {
-	int GameClientNum = pPlayers[ClientNum].m_GameClinetNum;
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	
 	while (1) {
 		if (check_crush(GameClientNum, pPlayers[ClientNum].m_gamestatus[GameClientNum].bx, pPlayers[ClientNum].m_gamestatus[GameClientNum].by + 1, pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
@@ -441,7 +441,7 @@ void GameServerThreadData::hard_drop_block(int ClientNum) {
 }
 
 int GameServerThreadData::check_crush(int ClientNum, int bx, int by, int b_rotation) { //지정된 좌표와 회전값으로 충돌이 있는지 검사
-	int GameClientNum = pPlayers[ClientNum].m_GameClinetNum;
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) { //지정된 위치의 게임판과 블럭모양을 비교해서 겹치면 false를 리턴
 			if (blocks[pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type][b_rotation][i][j] == 1 && pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[by + i][bx + j] > 0) return false;
@@ -451,7 +451,7 @@ int GameServerThreadData::check_crush(int ClientNum, int bx, int by, int b_rotat
 };
 
 void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시킴 
-	int GameClientNum = pPlayers[ClientNum].m_GameClinetNum;
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	Gamestatus* m_gamestatus = &(pPlayers[ClientNum].m_gamestatus[GameClientNum]);
 
 	switch (dir) {
@@ -533,7 +533,7 @@ void GameServerThreadData::check_line(void) {
 	int block_amount; //한줄의 블록갯수를 저장하는 변수 
 	int combo = 0; //콤보갯수 저장하는 변수 지정및 초기화 
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClinetNum;
+		int GameClientNum = pPlayers[i].m_GameClientNum;
 		Gamestatus* m_gamestatus = &(pPlayers[i].m_gamestatus[GameClientNum]);
 		for (int j = BOARD_Y - 2; j > 3;) { //i=MAIN_Y-2 : 밑쪽벽의 윗칸부터,  i>3 : 천장(3)아래까지 검사 
 			block_amount = 0; //블록갯수 저장 변수 초기화 

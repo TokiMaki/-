@@ -7,7 +7,7 @@ struct Player
 	SOCKET clientSocket;
 	KeyInput m_keys;//클라이언트의 키입력 저장
 	Gamestatus m_gamestatus[MAX_PLAYER];//게임의 상태 저장
-	int m_GameClinetNum;
+	int m_GameClientNum;
 };
 struct GameServerThreadData
 {
