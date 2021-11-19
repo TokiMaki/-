@@ -14,6 +14,7 @@ public:
     void InitScene();
 
     void Update(float fTimeElapsed) override;
+
     void reset();
     void reset_main();
     void reset_main_cpy();
@@ -37,7 +38,6 @@ public:
 private:
     KeyInput m_keys;                    //클라이언트의 키입력을 저장
     Gamestatus m_gamestatus;  	        //내 클라이언트의 게임 상태
-    Flag flag;
 
 
     int key; //키보드로 입력받은 키값을 저장

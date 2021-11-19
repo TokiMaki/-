@@ -68,6 +68,8 @@ struct Gamestatus {
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target;
+
+    Flag flag;
 };
 
 struct Flag {
