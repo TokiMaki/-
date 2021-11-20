@@ -618,7 +618,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 		}
 
 		KeyInput keys = pGamePlayScene->m_keys;
-		int MSG_len = htonl(sizeof(KeyInput));
+		len = htonl(sizeof(KeyInput));
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_display("send()");
