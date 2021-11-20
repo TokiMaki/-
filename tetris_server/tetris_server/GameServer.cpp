@@ -59,16 +59,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	Player* playdata = (Player*)arg;
 	SOCKET client_sock = playdata->clientSocket;
 	int retval;
-	SOCKADDR_IN clientaddr;
-	int addrlen;
-	int temp_num;
-	char buf[BUFSIZE + 1];
-	std::cout << "commThread running\n" << std::endl;
-	std::cout << client_sock << std::endl;
-	//클라이언트 정보 출력
-	addrlen = sizeof(clientaddr);
-	getpeername(client_sock, (SOCKADDR*)&clientaddr, &addrlen);
-	int recv_Msg;
+	std::cout << client_sock << "commThread running\n" << std::endl;
 
 	Player tempP;
 	KeyInput tempKey;
@@ -305,9 +296,14 @@ void GameServerThreadData::new_block(int ClientNum) { //새로운 블록 생성
 	pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.new_block_on = 0; //new_block flag를 끔
 
 	for (int i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성
+		int b_type = pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type;
+		int b_rotation = pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation;
+		int by = pPlayers[ClientNum].m_gamestatus[GameClientNum].by;
+		int bx = pPlayers[ClientNum].m_gamestatus[GameClientNum].bx;
+
 		for (int j = 0; j < 4; j++) {
-			if (blocks[pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type][pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation][i][j] == 1)
-				pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[pPlayers[ClientNum].m_gamestatus[GameClientNum].by + i][pPlayers[ClientNum].m_gamestatus[GameClientNum].bx + j] = ACTIVE_BLOCK;
+			if (blocks[b_type][b_rotation][i][j] == 1)
+				pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[by + i][bx + j] = ACTIVE_BLOCK;
 		}
 	}
 	//for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
@@ -361,10 +357,13 @@ void GameServerThreadData::check_key() {
 void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		int GameClientNum = pPlayers[i].m_GameClientNum;
+		int by = pPlayers[i].m_gamestatus[GameClientNum].by;
+		int bx = pPlayers[i].m_gamestatus[GameClientNum].bx;
+		int b_rotation = pPlayers[i].m_gamestatus[GameClientNum].b_rotation;
 		pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime += fTimeElapsed;
 
 		if (pPlayers[i].m_keys.left == true && pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag == false) {
-			if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx - 1, pPlayers[i].m_gamestatus[GameClientNum].by, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == true) {
+			if (check_crush(i, bx - 1, by, b_rotation) == true) {
 				move_block(i, LEFT);
 				pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag = true;
 				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
@@ -372,7 +371,7 @@ void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 			}
 		}
 		if (pPlayers[i].m_keys.right == true && pPlayers[i].m_gamestatus[GameClientNum].flag.right_flag == false) {
-			if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx + 1, pPlayers[i].m_gamestatus[GameClientNum].by, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == true) {
+			if (check_crush(i, bx + 1, by, b_rotation) == true) {
 				move_block(i, RIGHT);
 				pPlayers[i].m_gamestatus[GameClientNum].flag.right_flag = true;
 				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
@@ -380,7 +379,7 @@ void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 			}
 		}
 		if (pPlayers[i].m_keys.down == true && pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == false) {
-			if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by + 1, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == true) {
+			if (check_crush(i, bx, by + 1, b_rotation) == true) {
 				drop_block(100);
 				pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag = true;
 				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
@@ -388,12 +387,12 @@ void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 			}
 		}
 		if (pPlayers[i].m_keys.up == true && pPlayers[i].m_gamestatus[GameClientNum].flag.up_flag == false) {
-			if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by, (pPlayers[i].m_gamestatus[GameClientNum].b_rotation + 1) % 4) == true) {
+			if (check_crush(i, bx, by, (b_rotation + 1) % 4) == true) {
 				move_block(i, UP);
 			}
 			//회전할 수 있는지 체크 후 가능하면 회전
 			else if (pPlayers[i].m_gamestatus[GameClientNum].flag.crush_on == true && 
-				check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by - 1, (pPlayers[i].m_gamestatus[GameClientNum].b_rotation + 1) % 4) == true)
+				check_crush(i, bx, by - 1, (b_rotation + 1) % 4) == true)
 				move_block(i, 100);
 			//바닥에 닿은 경우 위쪽으로 한칸띄워서 회전이 가능하면 그렇게 함(특수동작)
 			pPlayers[i].m_gamestatus[GameClientNum].flag.up_flag = true;
@@ -401,14 +400,14 @@ void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 
 		if (pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime >= pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed) {
 			if (pPlayers[i].m_keys.left == true && pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag == 1) {
-				if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx - 1, pPlayers[i].m_gamestatus[GameClientNum].by, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == true) {
+				if (check_crush(i, bx - 1, by, b_rotation) == true) {
 					move_block(i, LEFT);
 					pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
 					pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 				}
 			}
 			if (pPlayers[i].m_keys.right == true && pPlayers[i].m_gamestatus[GameClientNum].flag.right_flag == 1) {
-				if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx + 1, pPlayers[i].m_gamestatus[GameClientNum].by, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == true) {
+				if (check_crush(i, bx + 1, by, b_rotation) == true) {
 					move_block(i, RIGHT);
 					pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
 					pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
@@ -433,10 +432,14 @@ void GameServerThreadData::drop_block(float fTimeElapsed) {
 
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		int GameClientNum = pPlayers[i].m_GameClientNum;
+		int by = pPlayers[i].m_gamestatus[GameClientNum].by;
+		int bx = pPlayers[i].m_gamestatus[GameClientNum].bx;
+		int b_rotation = pPlayers[i].m_gamestatus[GameClientNum].b_rotation;
+
 		if (pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0) {
 			pPlayers[i].m_gamestatus[GameClientNum].fDropBlockTime += fTimeElapsed;
 			if (pPlayers[i].m_gamestatus[GameClientNum].fDropBlockTime >= pPlayers[i].m_gamestatus[GameClientNum].speed) {
-				if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by + 1, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+				if (check_crush(i, bx, by + 1, b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
 					for (int j = 0; j < BOARD_Y; j++) { //현재 조작중인 블럭을 굳힘
 						for (int k = 0; k < BOARD_X; k++) {
 							if (pPlayers[i].m_gamestatus[GameClientNum].board_org[j][k] == ACTIVE_BLOCK)
@@ -450,10 +453,12 @@ void GameServerThreadData::drop_block(float fTimeElapsed) {
 					pPlayers[i].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
 					break;
 				}
-				if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by + 1, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == true)
+				if (check_crush(i, bx, by + 1,	b_rotation) == true)
 					move_block(i, DOWN); //밑이 비어있으면 밑으로 한칸 이동
-				if (check_crush(i, pPlayers[i].m_gamestatus[GameClientNum].bx, pPlayers[i].m_gamestatus[GameClientNum].by + 1, pPlayers[i].m_gamestatus[GameClientNum].b_rotation) == false)
+
+				if (check_crush(i, bx, by + 1, b_rotation) == false)
 					pPlayers[i].m_gamestatus[GameClientNum].flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
+
 				pPlayers[i].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
 			}
 		}
@@ -462,10 +467,14 @@ void GameServerThreadData::drop_block(float fTimeElapsed) {
 }
 
 void GameServerThreadData::hard_drop_block(int ClientNum) {
-	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
-	
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;	
+
 	while (1) {
-		if (check_crush(GameClientNum, pPlayers[ClientNum].m_gamestatus[GameClientNum].bx, pPlayers[ClientNum].m_gamestatus[GameClientNum].by + 1, pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+		int by = pPlayers[ClientNum].m_gamestatus[GameClientNum].by;
+		int bx = pPlayers[ClientNum].m_gamestatus[GameClientNum].bx;
+		int b_rotation = pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation;
+
+		if (check_crush(GameClientNum, bx, by + 1, b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
 			for (int i = 0; i < BOARD_Y; i++) { //현재 조작중인 블럭을 굳힘
 				for (int j = 0; j < BOARD_X; j++) {
 					if (pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[i][j] == ACTIVE_BLOCK)
@@ -477,19 +486,21 @@ void GameServerThreadData::hard_drop_block(int ClientNum) {
 			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.new_block_on = true; //새로운 블럭생성 flag를 켬
 			return;
 		}
-		if (check_crush(GameClientNum, pPlayers[ClientNum].m_gamestatus[GameClientNum].bx, pPlayers[ClientNum].m_gamestatus[GameClientNum].by + 1, pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation) == true)
+		if (check_crush(GameClientNum, bx, by + 1, b_rotation) == true)
 			move_block(ClientNum, DOWN); //밑이 비어있으면 밑으로 한칸 이동
-		if (check_crush(GameClientNum, pPlayers[ClientNum].m_gamestatus[GameClientNum].bx, pPlayers[ClientNum].m_gamestatus[GameClientNum].by + 1, pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation) == false)
+		if (check_crush(GameClientNum, bx, by + 1, b_rotation) == false)
 			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
 		pPlayers[ClientNum].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
 	}
 }
 
-int GameServerThreadData::check_crush(int ClientNum, int bx, int by, int b_rotation) { //지정된 좌표와 회전값으로 충돌이 있는지 검사
+bool GameServerThreadData::check_crush(int ClientNum, int bx, int by, int b_rotation) { //지정된 좌표와 회전값으로 충돌이 있는지 검사
 	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+
 	for (int i = 0; i < 4; i++) {
 		for (int j = 0; j < 4; j++) { //지정된 위치의 게임판과 블럭모양을 비교해서 겹치면 false를 리턴
-			if (blocks[pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type][b_rotation][i][j] == 1 && pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[by + i][bx + j] > 0) return false;
+			if (blocks[pPlayers[ClientNum].m_gamestatus[GameClientNum].b_type][b_rotation][i][j] == 1 && pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[by + i][bx + j] > 0)
+				return false;
 		}
 	}
 	return true; //하나도 안겹치면 true리턴 
@@ -503,12 +514,14 @@ void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시�
 	case LEFT: //왼쪽방향
 		for (int i = 0; i < 4; i++) { //현재좌표의 블럭을 지움 
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
 			}
 		}
 		for (int i = 0; i < 4; i++) { //왼쪽으로 한칸가서 active block을 찍음 
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j - 1] = ACTIVE_BLOCK;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j - 1] = ACTIVE_BLOCK;
 			}
 		}
 		m_gamestatus->bx--; //좌표값 이동 
@@ -517,12 +530,14 @@ void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시�
 	case RIGHT:    //오른쪽 방향-> 왼쪽방향이랑 같은 원리로 동작 
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
 			}
 		}
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j + 1] = ACTIVE_BLOCK;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j + 1] = ACTIVE_BLOCK;
 			}
 		}
 		m_gamestatus->bx++;
@@ -531,12 +546,14 @@ void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시�
 	case DOWN:    //아래쪽 방향-> 왼쪽방향이랑 같은 원리로 동작
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
 			}
 		}
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i + 1][m_gamestatus->bx + j] = ACTIVE_BLOCK;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i + 1][m_gamestatus->bx + j] = ACTIVE_BLOCK;
 			}
 		}
 		m_gamestatus->by++;
@@ -545,13 +562,15 @@ void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시�
 	case UP: //키보드 위쪽 눌렀을때 회전시킴-> 
 		for (int i = 0; i < 4; i++) { //현재좌표의 블럭을 지움  
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
 			}
 		}
 		m_gamestatus->b_rotation = (m_gamestatus->b_rotation + 1) % 4; //회전값을 1증가시킴(3에서 4가 되는 경우는 0으로 되돌림) 
 		for (int i = 0; i < 4; i++) { //회전된 블록을 찍음 
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = ACTIVE_BLOCK;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = ACTIVE_BLOCK;
 			}
 		}
 		break;
@@ -560,13 +579,15 @@ void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시�
 			  //이를 동작시키는 특수동작 
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i][m_gamestatus->bx + j] = EMPTY;
 			}
 		}
 		m_gamestatus->b_rotation = (m_gamestatus->b_rotation + 1) % 4;
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) m_gamestatus->board_org[m_gamestatus->by + i - 1][m_gamestatus->bx + j] = ACTIVE_BLOCK;
+				if (blocks[m_gamestatus->b_type][m_gamestatus->b_rotation][i][j] == 1) 
+					m_gamestatus->board_org[m_gamestatus->by + i - 1][m_gamestatus->bx + j] = ACTIVE_BLOCK;
 			}
 		}
 		m_gamestatus->by--;
@@ -588,8 +609,11 @@ void GameServerThreadData::check_line(void) {
 			if (block_amount == BOARD_X - 2) { //블록이 가득 찬 경우 
 				for (int k = j; k > 1; k--) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만) 
 					for (int l = 1; l < BOARD_X - 1; l++) {
-						if (m_gamestatus->board_org[k - 1][l] != CEILLING) m_gamestatus->board_org[k][l] = m_gamestatus->board_org[k - 1][l];
-						if (m_gamestatus->board_org[k - 1][l] == CEILLING) m_gamestatus->board_org[k][l] = EMPTY;
+						if (m_gamestatus->board_org[k - 1][l] != CEILLING) 
+							m_gamestatus->board_org[k][l] = m_gamestatus->board_org[k - 1][l];
+
+						if (m_gamestatus->board_org[k - 1][l] == CEILLING) 
+							m_gamestatus->board_org[k][l] = EMPTY;
 						//윗줄이 천장인 경우에는 천장을 한칸 내리면 안되니까 빈칸을 넣음 
 					}
 				}

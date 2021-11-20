@@ -27,7 +27,7 @@ struct GameServerThreadData
     void KeyUpdate(float fTimeElapsed);
     void drop_block(float fTimeElapsed);
     void hard_drop_block(int ClientNum);
-    int check_crush(int ClientNum, int bx, int by, int b_rotation);
+    bool check_crush(int ClientNum, int bx, int by, int b_rotation);
     void move_block(int ClientNum, int dir);
     void check_line(void);
     void copy_another_map(void);

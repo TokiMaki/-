@@ -7,9 +7,6 @@
 
 DWORD WINAPI MatchMakingThread(LPVOID arg)
 {
-	SOCKADDR_IN clientaddr;
-	int addrlen;
-	int retval;
 	std::vector<SOCKET>*MatchMakingQ = (std::vector<SOCKET>*)arg;
 
 	while (1) {
@@ -99,7 +96,7 @@ int RecvMsgfromClient(SOCKET client)
 {
 	int retval;
 	int len = 0;
-	int Msg;
+	int Msg = -1;
 	SOCKET client_sock = (SOCKET)client;
 
 	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
