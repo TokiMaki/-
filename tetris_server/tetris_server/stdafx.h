@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "ws2_32")
+
 #include<winsock2.h>
 #include<windows.h>
 #include<stdio.h>
@@ -8,8 +11,6 @@
 #include<stdlib.h>
 #include<iostream>
 #include<vector>
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "ws2_32")
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
@@ -84,11 +85,6 @@ struct Gamestatus {
 
 struct MatchSockets {
     SOCKET client[MAX_PLAYER];
-};
-
-struct CGameTimer
-{
-
 };
 
 class GlobalGameData //CommThread와 클라이언트 간의 소켓, 게임 업데이트의 입력 및 출력에 쓰이는 데이터
