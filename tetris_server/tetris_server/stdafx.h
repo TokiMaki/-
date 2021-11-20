@@ -14,7 +14,7 @@
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
-#define BUF_SIZE 512
+#define BUF_SIZE 2048
 
 #define LEFT 75 //좌로 이동    //키보드값들 
 #define RIGHT 77 //우로 이동 
@@ -38,7 +38,6 @@
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
 #define MAX_PLAYER 1 // 최대 인원수
-#define BUFSIZE    2048
 
 struct KeyInput {
     bool left = false;      //←
