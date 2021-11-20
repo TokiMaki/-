@@ -38,6 +38,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	while (1)
 	{
 		WaitForSingleObject(hupdate, INFINITE); // 쓰기 완료 기다리기
+		printf("Call GameThread\n");
 		newRoomData.m_GameTimer.Tick();
 		newRoomData.check_key();
 		newRoomData.KeyUpdate(newRoomData.m_GameTimer.GetTimeElapsed());
@@ -83,7 +84,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 		err_display("send()");
 		return 0;
 	}
-	std::cout << tempClientNum << std::endl;
 
 	//초기 게임 데이터 받기
 	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
@@ -104,6 +104,8 @@ DWORD WINAPI CommThread(LPVOID arg)
 	while (1)
 	{
 		WaitForSingleObject(hcheckupdate, INFINITE);
+		//ResetEvent(hcheckupdate);
+		printf("Call CommThread %d\n", playdata->m_GameClientNum);
 		// 클라이언트에 업데이트된 데이터 보내주기
 
 		len = sizeof(Gamestatus) * MAX_PLAYER;
@@ -112,13 +114,16 @@ DWORD WINAPI CommThread(LPVOID arg)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("send()");
-			return 0;
+			SetEvent(hupdate); // 쓰기 완료
+			break;
 		}
-		retval = send(client_sock, (char*)&playdata->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
+		len = ntohl(len);
+		retval = send(client_sock, (char*)&playdata->m_gamestatus, len, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("send()");
-			return 0;
+			SetEvent(hupdate); // 쓰기 완료
+			break;
 		}
 		//키입력 데이터 주고 받기
 		retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
@@ -129,7 +134,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 			break;
 		}
 		len = ntohl(len);
-		retval = recvn(client_sock, (char*)&tempKey, sizeof(KeyInput), 0);
+		retval = recvn(client_sock, (char*)&tempKey, len, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
@@ -137,6 +142,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 			break;
 		}
 		playdata->m_keys = tempKey;
+
 		SetEvent(hupdate); // 쓰기 완료
 	}
 
