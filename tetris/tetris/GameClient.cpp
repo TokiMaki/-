@@ -5,6 +5,7 @@
 
 GameClient::GameClient() {
     BuildScene();
+    m_GameTimer.Start();
     ChangeScene(Scene::SceneNum::Title);
 }
 

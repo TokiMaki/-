@@ -1,5 +1,8 @@
 #pragma once
 
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "ws2_32")
+
 #include<winsock2.h>
 #include<windows.h>
 #include<stdio.h>
@@ -8,12 +11,10 @@
 #include<stdlib.h>
 #include<iostream>
 #include<vector>
-#pragma comment(lib, "winmm.lib")
-#pragma comment(lib, "ws2_32")
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
-#define BUF_SIZE 512
+#define BUF_SIZE 2048
 
 #define LEFT 75 //좌로 이동    //키보드값들 
 #define RIGHT 77 //우로 이동 
@@ -37,7 +38,6 @@
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
 #define MAX_PLAYER 1 // 최대 인원수
-#define BUFSIZE    2048
 
 struct KeyInput {
     bool left = false;      //←
@@ -84,11 +84,6 @@ struct Gamestatus {
 
 struct MatchSockets {
     SOCKET client[MAX_PLAYER];
-};
-
-struct CGameTimer
-{
-
 };
 
 class GlobalGameData //CommThread와 클라이언트 간의 소켓, 게임 업데이트의 입력 및 출력에 쓰이는 데이터
