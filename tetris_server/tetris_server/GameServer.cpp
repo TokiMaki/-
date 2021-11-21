@@ -3,23 +3,19 @@
 #include "MatchMaking.h"
 #include "socket_function.h"
 
-HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
-HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
-GlobalGameData roomdata;
-
 DWORD WINAPI GameServerThread(LPVOID arg)
 {
 	GameServerThreadData newRoomData;
 	MatchSockets* match_sockets = (MatchSockets*)arg;
 
 
-	hupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
-	if (hupdate == NULL)
+	newRoomData.hupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
+	if (newRoomData.hupdate == NULL)
 	{
 		return 1;
 	}
-	hcheckupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
-	if (hcheckupdate == NULL)
+	newRoomData.hcheckupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
+	if (newRoomData.hcheckupdate == NULL)
 	{
 		return 1;
 	}
@@ -29,6 +25,8 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
 		newplayerdata.clientSocket = match_sockets->client[i];
 		newplayerdata.m_GameClientNum = i;
+		newplayerdata.hupdate = newRoomData.hupdate;
+		newplayerdata.hcheckupdate = newRoomData.hcheckupdate;
 		newRoomData.pPlayers.push_back(newplayerdata);
 	}
 	newRoomData.reset();
@@ -37,8 +35,8 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	newRoomData.m_GameTimer.Start();
 	while (1)
 	{
-		WaitForSingleObject(hupdate, INFINITE); // 쓰기 완료 기다리기
-		printf("Call GameThread\n");
+		WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
+		//printf("Call GameThread\n");
 		newRoomData.m_GameTimer.Tick();
 		newRoomData.check_key();
 		newRoomData.KeyUpdate(newRoomData.m_GameTimer.GetTimeElapsed());
@@ -50,7 +48,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		}
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
-		SetEvent(hcheckupdate);
+		SetEvent(newRoomData.hcheckupdate);
 	}
 	delete match_sockets;
 	return 0;
@@ -103,9 +101,9 @@ DWORD WINAPI CommThread(LPVOID arg)
 
 	while (1)
 	{
-		WaitForSingleObject(hcheckupdate, INFINITE);
+		WaitForSingleObject(playdata->hcheckupdate, INFINITE);
 		//ResetEvent(hcheckupdate);
-		printf("Call CommThread %d\n", playdata->m_GameClientNum);
+		//printf("Call CommThread %d\n", playdata->m_GameClientNum);
 		// 클라이언트에 업데이트된 데이터 보내주기
 
 		len = sizeof(Gamestatus) * MAX_PLAYER;
@@ -114,7 +112,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("send()");
-			SetEvent(hupdate); // 쓰기 완료
+			SetEvent(playdata->hupdate); // 쓰기 완료
 			break;
 		}
 		len = ntohl(len);
@@ -122,7 +120,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("send()");
-			SetEvent(hupdate); // 쓰기 완료
+			SetEvent(playdata->hupdate); // 쓰기 완료
 			break;
 		}
 		//키입력 데이터 주고 받기
@@ -130,7 +128,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
-			SetEvent(hupdate); // 쓰기 완료
+			SetEvent(playdata->hupdate); // 쓰기 완료
 			break;
 		}
 		len = ntohl(len);
@@ -138,12 +136,12 @@ DWORD WINAPI CommThread(LPVOID arg)
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("recv()");
-			SetEvent(hupdate); // 쓰기 완료
+			SetEvent(playdata->hupdate); // 쓰기 완료
 			break;
 		}
 		playdata->m_keys = tempKey;
 
-		SetEvent(hupdate); // 쓰기 완료
+		SetEvent(playdata->hupdate); // 쓰기 완료
 	}
 
 	return 0;
