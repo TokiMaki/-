@@ -141,7 +141,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		playdata->m_keys = tempKey;
 
 		SetEvent(playdata->hupdate); // 쓰기 완료
-		WaitForSingleObject(playdata->hcheckupdate,INFINITE);
+		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
 
 
 	}
