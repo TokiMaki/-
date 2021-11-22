@@ -103,7 +103,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 	{
 		WaitForSingleObject(playdata->hcheckupdate, INFINITE);
 		//ResetEvent(hcheckupdate);
-		//printf("Call CommThread %d\n", playdata->m_GameClientNum);
 		// 클라이언트에 업데이트된 데이터 보내주기
 
 		len = sizeof(Gamestatus) * MAX_PLAYER;
@@ -142,6 +141,9 @@ DWORD WINAPI CommThread(LPVOID arg)
 		playdata->m_keys = tempKey;
 
 		SetEvent(playdata->hupdate); // 쓰기 완료
+		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
+
+
 	}
 
 	return 0;
@@ -220,74 +222,6 @@ void GameServerThreadData::reset_main_cpy(void) { //m_gamestatus.board_cpy를 초�
 		}
 	}
 }
-
-//void GameServerThreadData::draw_map(void) { //게임 상태 표시를 나타내는 함수  
-//	int y = 3;           // m_gamestatus.level, goal, score만 게임중에 값이 바뀔수 도 있음 그 y값을 따로 저장해둠 
-//						 // 그래서 혹시 게임 상태 표시 위치가 바뀌어도 그 함수에서 안바꿔도 되게
-//	gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL = y); printf(" LEVEL : %5d", m_gamestatus.level);
-//	// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL = y + 1); printf(" GOAL  : %5d", 10 - cnt);
-//	gotoxy(STATUS_X_ADJ, y + 2); printf("┌    NEXT    ┐");
-//	gotoxy(STATUS_X_ADJ, y + 3); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 4); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 5); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 6); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 7); printf("└────────────┘");
-//	gotoxy(STATUS_X_ADJ, y + 9); printf("┌    ITEM    ┐");
-//	gotoxy(STATUS_X_ADJ, y + 10); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 11); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 12); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 13); printf("│            │");
-//	gotoxy(STATUS_X_ADJ, y + 14); printf("└────────────┘");
-//
-//	/*
-//	gotoxy(STATUS_X_ADJ, y + 8); printf(" YOUR SCORE :");
-//	gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE = y + 9); printf("        %6d", score);
-//	gotoxy(STATUS_X_ADJ, y + 10); printf(" LAST SCORE :");
-//	gotoxy(STATUS_X_ADJ, y + 11); printf("        %6d", last_score);
-//	gotoxy(STATUS_X_ADJ, y + 12); printf(" BEST SCORE :");
-//	gotoxy(STATUS_X_ADJ, y + 13); printf("        %6d", best_score);
-//	gotoxy(STATUS_X_ADJ, y + 15); printf("  △   : Shift        SPACE : Hard Drop");
-//	gotoxy(STATUS_X_ADJ, y + 16); printf("◁  ▷ : Left / Right   P   : Pause");
-//	gotoxy(STATUS_X_ADJ, y + 17); printf("  ▽   : Soft Drop     ESC  : Quit");
-//	*/
-//}
-//
-//void GameServerThreadData::draw_main(void) { //게임판 그리는 함수 
-//
-//	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌 
-//		if (m_gamestatus.board_org[CEILLING_Y][j] == EMPTY) m_gamestatus.board_org[CEILLING_Y][j] = CEILLING;
-//	}
-//	for (int i = 0; i < BOARD_Y; i++) {
-//		for (int j = 0; j < BOARD_X; j++) {
-//			if (m_gamestatus.board_cpy[i][j] != m_gamestatus.board_org[i][j]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
-//												//이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
-//				gotoxy(BOARD_X_ADJ + j, BOARD_Y_ADJ + i);
-//				switch (m_gamestatus.board_org[i][j]) {
-//				case EMPTY: //빈칸모양 
-//					printf("  ");
-//					break;
-//				case CEILLING: //천장모양 
-//					printf(". ");
-//					break;
-//				case WALL: //벽모양 
-//					printf("▩");
-//					break;
-//				case INACTIVE_BLOCK: //굳은 블럭 모양  
-//					printf("□");
-//					break;
-//				case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-//					printf("■");
-//					break;
-//				}
-//			}
-//		}
-//	}
-//	for (int i = 0; i < BOARD_Y; i++) { //게임판을 그린 후 m_gamestatus.board_cpy에 복사  
-//		for (int j = 0; j < BOARD_X; j++) {
-//			m_gamestatus.board_cpy[i][j] = m_gamestatus.board_org[i][j];
-//		}
-//	}
-//}
 
 void GameServerThreadData::new_block(int ClientNum) { //새로운 블록 생성
 	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
