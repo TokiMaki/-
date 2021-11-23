@@ -110,6 +110,10 @@ void WaitScene::Update(float fTimeElapsed) {
 
 }
 
+void WaitScene::Paint(HDC hDC) {
+	TextOut(hDC, 100, 300, "WAIT SCENE", 11);
+}
+
 DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 {
 	int retval;

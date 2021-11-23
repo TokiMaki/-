@@ -11,5 +11,6 @@ public:
 
     void InitScene() override;
     void Update(float fTimeElapsed) override;
+    void Paint(HDC hDC) override;
     static DWORD WINAPI TestThread(LPVOID arg);
 };

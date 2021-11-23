@@ -31,6 +31,11 @@ void GamePlayScene::Update(float fTimeElapsed) {
 	// if (m_gamestatus[m_pGameClient->m_ClientNum].flag.new_block_on == 1) new_block(); // 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
 }
 
+void GamePlayScene::Paint(HDC hDC)
+{
+	TextOut(hDC, 100, 500, "PLAY SCENE", 11);
+}
+
 void GamePlayScene::reset(void) {
 	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
 	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
@@ -594,6 +599,7 @@ void GamePlayScene::InitScene() {
 
 	CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
+
 
 DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	int retval;

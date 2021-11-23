@@ -38,6 +38,12 @@ void TitleScene::Update(float fTimeElapsed) {
     while (kbhit()) getch(); //버퍼에 기록된 키값을 버림
 }
 
+void TitleScene::Paint(HDC hDC)
+{
+    TextOut(hDC, 100, 100, "TITLE SCENE", 11);
+}
+
 void TitleScene::InitScene() {
 
 }
+

@@ -15,6 +15,8 @@ public:
 
     void Update(float fTimeElapsed) override;
 
+    void Paint(HDC hDC) override;
+
     void reset();
     void reset_main();
     void reset_main_cpy();

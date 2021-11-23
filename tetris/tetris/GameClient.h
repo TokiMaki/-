@@ -25,6 +25,7 @@ public:
 	void ChangeScene(Scene::SceneNum tag);
 	void BuildScene();
 	void Update();
+	void Paint(HDC hDC);
 
 	void SetSOCKET(SOCKET);
 	SOCKET GetSOCKET();

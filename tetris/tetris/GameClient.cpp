@@ -55,6 +55,10 @@ void GameClient::Update() {
     m_pScene->Update(m_GameTimer.GetTimeElapsed());
 }
 
+void GameClient::Paint(HDC hDC) {
+    m_pScene->Paint(hDC);
+}
+
 void GameClient::SetSOCKET(SOCKET arg)
 {
     sock = arg;
