@@ -32,7 +32,7 @@ struct GameServerThreadData
     //void draw_main();
     void check_key();
     void KeyUpdate(float fTimeElapsed);
-    void drop_block(float fTimeElapsed);
+    void drop_block(int ClientNum, float fTimeElapsed);
     void hard_drop_block(int ClientNum);
     bool check_crush(int ClientNum, int bx, int by, int b_rotation);
     void move_block(int ClientNum, int dir);

@@ -105,39 +105,72 @@ void GamePlayScene::draw_map(void) { //게임 상태 표시를 나타내는 함수
 	*/
 }
 
-void GamePlayScene::draw_main(void) { //게임판 그리는 함수 
+void GamePlayScene::draw_main(void) { //게임판 그리는 함수
+	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
+	int DrawPlayers = 0;
 
-	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌 
-		if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] == EMPTY) m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
+	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
+		if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] == EMPTY)
+			m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
 	}
-	for (int i = 0; i < BOARD_Y; i++) {
-		for (int j = 0; j < BOARD_X; j++) {
-			if (m_gamestatus[m_pGameClient->m_ClientNum].board_cpy[i][j] != m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][j]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
-												//이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
-				gotoxy(BOARD_X_ADJ + j, BOARD_Y_ADJ + i);
-				switch (m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][j]) {
-				case EMPTY: //빈칸모양 
-					printf("  ");
-					break;
-				case CEILLING: //천장모양 
-					printf(". ");
-					break;
-				case WALL: //벽모양 
-					printf("▩");
-					break;
-				case INACTIVE_BLOCK: //굳은 블럭 모양  
-					printf("□");
-					break;
-				case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-					printf("■");
-					break;
+	for (int i = 0; i < MAX_PLAYER; ++i) {
+		if (i != m_pGameClient->m_ClientNum)
+			DrawPlayers++;
+		for (int j = 0; j < BOARD_Y; j++) {
+			for (int k = 0; k < BOARD_X; k++) {
+				if (i == m_pGameClient->m_ClientNum) {
+					if (m_gamestatus[i].board_cpy[j][k] != m_gamestatus[i].board_org[j][k]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
+						//이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
+						gotoxy(BOARD_X_ADJ + k, BOARD_Y_ADJ + j);
+						switch (m_gamestatus[m_pGameClient->m_ClientNum].board_org[j][k]) {
+						case EMPTY: //빈칸모양 
+							printf("  ");
+							break;
+						case CEILLING: //천장모양 
+							printf(". ");
+							break;
+						case WALL: //벽모양 
+							printf("▩");
+							break;
+						case INACTIVE_BLOCK: //굳은 블럭 모양  
+							printf("□");
+							break;
+						case ACTIVE_BLOCK: //움직이고있는 블럭 모양
+							printf("■");
+							break;
+						}
+					}
 				}
+				else if (m_gamestatus[i].board_cpy[j][k] != m_gamestatus[i].board_org[j][k]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
+						//이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
+						gotoxy(BOARD_X_ADJ + BOARD_X * DrawPlayers + 6 + k, BOARD_Y_ADJ + j);
+						switch (m_gamestatus[i].board_org[j][k]) {
+						case EMPTY: //빈칸모양 
+							printf("  ");
+							break;
+						case CEILLING: //천장모양 
+							printf(". ");
+							break;
+						case WALL: //벽모양 
+							printf("▩");
+							break;
+						case INACTIVE_BLOCK: //굳은 블럭 모양  
+							printf("□");
+							break;
+						case ACTIVE_BLOCK: //움직이고있는 블럭 모양
+							printf("■");
+							break;
+						}
+					}
+				
 			}
 		}
 	}
-	for (int i = 0; i < BOARD_Y; i++) { //게임판을 그린 후 m_gamestatus[m_pGameClient->m_ClientNum].board_cpy에 복사  
-		for (int j = 0; j < BOARD_X; j++) {
-			m_gamestatus[m_pGameClient->m_ClientNum].board_cpy[i][j] = m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][j];
+	for (int i = 0; i < MAX_PLAYER; ++i) {
+		for (int j = 0; j < BOARD_Y; j++) { //게임판을 그린 후 m_gamestatus[m_pGameClient->m_ClientNum].board_cpy에 복사
+			for (int k = 0; k < BOARD_X; k++) {
+				m_gamestatus[i].board_cpy[j][k] = m_gamestatus[i].board_org[j][k];
+			}
 		}
 	}
 }
