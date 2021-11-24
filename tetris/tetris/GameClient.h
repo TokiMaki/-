@@ -26,6 +26,7 @@ public:
 	void BuildScene();
 	void Update();
 	void Paint(HDC hDC);
+	void KeyDown(unsigned char KEYCODE);
 
 	void SetSOCKET(SOCKET);
 	SOCKET GetSOCKET();

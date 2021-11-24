@@ -88,6 +88,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 			break;
 		}
 		break;
+	case WM_KEYDOWN:
+		gameClient.KeyDown(wParam);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;

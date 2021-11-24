@@ -11,6 +11,7 @@ TitleScene::TitleScene(SceneNum num, GameClient* const pGameClient) {
 TitleScene::~TitleScene() {}
 
 void TitleScene::Update(float fTimeElapsed) {
+    /*
     int x = 5; //타이틀화면이 표시되는 x좌표
     int y = 4; //타이틀화면이 표시되는 y좌표
     int cnt; //타이틀 프레임을 세는 변수
@@ -36,6 +37,7 @@ void TitleScene::Update(float fTimeElapsed) {
         m_pGameClient->ChangeScene(Scene::SceneNum::Wait);
     }; //키입력이 게임 플레이 신으로
     while (kbhit()) getch(); //버퍼에 기록된 키값을 버림
+    */
 }
 
 void TitleScene::Paint(HDC hDC)
@@ -58,6 +60,15 @@ void TitleScene::Paint(HDC hDC)
     TextOut(hDC, x, y + 20 * 13, "   P   : Pause", 14);
     TextOut(hDC, x, y + 20 * 14, "  ESC  : Quit", 13);
     TextOut(hDC, x, y + 20 * 16, "BONUS FOR HARD DROPS / COMBOS", 29);
+}
+
+void TitleScene::KeyDown(unsigned char KEYCODE)
+{
+    switch (KEYCODE) {
+    case VK_RETURN:
+        m_pGameClient->ChangeScene(Scene::SceneNum::Wait);
+        break;
+    }
 }
 
 void TitleScene::InitScene() {

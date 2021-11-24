@@ -36,6 +36,10 @@ void GamePlayScene::Paint(HDC hDC)
 	TextOut(hDC, 100, 500, "PLAY SCENE", 11);
 }
 
+void GamePlayScene::KeyDown(unsigned char KEYCODE)
+{
+}
+
 void GamePlayScene::reset(void) {
 	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
 	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;

@@ -114,6 +114,10 @@ void WaitScene::Paint(HDC hDC) {
 	Ellipse(hDC, 200, 200, 300, 300);
 }
 
+void WaitScene::KeyDown(unsigned char KEYCODE)
+{
+}
+
 DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 {
 	int retval;

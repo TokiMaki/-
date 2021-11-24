@@ -59,6 +59,11 @@ void GameClient::Paint(HDC hDC) {
     m_pScene->Paint(hDC);
 }
 
+void GameClient::KeyDown(unsigned char KEYCODE)
+{
+    m_pScene->KeyDown(KEYCODE);
+}
+
 void GameClient::SetSOCKET(SOCKET arg)
 {
     sock = arg;

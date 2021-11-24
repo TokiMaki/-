@@ -20,6 +20,7 @@ public:
     virtual void InitScene() = 0;
     virtual void Update(float fTimeElapsed) = 0;
     virtual void Paint(HDC hDC) = 0;
+    virtual void KeyDown(unsigned char KEYCODE) = 0;
 
 protected:
     SceneNum m_SceneNum;
