@@ -8,6 +8,7 @@ DWORD WINAPI TestThread(LPVOID arg);
 
 HINSTANCE g_hinst;
 HWND hDlg;
+RECT rt;
 
 //int main() {
 //    while (1) {
@@ -55,22 +56,29 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 	HDC hDC, memDC;
+	HBITMAP hBitmap;
 	PAINTSTRUCT ps;
 
 	switch (iMsg) {
 	case WM_CREATE:
+		GetClientRect(hWnd, &rt);
 		SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:
+		InvalidateRect(hWnd, &rt, FALSE);
 		hDC = BeginPaint(hWnd, &ps);
 		memDC = CreateCompatibleDC(hDC);
 
-		gameClient.Paint(hDC);
-		//BitBlt(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, memDC, 0, 0, SRCCOPY);
+		hBitmap = CreateCompatibleBitmap(hDC, rt.right, rt.bottom);
+		SelectObject(memDC, (HBITMAP)hBitmap);
+		FillRect(memDC, &rt, (HBRUSH)GetStockObject(WHITE_BRUSH));
+		
+		gameClient.Paint(memDC);
+		BitBlt(hDC, 0, 0, rt.right, rt.bottom, memDC, 0, 0, SRCCOPY);
 
-		DeleteDC(memDC);
-		DeleteDC(hDC);
 		EndPaint(hWnd, &ps);
+		DeleteObject(hBitmap);
+		DeleteDC(memDC);
 		break;
 	case WM_TIMER:
 		switch (wParam)

@@ -50,17 +50,17 @@ void WaitScene::Update(float fTimeElapsed) {
 
 	//while (1) {
 
-	std::cout << "Waiting";
+	//std::cout << "Waiting";
 	for (int i = 0; i < 3; ++i) {
 		if (WaitTimer >= i * 0.5) {
-			std::cout << ".";
+			//std::cout << ".";
 		}
 	}
 	if (WaitTimer >= 1.5) {
-		system("cls");
+		//system("cls");
 		WaitTimer = 0;
 	}
-	std::cout << "\r";
+	//std::cout << "\r";
 	WaitForSingleObject(hWaitReadEvent, INFINITE);
 	if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
 		m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
@@ -111,7 +111,7 @@ void WaitScene::Update(float fTimeElapsed) {
 }
 
 void WaitScene::Paint(HDC hDC) {
-	TextOut(hDC, 100, 300, "WAIT SCENE", 11);
+	Ellipse(hDC, 200, 200, 300, 300);
 }
 
 DWORD __stdcall WaitScene::TestThread(LPVOID arg)

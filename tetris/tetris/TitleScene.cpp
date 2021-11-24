@@ -40,7 +40,7 @@ void TitleScene::Update(float fTimeElapsed) {
 
 void TitleScene::Paint(HDC hDC)
 {
-    TextOut(hDC, 100, 100, "TITLE SCENE", 11);
+    Ellipse(hDC, rand()%100, rand() % 100, 200, 200);
 }
 
 void TitleScene::InitScene() {
