@@ -40,7 +40,24 @@ void TitleScene::Update(float fTimeElapsed) {
 
 void TitleScene::Paint(HDC hDC)
 {
-    Ellipse(hDC, rand()%100, rand() % 100, 200, 200);
+    int x = WINDOW_WIDTH / 4; //타이틀화면이 표시되는 x좌표
+    int y = WINDOW_HEIGHT / 4; //타이틀화면이 표시되는 y좌표
+   
+    RECT rt = { x,y,x + 250,y + 100 };
+    FillRect(hDC, &rt, CreateSolidBrush(RGB(rand()%255, rand() % 255, rand() % 255)));
+    //Rectangle(hDC, x, y, x+250, y+100);
+    SetBkMode(hDC, TRANSPARENT);
+    SetTextColor(hDC, RGB(rand() % 255, rand() % 255, rand() % 255));
+    TextOut(hDC, x + 20 * 5, y + 20 * 2, "T E T R I S", 11);
+    SetTextColor(hDC, RGB(0, 0, 0));
+    TextOut(hDC, x, y + 20 * 7, "Enter Key to Start..", 20);
+    TextOut(hDC, x, y + 20 * 9, "  △   : Shift", 14);
+    TextOut(hDC, x, y + 20 * 10, "◁  ▷ : Left / Right", 21);
+    TextOut(hDC, x, y + 20 * 11, "  ▽   : Soft Drop", 18);
+    TextOut(hDC, x, y + 20 * 12, " SPACE : Hard Drop", 18);
+    TextOut(hDC, x, y + 20 * 13, "   P   : Pause", 14);
+    TextOut(hDC, x, y + 20 * 14, "  ESC  : Quit", 13);
+    TextOut(hDC, x, y + 20 * 16, "BONUS FOR HARD DROPS / COMBOS", 29);
 }
 
 void TitleScene::InitScene() {
