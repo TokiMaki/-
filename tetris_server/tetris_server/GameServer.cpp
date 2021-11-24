@@ -128,8 +128,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 
 		SetEvent(playdata->hupdate); // 쓰기 완료
 		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
-
-
 	}
 
 	return 0;
@@ -148,7 +146,6 @@ void GameServerThreadData::CreateCommThread(void)
 
 void GameServerThreadData::reset(void) {
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].level = 1; //각종변수 초기화
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].flag.crush_on = 0;
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].speed = 1;
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
@@ -335,7 +332,6 @@ void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
 			pPlayers[i].m_gamestatus[GameClientNum].flag.space_flag = 1;
 		}
 	}
-
 }
 
 void GameServerThreadData::drop_block(int PlayerNum, float fTimeElapsed) {
@@ -587,28 +583,13 @@ void GameServerThreadData::check_line(void) {
 //	}
 //}
 
-//void GameServerThreadData::check_game_over(void) {
-//	int i;
-//
-//	int x = 5;
-//	int y = 5;
-//
-//	for (i = 1; i < BOARD_X - 2; i++) {
-//		if (m_gamestatus.board_org[CEILLING_Y][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
-//			gotoxy(x, y + 0); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤"); //게임오버 메세지 
-//			gotoxy(x, y + 1); printf("▤                              ▤");
-//			gotoxy(x, y + 2); printf("▤  +-----------------------+   ▤");
-//			gotoxy(x, y + 3); printf("▤  |  G A M E  O V E R..   |   ▤");
-//			gotoxy(x, y + 4); printf("▤  +-----------------------+   ▤");
-//			gotoxy(x, y + 5); printf("▤   YOUR SCORE: %6d         ▤", score);
-//			gotoxy(x, y + 6); printf("▤                              ▤");
-//			gotoxy(x, y + 7); printf("▤  Press any key to restart..  ▤");
-//			gotoxy(x, y + 8); printf("▤                              ▤");
-//			gotoxy(x, y + 9); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤");
-//
-//			while (kbhit()) getch();
-//			key = getch();
-//			reset();
-//		}
-//	}
-//}
+void GameServerThreadData::check_game_over(void) {
+	for (int i = 0; i < MAX_PLAYER; ++i) {
+		int GameClientNum = pPlayers[i].m_GameClientNum;
+		for (int j = 1; j < BOARD_X - 2; j++) {
+			if (pPlayers[i].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버
+				pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag = 1;
+			}
+		}
+	}
+}
