@@ -85,22 +85,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 		return 0;
 	}
 
-	//초기 게임 데이터 받기
-	retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
-	if (retval == SOCKET_ERROR)
-	{
-		err_display("recv()");
-		return 0;
-	}
-	len = ntohl(len);
-	retval = recvn(client_sock, (char*)&tempstatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
-	if (retval == SOCKET_ERROR)
-	{
-		err_display("recv()");
-		return 0;
-	}
-	playdata->m_gamestatus[playdata->m_GameClientNum] = tempstatus[playdata->m_GameClientNum];
-
 	while (1)
 	{
 		WaitForSingleObject(playdata->hcheckupdate, INFINITE);
@@ -169,10 +153,7 @@ void GameServerThreadData::reset(void) {
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].speed = 1;
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
 	}
-	system("cls"); //화면지움
 	reset_main(); // m_gamestatus.board_org를 초기화
-	//draw_map(); // 게임화면을 그림
-	//draw_main(); // 게임판을 그림
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		new_block(i); //새로운 블록을 하나 만듦
 	}
@@ -217,8 +198,8 @@ void GameServerThreadData::reset_main(void) { //게임판을 초기화
 void GameServerThreadData::reset_main_cpy(void) { //m_gamestatus.board_cpy를 초기화 
 
 	for (int i = 0; i < MAX_PLAYER; ++i) {
-		for (int j = 0; j < BOARD_Y; j++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음 
-			for (int k = 0; k < BOARD_X; k++) {  //이는 m_gamestatus.board_org와 같은 숫자가 없게 하기 위함 
+		for (int j = 0; j < BOARD_Y; j++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음
+			for (int k = 0; k < BOARD_X; k++) {  //이는 m_gamestatus.board_org와 같은 숫자가 없게 하기 위함
 				pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_cpy[j][k] = 100;
 			}
 		}
@@ -246,18 +227,6 @@ void GameServerThreadData::new_block(int ClientNum) { //새로운 블록 생성
 				pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[by + i][bx + j] = ACTIVE_BLOCK;
 		}
 	}
-	//for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
-	//	for (int j = 0; j < 4; j++) {
-	//		if (blocks[pPlayers[ClientNem].m_gamestatus[GameClientNum].b_type_next][0][i][j] == 1) {
-	//			gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-	//			printf("■");
-	//		}
-	//		else {
-	//			gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-	//			printf("  ");
-	//		}
-	//	}
-	//}
 }
 
 void GameServerThreadData::check_key() {
