@@ -53,14 +53,18 @@ void WaitScene::Paint(HDC hDC) {
 	int x = WINDOW_WIDTH / 2;
 	int y = WINDOW_HEIGHT / 2;
 
-	RECT rt = { x - 250,y - 100,x + 250,y + 100 };
+	HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
+	HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
 
-	FillRect(hDC, &rt, CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255)));
+	Rectangle(hDC, x - 250, y - 100, x + 250, y + 100);
 
 	SetBkMode(hDC, TRANSPARENT);
 	SetTextColor(hDC, RGB(rand() % 255, rand() % 255, rand() % 255));
 	TextOut(hDC, x-40, y, "W A I T I N G", 13);
 	SetTextColor(hDC, RGB(0, 0, 0));
+
+	SelectObject(hDC, oldBrush);
+	DeleteObject(myBrush);
 }
 
 void WaitScene::KeyDown(unsigned char KEYCODE)

@@ -4,10 +4,10 @@
 GameClient gameClient;
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT iMsg, WPARAM wParam, LPARAM lParam);
-DWORD WINAPI TestThread(LPVOID arg);
+DWORD WINAPI UpdateThread(LPVOID arg);
+DWORD WINAPI CallDrawMsgThread(LPVOID arg);
 
 HINSTANCE g_hinst;
-HWND hDlg;
 RECT rt;
 
 //int main() {
@@ -18,7 +18,7 @@ RECT rt;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	HWND 	hwnd;
+	HWND hwnd;
 	MSG 	msg;
 	WNDCLASSEX	WndClass;
 	g_hinst = hInstance;
@@ -42,7 +42,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	CreateThread(NULL, 0, TestThread, (LPVOID)&gameClient, 0, NULL);
+	CreateThread(NULL, 0, UpdateThread, (LPVOID)&gameClient, 0, NULL);
+	CreateThread(NULL, 0, CallDrawMsgThread, (LPVOID)&hwnd, 0, NULL);
 
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
@@ -62,7 +63,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 	switch (iMsg) {
 	case WM_CREATE:
 		GetClientRect(hWnd, &rt);
-		SetTimer(hWnd, 1, 1000 / 60, NULL);
+		//SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:
 		InvalidateRect(hWnd, &rt, FALSE);
@@ -80,14 +81,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		DeleteObject(hBitmap);
 		DeleteDC(memDC);
 		break;
-	case WM_TIMER:
-		switch (wParam)
-		{
-		case 1:
-			SendMessage(hWnd, WM_PAINT, wParam, lParam);
-			break;
-		}
-		break;
 	case WM_KEYDOWN:
 		gameClient.KeyDown(wParam);
 		break;
@@ -100,11 +93,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 }
 
 
-DWORD __stdcall TestThread(LPVOID arg)
+DWORD __stdcall UpdateThread(LPVOID arg)
 {
 	GameClient* clientMain = (GameClient*)arg;
 	while (1) {
 		clientMain->Update();
+	}
+	return 0;
+}
+
+DWORD __stdcall CallDrawMsgThread(LPVOID arg)
+{
+	HWND* hWnd = (HWND*)arg;
+	while (1) {
+		SendMessage(*hWnd, WM_PAINT, NULL, NULL);
 	}
 	return 0;
 }

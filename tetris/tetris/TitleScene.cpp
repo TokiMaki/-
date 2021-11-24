@@ -44,10 +44,13 @@ void TitleScene::Paint(HDC hDC)
 {
     int x = WINDOW_WIDTH / 4; //타이틀화면이 표시되는 x좌표
     int y = WINDOW_HEIGHT / 4; //타이틀화면이 표시되는 y좌표
-   
+
+    HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
+    HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
+
     RECT rt = { x,y,x + 250,y + 100 };
-    FillRect(hDC, &rt, CreateSolidBrush(RGB(rand()%255, rand() % 255, rand() % 255)));
-    //Rectangle(hDC, x, y, x+250, y+100);
+    //FillRect(hDC, &rt, CreateSolidBrush(RGB(rand()%255, rand() % 255, rand() % 255)));
+    Rectangle(hDC, x, y, x+250, y+100);
     SetBkMode(hDC, TRANSPARENT);
     SetTextColor(hDC, RGB(rand() % 255, rand() % 255, rand() % 255));
     TextOut(hDC, x + 20 * 5, y + 20 * 2, "T E T R I S", 11);
@@ -57,9 +60,11 @@ void TitleScene::Paint(HDC hDC)
     TextOut(hDC, x, y + 20 * 10, "◁  ▷ : Left / Right", 21);
     TextOut(hDC, x, y + 20 * 11, "  ▽   : Soft Drop", 18);
     TextOut(hDC, x, y + 20 * 12, " SPACE : Hard Drop", 18);
-    TextOut(hDC, x, y + 20 * 13, "   P   : Pause", 14);
-    TextOut(hDC, x, y + 20 * 14, "  ESC  : Quit", 13);
-    TextOut(hDC, x, y + 20 * 16, "BONUS FOR HARD DROPS / COMBOS", 29);
+    TextOut(hDC, x, y + 20 * 13, "  ESC  : Quit", 13);
+    TextOut(hDC, x, y + 20 * 15, "BONUS FOR HARD DROPS / COMBOS", 29);
+
+    SelectObject(hDC, oldBrush);
+    DeleteObject(myBrush);
 }
 
 void TitleScene::KeyDown(unsigned char KEYCODE)
