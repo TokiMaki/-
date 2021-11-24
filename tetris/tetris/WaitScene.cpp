@@ -42,76 +42,25 @@ void WaitScene::InitScene() {
 }
 
 void WaitScene::Update(float fTimeElapsed) {
-	static float WaitTimer = 0.f;
-	WaitTimer += fTimeElapsed;
-
-	int retval;
-	int len = 0;
-
-	//while (1) {
-
-	//std::cout << "Waiting";
-	for (int i = 0; i < 3; ++i) {
-		if (WaitTimer >= i * 0.5) {
-			//std::cout << ".";
-		}
-	}
-	if (WaitTimer >= 1.5) {
-		//system("cls");
-		WaitTimer = 0;
-	}
-	//std::cout << "\r";
 	WaitForSingleObject(hWaitReadEvent, INFINITE);
 	if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
 		m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
 	}
 	SetEvent(hWaitWriteEvent);
-
-	//    retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
-	//    if (retval == SOCKET_ERROR) {
-	//        err_quit("recv()");
-	//        break;
-	//    }
-	//    else if (retval == 0)
-	//        break;
-	//    len = ntohl(len);
-
-	//    retval = recvn(m_pGameClient->GetSOCKET(), (char*)&Msg, len, 0);
-	//    if (retval == SOCKET_ERROR) {
-	//        err_quit("recv()");
-	//        break;
-	//    }
-	//    else if (retval == 0)
-	//        break;
-	//    Msg = ntohl(Msg);
-	//    // printf("%d\n", Msg);
-
-	//    if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
-	//        m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
-	//        break;
-	//    }
-
-	//    Msg = 0;
-	//    int sendMsg = htonl(Msg);
-
-	//    int MSG_len = htonl(sizeof(int));
-	//    retval = send(m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
-	//    if (retval == SOCKET_ERROR) {
-	//        err_display("send()");
-	//        break;
-	//    }
-
-	//    retval = send(m_pGameClient->GetSOCKET(), (char*)&sendMsg, sizeof(int), 0);
-	//    if (retval == SOCKET_ERROR) {
-	//        err_display("send()");
-	//        break;
-	//    }
-	//}
-
 }
 
 void WaitScene::Paint(HDC hDC) {
-	Ellipse(hDC, 200, 200, 300, 300);
+	int x = WINDOW_WIDTH / 2;
+	int y = WINDOW_HEIGHT / 2;
+
+	RECT rt = { x - 250,y - 100,x + 250,y + 100 };
+
+	FillRect(hDC, &rt, CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255)));
+
+	SetBkMode(hDC, TRANSPARENT);
+	SetTextColor(hDC, RGB(rand() % 255, rand() % 255, rand() % 255));
+	TextOut(hDC, x-40, y, "W A I T I N G", 13);
+	SetTextColor(hDC, RGB(0, 0, 0));
 }
 
 void WaitScene::KeyDown(unsigned char KEYCODE)
