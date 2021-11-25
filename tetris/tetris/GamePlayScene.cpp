@@ -85,6 +85,25 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	TextOut(hDC, x + 48, y, "NEXT", 4);
 	Rectangle(hDC, x+0, y+20, x + 130, y+120);
 
+	if (m_pGameClient->m_ClientNum != -1) {
+		for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
+			for (int j = 0; j < 4; j++) {
+				if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
+					
+					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
+					//printf("■");
+					TextOut(hDC, x+23 + 20 * i, y+40 + j * 20, "■", 2);
+				}
+				else {
+					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
+					//printf("  ");
+					TextOut(hDC, x+23 + 20 * i, y+40 + 20 * j, "  ", 2);
+				}
+			}
+		}
+	}
+	
+
 	TextOut(hDC, x + 48, y+140, "ITEM", 4);
 	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
 }
@@ -144,25 +163,6 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 						break;
 					}
 				}
-			}
-		}
-	}
-	for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
-		for (int j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-				//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				//printf("■");
-			}
-			else {
-				//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				//printf("  ");
-			}
-		}
-	}
-	for (int i = 0; i < MAX_PLAYER; ++i) {
-		for (int j = 0; j < BOARD_Y; j++) { //게임판을 그린 후 m_gamestatus[m_pGameClient->m_ClientNum].board_cpy에 복사
-			for (int k = 0; k < BOARD_X; k++) {
-				m_gamestatus[i].board_cpy[j][k] = m_gamestatus[i].board_org[j][k];
 			}
 		}
 	}
