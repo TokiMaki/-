@@ -24,19 +24,19 @@ void GamePlayScene::Update(float fTimeElapsed) {
 	SetEvent(hWriteEvent);
 }
 
-void GamePlayScene::reset(void) {
-	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
-	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
-	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
-
-	system("cls"); //화면지움
-	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org를 초기화
-	draw_map(); // 게임화면을 그림
-	draw_main(); // 게임판을 그림
-
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
-	new_block(); //새로운 블록을 하나 만듦
-}
+//void GamePlayScene::reset(void) {
+//	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
+//	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
+//	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
+//
+//	system("cls"); //화면지움
+//	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org를 초기화
+//	draw_map(); // 게임화면을 그림
+//	draw_main(); // 게임판을 그림
+//
+//	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
+//	new_block(); //새로운 블록을 하나 만듦
+//}
 
 void GamePlayScene::reset_main(void) { //게임판을 초기화
 
@@ -252,32 +252,6 @@ void GamePlayScene::check_key() {
 	}
 }
 
-void GamePlayScene::check_game_over(void) {
-	int i;
-
-	int x = 5;
-	int y = 5;
-
-	for (i = 1; i < BOARD_X - 2; i++) {
-		if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
-			gotoxy(x, y + 0); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤"); //게임오버 메세지
-			gotoxy(x, y + 1); printf("▤                              ▤");
-			gotoxy(x, y + 2); printf("▤  +-----------------------+   ▤");
-			gotoxy(x, y + 3); printf("▤  |  G A M E  O V E R..   |   ▤");
-			gotoxy(x, y + 4); printf("▤  +-----------------------+   ▤");
-			gotoxy(x, y + 5); printf("▤   YOUR SCORE: %6d         ▤", score);
-			gotoxy(x, y + 6); printf("▤                              ▤");
-			gotoxy(x, y + 7); printf("▤  Press any key to restart..  ▤");
-			gotoxy(x, y + 8); printf("▤                              ▤");
-			gotoxy(x, y + 9); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤");
-
-			while (kbhit()) getch();
-			key = getch();
-			reset();
-		}
-	}
-}
-
 void GamePlayScene::InitScene() {
 	srand((unsigned)time(NULL)); //난수표생성
 	// reset(); //게임판 리셋
@@ -351,20 +325,3 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	}
 	return 0;
 }
-
-//void GamePlayScene::PlaySceneSend() {
-//	int retval;
-//	int len = 0;
-//	int Msg = 0;
-//
-//	int MSG_len = htonl(sizeof(KeyInput));
-//
-//	retval = send(m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
-//	if (retval == SOCKET_ERROR) {
-//		err_display("send()");
-//	}
-//	retval = send(m_pGameClient->GetSOCKET(), (char*)&m_keys, sizeof(KeyInput), 0);
-//	if (retval == SOCKET_ERROR) {
-//		err_display("send()");
-//	}
-//}

@@ -39,17 +39,20 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//printf("Call GameThread\n");
 		newRoomData.m_GameTimer.Tick();
 		newRoomData.check_key();
-		newRoomData.KeyUpdate(newRoomData.m_GameTimer.GetTimeElapsed());
-		newRoomData.copy_another_map();
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
-			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
-				newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
-			newRoomData.check_game_over(GameClientNum);
-			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1)
-				// 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
-				newRoomData.new_block(GameClientNum);
+			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0) {
+				newRoomData.KeyUpdate(GameClientNum, newRoomData.m_GameTimer.GetTimeElapsed());
+				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
+					newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
+				newRoomData.check_game_over(GameClientNum);
+				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1)
+					// 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
+					newRoomData.new_block(GameClientNum);
+			}
+
 		}
+		newRoomData.copy_another_map();
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
 		SetEvent(newRoomData.hcheckupdate);
@@ -262,77 +265,75 @@ void GameServerThreadData::check_key() {
 	}
 }
 
-void GameServerThreadData::KeyUpdate(float fTimeElapsed) {
-	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClientNum;
-		int by = pPlayers[i].m_gamestatus[GameClientNum].by;
-		int bx = pPlayers[i].m_gamestatus[GameClientNum].bx;
-		int b_rotation = pPlayers[i].m_gamestatus[GameClientNum].b_rotation;
-		pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime += fTimeElapsed;
+void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
+	int GameClientNum = pPlayers[clientNum].m_GameClientNum;
+	int by = pPlayers[clientNum].m_gamestatus[GameClientNum].by;
+	int bx = pPlayers[clientNum].m_gamestatus[GameClientNum].bx;
+	int b_rotation = pPlayers[clientNum].m_gamestatus[GameClientNum].b_rotation;
+	pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime += fTimeElapsed;
 
-		if (pPlayers[i].m_keys.left == true && pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag == false) {
-			if (check_crush(i, bx - 1, by, b_rotation) == true) {
-				move_block(i, LEFT);
-				pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag = true;
-				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
-				pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
-			}
+	if (pPlayers[clientNum].m_keys.left == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.left_flag == false) {
+		if (check_crush(clientNum, bx - 1, by, b_rotation) == true) {
+			move_block(clientNum, LEFT);
+			pPlayers[clientNum].m_gamestatus[GameClientNum].flag.left_flag = true;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 		}
-		if (pPlayers[i].m_keys.right == true && pPlayers[i].m_gamestatus[GameClientNum].flag.right_flag == false) {
-			if (check_crush(i, bx + 1, by, b_rotation) == true) {
-				move_block(i, RIGHT);
-				pPlayers[i].m_gamestatus[GameClientNum].flag.right_flag = true;
-				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
-				pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
-			}
+	}
+	if (pPlayers[clientNum].m_keys.right == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.right_flag == false) {
+		if (check_crush(clientNum, bx + 1, by, b_rotation) == true) {
+			move_block(clientNum, RIGHT);
+			pPlayers[clientNum].m_gamestatus[GameClientNum].flag.right_flag = true;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 		}
-		if (pPlayers[i].m_keys.down == true && pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == false) {
-			if (check_crush(i, bx, by + 1, b_rotation) == true) {
-				drop_block(i, 100);
-				pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag = true;
-				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
-				pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
-			}
+	}
+	if (pPlayers[clientNum].m_keys.down == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.down_flag == false) {
+		if (check_crush(clientNum, bx, by + 1, b_rotation) == true) {
+			drop_block(clientNum, 100);
+			pPlayers[clientNum].m_gamestatus[GameClientNum].flag.down_flag = true;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.2f;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 		}
-		if (pPlayers[i].m_keys.up == true && pPlayers[i].m_gamestatus[GameClientNum].flag.up_flag == false) {
-			if (check_crush(i, bx, by, (b_rotation + 1) % 4) == true) {
-				move_block(i, UP);
-			}
-			//회전할 수 있는지 체크 후 가능하면 회전
-			else if (pPlayers[i].m_gamestatus[GameClientNum].flag.crush_on == true &&
-				check_crush(i, bx, by - 1, (b_rotation + 1) % 4) == true)
-				move_block(i, 100);
-			//바닥에 닿은 경우 위쪽으로 한칸띄워서 회전이 가능하면 그렇게 함(특수동작)
-			pPlayers[i].m_gamestatus[GameClientNum].flag.up_flag = true;
+	}
+	if (pPlayers[clientNum].m_keys.up == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.up_flag == false) {
+		if (check_crush(clientNum, bx, by, (b_rotation + 1) % 4) == true) {
+			move_block(clientNum, UP);
 		}
+		//회전할 수 있는지 체크 후 가능하면 회전
+		else if (pPlayers[clientNum].m_gamestatus[GameClientNum].flag.crush_on == true &&
+			check_crush(clientNum, bx, by - 1, (b_rotation + 1) % 4) == true)
+			move_block(clientNum, 100);
+		//바닥에 닿은 경우 위쪽으로 한칸띄워서 회전이 가능하면 그렇게 함(특수동작)
+		pPlayers[clientNum].m_gamestatus[GameClientNum].flag.up_flag = true;
+	}
 
-		if (pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime >= pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed) {
-			if (pPlayers[i].m_keys.left == true && pPlayers[i].m_gamestatus[GameClientNum].flag.left_flag == 1) {
-				if (check_crush(i, bx - 1, by, b_rotation) == true) {
-					move_block(i, LEFT);
-					pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
-					pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
-				}
-			}
-			if (pPlayers[i].m_keys.right == true && pPlayers[i].m_gamestatus[GameClientNum].flag.right_flag == 1) {
-				if (check_crush(i, bx + 1, by, b_rotation) == true) {
-					move_block(i, RIGHT);
-					pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
-					pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
-				}
-			}
-			if (pPlayers[i].m_keys.down == true && pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 1) {
-				drop_block(i, 100);
-				std::cout << "아래 꾹 누르는중\n" << std::endl;
-				pPlayers[i].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
-				pPlayers[i].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
+	if (pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime >= pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed) {
+		if (pPlayers[clientNum].m_keys.left == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.left_flag == 1) {
+			if (check_crush(clientNum, bx - 1, by, b_rotation) == true) {
+				move_block(clientNum, LEFT);
+				pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
+				pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 			}
 		}
+		if (pPlayers[clientNum].m_keys.right == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.right_flag == 1) {
+			if (check_crush(clientNum, bx + 1, by, b_rotation) == true) {
+				move_block(clientNum, RIGHT);
+				pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
+				pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
+			}
+		}
+		if (pPlayers[clientNum].m_keys.down == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.down_flag == 1) {
+			drop_block(clientNum, 100);
+			std::cout << "아래 꾹 누르는중\n" << std::endl;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
+			pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
+		}
+	}
 
-		if (pPlayers[i].m_keys.space == true && pPlayers[i].m_gamestatus[GameClientNum].flag.space_flag == 0) {
-			hard_drop_block(i);
-			pPlayers[i].m_gamestatus[GameClientNum].flag.space_flag = 1;
-		}
+	if (pPlayers[clientNum].m_keys.space == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.space_flag == 0) {
+		hard_drop_block(clientNum);
+		pPlayers[clientNum].m_gamestatus[GameClientNum].flag.space_flag = 1;
 	}
 }
 
