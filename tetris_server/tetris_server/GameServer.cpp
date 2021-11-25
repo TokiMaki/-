@@ -42,11 +42,13 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newRoomData.KeyUpdate(newRoomData.m_GameTimer.GetTimeElapsed());
 		newRoomData.copy_another_map();
 		for (int i = 0; i < MAX_PLAYER; ++i) {
-			if (newRoomData.pPlayers[i].m_gamestatus[newRoomData.pPlayers[i].m_GameClientNum].flag.down_flag == 0)
+			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
+			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
 				newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
-			if (newRoomData.pPlayers[i].m_gamestatus[newRoomData.pPlayers[i].m_GameClientNum].flag.new_block_on == 1)
+			newRoomData.check_game_over(GameClientNum);
+			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1)
 				// 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
-				newRoomData.new_block(newRoomData.pPlayers[i].m_GameClientNum);
+				newRoomData.new_block(GameClientNum);
 		}
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
@@ -583,13 +585,11 @@ void GameServerThreadData::check_line(void) {
 //	}
 //}
 
-void GameServerThreadData::check_game_over(void) {
-	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClientNum;
-		for (int j = 1; j < BOARD_X - 2; j++) {
-			if (pPlayers[i].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버
-				pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag = 1;
-			}
+void GameServerThreadData::check_game_over(int ClinentNum) {
+	int GameClientNum = pPlayers[ClinentNum].m_GameClientNum;
+	for (int j = 1; j < BOARD_X - 2; j++) {
+		if (pPlayers[ClinentNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버
+			pPlayers[ClinentNum].m_gamestatus[GameClientNum].flag.gameover_flag = 1;
 		}
 	}
 }
