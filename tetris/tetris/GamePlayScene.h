@@ -23,7 +23,7 @@ public:
     void reset_main();
     void reset_main_cpy();
     void new_block();
-    void draw_map();
+    void draw_map(HDC hDC);
     void draw_main(HDC hDC);
     void check_key();
     void check_game_over(void);

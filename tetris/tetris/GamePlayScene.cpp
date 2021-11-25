@@ -28,6 +28,7 @@ void GamePlayScene::Paint(HDC hDC)
 	SetBkMode(hDC, TRANSPARENT);
 	SetTextColor(hDC, RGB(0, 0, 0));
 	draw_main(hDC);
+	draw_map(hDC);
 }
 
 void GamePlayScene::KeyDown(unsigned char KEYCODE)
@@ -77,24 +78,15 @@ void GamePlayScene::reset_main_cpy(void) { //m_gamestatus[m_pGameClient->m_Clien
 	}
 }
 
-void GamePlayScene::draw_map(void) { //게임 상태 표시를 나타내는 함수  
-	int y = 3;           // m_gamestatus[m_pGameClient->m_ClientNum].level, goal, score만 게임중에 값이 바뀔수 도 있음 그 y값을 따로 저장해둠 
-						 // 그래서 혹시 게임 상태 표시 위치가 바뀌어도 그 함수에서 안바꿔도 되게
-	// gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL = y); printf(" LEVEL : %5d", m_gamestatus[m_pGameClient->m_ClientNum].level);
-	// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL = y + 1); printf(" GOAL  : %5d", 10 - cnt);
-	gotoxy(STATUS_X_ADJ, y + 2); printf("┌    NEXT    ┐");
-	gotoxy(STATUS_X_ADJ, y + 3); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 4); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 5); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 6); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 7); printf("└────────────┘");
-	gotoxy(STATUS_X_ADJ, y + 9); printf("┌    ITEM    ┐");
-	gotoxy(STATUS_X_ADJ, y + 10); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 11); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 12); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 13); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 14); printf("└────────────┘");
-	
+void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
+	int x = 360;
+	int y = 130;
+
+	TextOut(hDC, x + 48, y, "NEXT", 4);
+	Rectangle(hDC, x+0, y+20, x + 130, y+120);
+
+	TextOut(hDC, x + 48, y+140, "ITEM", 4);
+	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
 }
 
 void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
