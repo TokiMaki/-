@@ -251,32 +251,6 @@ void GamePlayScene::check_key() {
 	}
 }
 
-void GamePlayScene::check_game_over(void) {
-	int i;
-
-	int x = 5;
-	int y = 5;
-
-	for (i = 1; i < BOARD_X - 2; i++) {
-		if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][i] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버 
-			gotoxy(x, y + 0); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤"); //게임오버 메세지
-			gotoxy(x, y + 1); printf("▤                              ▤");
-			gotoxy(x, y + 2); printf("▤  +-----------------------+   ▤");
-			gotoxy(x, y + 3); printf("▤  |  G A M E  O V E R..   |   ▤");
-			gotoxy(x, y + 4); printf("▤  +-----------------------+   ▤");
-			gotoxy(x, y + 5); printf("▤   YOUR SCORE: %6d         ▤", score);
-			gotoxy(x, y + 6); printf("▤                              ▤");
-			gotoxy(x, y + 7); printf("▤  Press any key to restart..  ▤");
-			gotoxy(x, y + 8); printf("▤                              ▤");
-			gotoxy(x, y + 9); printf("▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤");
-
-			while (kbhit()) getch();
-			key = getch();
-			reset();
-		}
-	}
-}
-
 void GamePlayScene::InitScene() {
 	srand((unsigned)time(NULL)); //난수표생성
 	// reset(); //게임판 리셋
