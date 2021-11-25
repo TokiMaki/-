@@ -40,6 +40,7 @@ struct GameServerThreadData
     void copy_another_map(void);
     //void check_level_up(void);
     void check_game_over(int ClientNum);
+    void active_item(void);
 
     int blocks[7][4][4][4] = {
     {{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭

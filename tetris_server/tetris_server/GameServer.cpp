@@ -594,3 +594,28 @@ void GameServerThreadData::check_game_over(int ClinentNum) {
 		}
 	}
 }
+
+void GameServerThreadData::active_item(void)
+{
+	for (int i = 0; i < MAX_PLAYER; ++i)
+	{
+		int item_block = pPlayers[i].m_gamestatus->item;
+
+		switch (item_block)
+		{
+		case 0:
+			//키 반전
+			pPlayers[pPlayers[i].m_gamestatus->target];
+			break;
+		case 1:
+			//상대 스피드 업
+			pPlayers[pPlayers[i].m_gamestatus->target].m_gamestatus->speed = 0.5;
+			break;
+		case 2:
+			//블록 종류 변경
+			break;
+		default:
+			break;
+		}
+	}
+}
