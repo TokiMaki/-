@@ -14,13 +14,12 @@ WaitScene::WaitScene(SceneNum num, GameClient* const pGameClient) {
 WaitScene::~WaitScene() {}
 
 void WaitScene::InitScene() {
-	system("cls");
-
 	int retval;
 
 	// 윈속 초기화
-	if (m_pGameClient->InitWSA() != true)
-		exit(1);
+	if (m_pGameClient->InitWSA() != true) {
+		err_quit("INIT ERR!");
+	}
 
 	// socket()
 	m_pGameClient->SetSOCKET(socket(AF_INET, SOCK_STREAM, 0));
@@ -96,7 +95,6 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 		else if (retval == 0)
 			break;
 		pWaitScene->Msg = ntohl(pWaitScene->Msg);
-		printf("%d\n", pWaitScene->Msg);
 
 		if (pWaitScene->Msg == MSG_MatchMaking::Msg_PlayInGame) {
 			SetEvent(hWaitReadEvent);
@@ -108,13 +106,13 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 		int MSG_len = htonl(sizeof(int));
 		retval = send(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("send()");
+			err_quit("send()");
 			break;
 		}
 
 		retval = send(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&sendMsg, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("send()");
+			err_quit("send()");
 			break;
 		}
 		SetEvent(hWaitReadEvent);
