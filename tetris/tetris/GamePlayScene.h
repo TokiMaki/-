@@ -17,7 +17,7 @@ public:
 
     void Paint(HDC hDC) override;
     void KeyDown(unsigned char KEYCODE) override;
-
+    void KeyUp(unsigned char KEYCODE) override;
 
     void reset();
     void reset_main();
