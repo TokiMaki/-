@@ -33,6 +33,64 @@ void GamePlayScene::Paint(HDC hDC)
 
 void GamePlayScene::KeyDown(unsigned char KEYCODE)
 {
+	switch (KEYCODE) {
+	case VK_LEFT:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.left = true;
+		}
+		break;
+	case VK_RIGHT:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.right = true;
+		}
+		break;
+	case VK_UP:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.up = true;
+		}
+		break;
+	case VK_DOWN:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.down = true;
+		}
+		break;
+	case VK_SPACE:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.space = true;
+		}
+		break;
+	case VK_F4:
+		closesocket(m_pGameClient->GetSOCKET());
+		WSACleanup();
+		exit(0);
+		break;
+	}
+}
+
+void GamePlayScene::KeyUp(unsigned char KEYCODE)
+{
+	switch (KEYCODE) {
+	case VK_LEFT:
+		m_keys.left = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.left_flag = false;
+		break;
+	case VK_RIGHT:
+		m_keys.right = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.right_flag = false;
+		break;
+	case VK_UP:
+		m_keys.up = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.up_flag = false;
+		break;
+	case VK_DOWN:
+		m_keys.down = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
+		break;
+	case VK_SPACE:
+		m_keys.space = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
+		break;
+	}
 }
 
 void GamePlayScene::reset(void) {
@@ -199,56 +257,7 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 }
 
 void GamePlayScene::check_key() {
-	// 왼쪽키 트리거
-	if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
-		if (GetAsyncKeyState(VK_LEFT)) {
-			m_keys.left = true;
-		}
-		else {
-			m_keys.left = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.left_flag = false;
-		}
-
-		// 오른쪽키 트리거
-		if (GetAsyncKeyState(VK_RIGHT)) {
-			m_keys.right = true;
-		}
-		else {
-			m_keys.right = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.right_flag = false;
-		}
-
-		// 아래키 트리거
-		if (GetAsyncKeyState(VK_DOWN)) {
-			m_keys.down = true;
-		}
-		else {
-			m_keys.down = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
-		}
-
-		// 위키 트리거
-		if (GetAsyncKeyState(VK_UP)) {
-			m_keys.up = true;
-		}
-		else {
-			m_keys.up = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.up_flag = false;
-		}
-
-		// 스페이스키 트리거
-		if (GetAsyncKeyState(VK_SPACE)) {
-			m_keys.space = true;
-		}
-		else {
-			m_keys.space = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
-		}
-		if (GetAsyncKeyState(VK_ESCAPE)) {
-			system("cls"); //화면을 지우고 
-			exit(0); //게임종료 
-		}
-	}
+	
 }
 
 void GamePlayScene::InitScene() {

@@ -70,6 +70,10 @@ void WaitScene::KeyDown(unsigned char KEYCODE)
 {
 }
 
+void WaitScene::KeyUp(unsigned char KEYCODE)
+{
+}
+
 DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 {
 	int retval;
