@@ -15,12 +15,16 @@ public:
 
     void Update(float fTimeElapsed) override;
 
-    //void reset();
+    void Paint(HDC hDC) override;
+    void KeyDown(unsigned char KEYCODE) override;
+
+
+    void reset();
     void reset_main();
     void reset_main_cpy();
     void new_block();
-    void draw_map();
-    void draw_main();
+    void draw_map(HDC hDC);
+    void draw_main(HDC hDC);
     void check_key();
     //void check_game_over(void);
 

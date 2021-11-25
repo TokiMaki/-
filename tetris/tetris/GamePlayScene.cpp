@@ -20,23 +20,34 @@ void GamePlayScene::Update(float fTimeElapsed) {
 	//	// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
 	//	// 조금더 충분히 생각해 보고 추가하거나 아예 삭제하는 쪽으로 할 예정
 	//};
-	draw_main(); //화면을 그림
 	SetEvent(hWriteEvent);
 }
 
-//void GamePlayScene::reset(void) {
-//	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
-//	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
-//	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
-//
-//	system("cls"); //화면지움
-//	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org를 초기화
-//	draw_map(); // 게임화면을 그림
-//	draw_main(); // 게임판을 그림
-//
-//	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
-//	new_block(); //새로운 블록을 하나 만듦
-//}
+void GamePlayScene::Paint(HDC hDC)
+{
+	SetBkMode(hDC, TRANSPARENT);
+	SetTextColor(hDC, RGB(0, 0, 0));
+	draw_main(hDC);
+	draw_map(hDC);
+}
+
+void GamePlayScene::KeyDown(unsigned char KEYCODE)
+{
+}
+
+void GamePlayScene::reset(void) {
+	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
+	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
+	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
+
+	//system("cls"); //화면지움
+	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org를 초기화
+	//draw_map(); // 게임화면을 그림
+	//draw_main(); // 게임판을 그림
+
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
+	new_block(); //새로운 블록을 하나 만듦
+}
 
 void GamePlayScene::reset_main(void) { //게임판을 초기화
 
@@ -67,27 +78,37 @@ void GamePlayScene::reset_main_cpy(void) { //m_gamestatus[m_pGameClient->m_Clien
 	}
 }
 
-void GamePlayScene::draw_map(void) { //게임 상태 표시를 나타내는 함수  
-	int y = 3;           // m_gamestatus[m_pGameClient->m_ClientNum].level, goal, score만 게임중에 값이 바뀔수 도 있음 그 y값을 따로 저장해둠 
-						 // 그래서 혹시 게임 상태 표시 위치가 바뀌어도 그 함수에서 안바꿔도 되게
-	// gotoxy(STATUS_X_ADJ, STATUS_Y_LEVEL = y); printf(" LEVEL : %5d", m_gamestatus[m_pGameClient->m_ClientNum].level);
-	// gotoxy(STATUS_X_ADJ, STATUS_Y_GOAL = y + 1); printf(" GOAL  : %5d", 10 - cnt);
-	gotoxy(STATUS_X_ADJ, y + 2); printf("┌    NEXT    ┐");
-	gotoxy(STATUS_X_ADJ, y + 3); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 4); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 5); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 6); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 7); printf("└────────────┘");
-	gotoxy(STATUS_X_ADJ, y + 9); printf("┌    ITEM    ┐");
-	gotoxy(STATUS_X_ADJ, y + 10); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 11); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 12); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 13); printf("│            │");
-	gotoxy(STATUS_X_ADJ, y + 14); printf("└────────────┘");
+void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
+	int x = 360;
+	int y = 130;
+
+	TextOut(hDC, x + 48, y, "NEXT", 4);
+	Rectangle(hDC, x+0, y+20, x + 130, y+120);
+
+	if (m_pGameClient->m_ClientNum != -1) {
+		for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
+			for (int j = 0; j < 4; j++) {
+				if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
+					
+					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
+					//printf("■");
+					TextOut(hDC, x+23 + 20 * i, y+40 + j * 20, "■", 2);
+				}
+				else {
+					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
+					//printf("  ");
+					TextOut(hDC, x+23 + 20 * i, y+40 + 20 * j, "  ", 2);
+				}
+			}
+		}
+	}
 	
+
+	TextOut(hDC, x + 48, y+140, "ITEM", 4);
+	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
 }
 
-void GamePlayScene::draw_main(void) { //게임판 그리는 함수
+void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 
@@ -101,69 +122,47 @@ void GamePlayScene::draw_main(void) { //게임판 그리는 함수
 		for (int j = 0; j < BOARD_Y; j++) {
 			for (int k = 0; k < BOARD_X; k++) {
 				if (i == m_pGameClient->m_ClientNum) {
-					if (m_gamestatus[i].board_cpy[j][k] != m_gamestatus[i].board_org[j][k]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
-						//이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
-						gotoxy(BOARD_X_ADJ + k, BOARD_Y_ADJ + j);
-						switch (m_gamestatus[m_pGameClient->m_ClientNum].board_org[j][k]) {
-						case EMPTY: //빈칸모양 
-							printf("  ");
-							break;
-						case CEILLING: //천장모양 
-							printf(". ");
-							break;
-						case WALL: //벽모양 
-							printf("▩");
-							break;
-						case INACTIVE_BLOCK: //굳은 블럭 모양  
-							printf("□");
-							break;
-						case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-							printf("■");
-							break;
-						}
+					int x = BOARD_X_ADJ + k;
+					int y = BOARD_Y_ADJ + j;
+					switch (m_gamestatus[m_pGameClient->m_ClientNum].board_org[j][k]) {
+					case EMPTY: //빈칸모양 
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
+						break;
+					case CEILLING: //천장모양 
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
+						break;
+					case WALL: //벽모양 
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
+						break;
+					case INACTIVE_BLOCK: //굳은 블럭 모양  
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "□", 2);
+						break;
+					case ACTIVE_BLOCK: //움직이고있는 블럭 모양
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "■", 2);
+						break;
 					}
 				}
-				else if (m_gamestatus[i].board_cpy[j][k] != m_gamestatus[i].board_org[j][k]) { //cpy랑 비교해서 값이 달라진 부분만 새로 그려줌.
-						//이게 없으면 게임판전체를 계속 그려서 느려지고 반짝거림
-						gotoxy(BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + k, BOARD_Y_ADJ + j);
-						switch (m_gamestatus[i].board_org[j][k]) {
-						case EMPTY: //빈칸모양 
-							printf("  ");
-							break;
-						case CEILLING: //천장모양 
-							printf(". ");
-							break;
-						case WALL: //벽모양 
-							printf("▩");
-							break;
-						case INACTIVE_BLOCK: //굳은 블럭 모양  
-							printf("□");
-							break;
-						case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-							printf("■");
-							break;
-						}
+				else{
+					int x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + k;
+					int y = BOARD_Y_ADJ + j;
+					switch (m_gamestatus[i].board_org[j][k]) {
+					case EMPTY: //빈칸모양 
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
+						break;
+					case CEILLING: //천장모양 
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
+						break;
+					case WALL: //벽모양 
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
+						break;
+					case INACTIVE_BLOCK: //굳은 블럭 모양  
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "□", 2);
+						break;
+					case ACTIVE_BLOCK: //움직이고있는 블럭 모양
+						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "■", 2);
+						break;
 					}
-				
-			}
-		}
-	}
-	for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
-		for (int j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("■");
-			}
-			else {
-				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("  ");
-			}
-		}
-	}
-	for (int i = 0; i < MAX_PLAYER; ++i) {
-		for (int j = 0; j < BOARD_Y; j++) { //게임판을 그린 후 m_gamestatus[m_pGameClient->m_ClientNum].board_cpy에 복사
-			for (int k = 0; k < BOARD_X; k++) {
-				m_gamestatus[i].board_cpy[j][k] = m_gamestatus[i].board_org[j][k];
+				}
 			}
 		}
 	}
@@ -262,12 +261,12 @@ void GamePlayScene::InitScene() {
 	// 내가 몇번인지 확인
 	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
+		err_quit("번호");
 	}
 	len = ntohl(len);
 	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&m_pGameClient->m_ClientNum, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
-		err_display("recv()");
+		err_quit("번호");
 	}
 
 	// 이벤트 생성
@@ -280,11 +279,12 @@ void GamePlayScene::InitScene() {
 		exit(1);
 	}
 
-	setcursortype(NOCURSOR); //커서 없앰
-	draw_map(); // 게임화면을 그림
+	//setcursortype(NOCURSOR); //커서 없앰
+	//draw_map(); // 게임화면을 그림
 
 	CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
+
 
 DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	int retval;
@@ -298,13 +298,13 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 		len = 0;
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+			err_quit("status");
 			break;
 		}
 		len = ntohl(len);
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&pGamePlayScene->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+			err_quit("status");
 			break;
 		}
 
@@ -312,12 +312,12 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 		len = htonl(sizeof(KeyInput));
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("send()");
+			err_quit("send()");
 			break;
 		}
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&keys, sizeof(KeyInput), 0);
 		if (retval == SOCKET_ERROR) {
-			err_display("send()");
+			err_quit("send()");
 			break;
 		}
 

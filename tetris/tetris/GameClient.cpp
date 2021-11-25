@@ -45,7 +45,6 @@ void GameClient::BuildScene() {
 }
 
 void GameClient::ChangeScene(Scene::SceneNum tag) {
-    system("cls"); //화면지움
     m_pScene = m_arrScene[tag];
     m_pScene->InitScene();
 }
@@ -53,6 +52,15 @@ void GameClient::ChangeScene(Scene::SceneNum tag) {
 void GameClient::Update() {
     m_GameTimer.Tick(60.0f);
     m_pScene->Update(m_GameTimer.GetTimeElapsed());
+}
+
+void GameClient::Paint(HDC hDC) {
+    m_pScene->Paint(hDC);
+}
+
+void GameClient::KeyDown(unsigned char KEYCODE)
+{
+    m_pScene->KeyDown(KEYCODE);
 }
 
 void GameClient::SetSOCKET(SOCKET arg)

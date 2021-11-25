@@ -3,8 +3,9 @@
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "ws2_32")
 
-#include<winsock2.h>
+#define _WINSOCKAPI_
 #include<windows.h>
+#include<winsock2.h>
 #include<stdlib.h>
 #include<stdio.h>
 #include<conio.h>
@@ -15,6 +16,9 @@
 
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
+
+#define WINDOW_WIDTH 1280
+#define WINDOW_HEIGHT 720
 
 #define LEFT 75 //좌로 이동    //키보드값들 
 #define RIGHT 77 //우로 이동 
