@@ -11,6 +11,7 @@ TitleScene::TitleScene(SceneNum num, GameClient* const pGameClient) {
 TitleScene::~TitleScene() {}
 
 void TitleScene::Update(float fTimeElapsed) {
+
 }
 
 void TitleScene::Paint(HDC hDC)

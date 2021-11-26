@@ -19,7 +19,7 @@ RECT rt;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	HWND hwnd;
-	MSG 	msg;
+	MSG msg;
 	WNDCLASSEX	WndClass;
 	g_hinst = hInstance;
 	WndClass.cbSize = sizeof(WNDCLASSEX);
@@ -66,7 +66,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		//SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:
-		InvalidateRect(hWnd, &rt, FALSE);
+		// InvalidateRect(hWnd, &rt, FALSE);
 		hDC = BeginPaint(hWnd, &ps);
 		memDC = CreateCompatibleDC(hDC);
 
@@ -109,7 +109,7 @@ DWORD __stdcall CallDrawMsgThread(LPVOID arg)
 {
 	HWND* hWnd = (HWND*)arg;
 	while (1) {
-		SendMessage(*hWnd, WM_PAINT, NULL, NULL);
+		InvalidateRect(*hWnd, NULL, FALSE);
 	}
 	return 0;
 }

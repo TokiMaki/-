@@ -37,7 +37,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
 		//printf("Call GameThread\n");
-		newRoomData.m_GameTimer.Tick();
+		newRoomData.m_GameTimer.Tick(60.0f);
 		newRoomData.check_key();
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
@@ -46,7 +46,8 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
 					newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
 				newRoomData.check_game_over(GameClientNum);
-				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1)
+				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1
+					&& newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0)
 					// 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
 					newRoomData.new_block(GameClientNum);
 			}
@@ -325,7 +326,6 @@ void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
 		}
 		if (pPlayers[clientNum].m_keys.down == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.down_flag == 1) {
 			drop_block(clientNum, 100);
-			std::cout << "아래 꾹 누르는중\n" << std::endl;
 			pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
 			pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 		}
