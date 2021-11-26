@@ -605,14 +605,15 @@ void GameServerThreadData::active_item(void)
 		{
 		case 0:
 			//키 반전
-			pPlayers[pPlayers[i].m_gamestatus->target];
+			//pPlayers[pPlayers[i].m_gamestatus->target];
 			break;
 		case 1:
 			//상대 스피드 업
 			pPlayers[pPlayers[i].m_gamestatus->target].m_gamestatus->speed = 0.5;
 			break;
 		case 2:
-			//블록 종류 변경
+			//현재 내려오는 블록 종류 변경
+			pPlayers[pPlayers[i].m_gamestatus->target].m_gamestatus->b_type = rand() % 7;
 			break;
 		default:
 			break;
