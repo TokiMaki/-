@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	CreateThread(NULL, 0, UpdateThread, (LPVOID)&gameClient, 0, NULL);
+	//CreateThread(NULL, 0, UpdateThread, (LPVOID)&gameClient, 0, NULL);
 	CreateThread(NULL, 0, CallDrawMsgThread, (LPVOID)&hwnd, 0, NULL);
 
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -66,7 +66,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		//SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:
-		// InvalidateRect(hWnd, &rt, FALSE);
+		InvalidateRect(hWnd, &rt, FALSE);
 		hDC = BeginPaint(hWnd, &ps);
 		memDC = CreateCompatibleDC(hDC);
 
@@ -91,6 +91,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		PostQuitMessage(0);
 		break;
 	}
+
 	
 	return(DefWindowProc(hWnd, iMsg, wParam, lParam));
 }
@@ -100,16 +101,18 @@ DWORD __stdcall UpdateThread(LPVOID arg)
 {
 	GameClient* clientMain = (GameClient*)arg;
 	while (1) {
-		clientMain->Update();
+		gameClient.Update();
 	}
 	return 0;
 }
 
 DWORD __stdcall CallDrawMsgThread(LPVOID arg)
 {
+	CGameTimer DrawTimer;
+	DrawTimer.Start();
 	HWND* hWnd = (HWND*)arg;
 	while (1) {
-		InvalidateRect(*hWnd, NULL, FALSE);
+		SendMessage(*hWnd, WM_PAINT, NULL, NULL);
 	}
 	return 0;
 }

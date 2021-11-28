@@ -37,15 +37,17 @@ void WaitScene::InitScene() {
 		exit(1);
 	}
 
-	CreateThread(NULL, 0, TestThread, (LPVOID)this, 0, NULL);
+	hThread = CreateThread(NULL, 0, TestThread, (LPVOID)this, 0, NULL);
 }
 
 void WaitScene::Update(float fTimeElapsed) {
-	WaitForSingleObject(hWaitReadEvent, INFINITE);
-	if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
-		m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
-	}
-	SetEvent(hWaitWriteEvent);
+	//WaitForSingleObject(hWaitReadEvent, INFINITE);
+	//if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
+	//	CloseHandle(hWaitReadEvent);
+	//	CloseHandle(hWaitWriteEvent);
+	//	m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+	//}
+	//SetEvent(hWaitWriteEvent);
 }
 
 void WaitScene::Paint(HDC hDC) {
@@ -81,7 +83,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 	WaitScene* pWaitScene = (WaitScene*)arg;
 
 	while (1) {
-		WaitForSingleObject(hWaitWriteEvent, INFINITE);
+		//WaitForSingleObject(hWaitWriteEvent, INFINITE);
 		retval = recvn(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("recv()");
@@ -101,6 +103,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 		pWaitScene->Msg = ntohl(pWaitScene->Msg);
 
 		if (pWaitScene->Msg == MSG_MatchMaking::Msg_PlayInGame) {
+			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
 			SetEvent(hWaitReadEvent);
 			break;
 		}
@@ -119,8 +122,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 			err_quit("send()");
 			break;
 		}
-		SetEvent(hWaitReadEvent);
+		//SetEvent(hWaitReadEvent);
 	}
 	return 0;
 }
-

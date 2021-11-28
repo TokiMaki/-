@@ -260,10 +260,6 @@ void GameServerThreadData::check_key() {
 			pPlayers[i].m_gamestatus[GameClientNum].flag.space_flag = false;
 		}
 	}
-	if (GetAsyncKeyState(VK_ESCAPE)) {
-		system("cls"); //화면을 지우고 
-		exit(0); //게임종료 
-	}
 }
 
 void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {

@@ -14,9 +14,9 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
-	WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
-	// check_key(); //키입력확인
-	SetEvent(hWriteEvent);
+	//WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
+	//// check_key(); //키입력확인
+	//SetEvent(hWriteEvent);
 }
 
 void GamePlayScene::Paint(HDC hDC)
@@ -58,6 +58,12 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 		}
 		break;
 	case VK_F4:
+		TerminateThread(hThread, 0);
+		CloseHandle(hThread);
+		CloseHandle(hReadEvent);
+		hReadEvent = nullptr;
+		CloseHandle(hWriteEvent);
+		hWriteEvent = nullptr;
 		closesocket(m_pGameClient->GetSOCKET());
 		WSACleanup();
 		m_pGameClient->ChangeScene(Scene::SceneNum::Title);
@@ -234,9 +240,10 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 
 	m_gamestatus[m_pGameClient->m_ClientNum].flag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flag를 끔  
 
-	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성  
+	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성
 		for (j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1) m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
+			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1) 
+				m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
 		}
 	}
 	for (i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
@@ -288,7 +295,7 @@ void GamePlayScene::InitScene() {
 	//setcursortype(NOCURSOR); //커서 없앰
 	//draw_map(); // 게임화면을 그림
 
-	CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
+	hThread = CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
 
 
@@ -304,12 +311,14 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("status");
+			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
 		len = ntohl(len);
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&pGamePlayScene->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("status");
+			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
 
@@ -318,11 +327,13 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("send()");
+			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&keys, sizeof(KeyInput), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("send()");
+			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
 		SetEvent(hReadEvent); // 읽기 완료 알리기

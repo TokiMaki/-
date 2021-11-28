@@ -84,7 +84,7 @@ struct Gamestatus {
     int item;       // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
-    int target;
+    int target = 1;
 
     Flag flag;
 };
