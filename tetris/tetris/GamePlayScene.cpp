@@ -21,12 +21,15 @@ void GamePlayScene::Update(float fTimeElapsed) {
 
 void GamePlayScene::Paint(HDC hDC)
 {
-	WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
-	SetBkMode(hDC, TRANSPARENT);
-	SetTextColor(hDC, RGB(0, 0, 0));
-	draw_main(hDC);
-	draw_map(hDC);
-	SetEvent(hWriteEvent);
+	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
+
+	if (InitComplete) {
+		SetBkMode(hDC, TRANSPARENT);
+		SetTextColor(hDC, RGB(0, 0, 0));
+		draw_main(hDC);
+		draw_map(hDC);
+	}
+	// SetEvent(hWriteEvent);
 }
 
 void GamePlayScene::KeyDown(unsigned char KEYCODE)
@@ -57,17 +60,18 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 			m_keys.space = true;
 		}
 		break;
-	case VK_F4:
-		TerminateThread(hThread, 0);
-		CloseHandle(hThread);
-		CloseHandle(hReadEvent);
-		hReadEvent = nullptr;
-		CloseHandle(hWriteEvent);
-		hWriteEvent = nullptr;
-		closesocket(m_pGameClient->GetSOCKET());
-		WSACleanup();
-		m_pGameClient->ChangeScene(Scene::SceneNum::Title);
-		// exit(0);
+	case VK_RETURN:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 1) {
+			TerminateThread(hThread, 0);
+			CloseHandle(hThread);
+			CloseHandle(hReadEvent);
+			hReadEvent = nullptr;
+			CloseHandle(hWriteEvent);
+			hWriteEvent = nullptr;
+			closesocket(m_pGameClient->GetSOCKET());
+			WSACleanup();
+			m_pGameClient->ChangeScene(Scene::SceneNum::Title);
+		}
 		break;
 	}
 }
@@ -174,11 +178,12 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 	int x, y;
-
-	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
-		if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] == EMPTY)
-			m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
-	}
+	//for (int i = 0; i < MAX_PLAYER; ++i) {
+	//	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
+	//		if (m_gamestatus[i].board_org[CEILLING_Y][j] == EMPTY)
+	//			m_gamestatus[i].board_org[CEILLING_Y][j] = CEILLING;
+	//	}
+	//}
 
 	// 나와 내 옆 다른 사람들의 보드 그리기
 	for (int i = 0; i < MAX_PLAYER; ++i) {
@@ -265,9 +270,8 @@ void GamePlayScene::check_key() {
 }
 
 void GamePlayScene::InitScene() {
-	srand((unsigned)time(NULL)); //난수표생성
 	// reset(); //게임판 리셋
-
+	InitComplete = false;
 	int retval;
 	int len = 0;
 
@@ -306,37 +310,34 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
 
 	while (1) {
-		WaitForSingleObject(hWriteEvent, INFINITE);
+		//WaitForSingleObject(hWriteEvent, INFINITE);
 		len = 0;
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("status");
-			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
 		len = ntohl(len);
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&pGamePlayScene->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("status");
-			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
+		pGamePlayScene->InitComplete = true;
 
 		KeyInput keys = pGamePlayScene->m_keys;
 		len = htonl(sizeof(KeyInput));
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("send()");
-			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
 		retval = send(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&keys, sizeof(KeyInput), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("send()");
-			SetEvent(hReadEvent); // 읽기 완료 알리기
 			break;
 		}
-		SetEvent(hReadEvent); // 읽기 완료 알리기
+		//SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
 	return 0;
 }

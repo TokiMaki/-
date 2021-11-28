@@ -42,13 +42,18 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
 			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0) {
+
 				newRoomData.KeyUpdate(GameClientNum, newRoomData.m_GameTimer.GetTimeElapsed());
+
 				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
 					newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
+
 				newRoomData.check_game_over(GameClientNum);
+
 				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1
 					&& newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0)
 					// 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
+
 					newRoomData.new_block(GameClientNum);
 			}
 
@@ -268,6 +273,11 @@ void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
 	int bx = pPlayers[clientNum].m_gamestatus[GameClientNum].bx;
 	int b_rotation = pPlayers[clientNum].m_gamestatus[GameClientNum].b_rotation;
 	pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime += fTimeElapsed;
+
+	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
+		if (pPlayers[clientNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] == EMPTY)
+			pPlayers[clientNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] = CEILLING;
+	}
 
 	if (pPlayers[clientNum].m_keys.left == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.left_flag == false) {
 		if (check_crush(clientNum, bx - 1, by, b_rotation) == true) {
