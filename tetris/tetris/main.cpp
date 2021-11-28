@@ -19,7 +19,7 @@ RECT rt;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	HWND hwnd;
-	MSG 	msg;
+	MSG msg;
 	WNDCLASSEX	WndClass;
 	g_hinst = hInstance;
 	WndClass.cbSize = sizeof(WNDCLASSEX);
@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	CreateThread(NULL, 0, UpdateThread, (LPVOID)&gameClient, 0, NULL);
+	//CreateThread(NULL, 0, UpdateThread, (LPVOID)&gameClient, 0, NULL);
 	CreateThread(NULL, 0, CallDrawMsgThread, (LPVOID)&hwnd, 0, NULL);
 
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -84,10 +84,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 	case WM_KEYDOWN:
 		gameClient.KeyDown(wParam);
 		break;
+	case WM_KEYUP:
+		gameClient.KeyUp(wParam);
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
 	}
+
 	
 	return(DefWindowProc(hWnd, iMsg, wParam, lParam));
 }
@@ -97,13 +101,15 @@ DWORD __stdcall UpdateThread(LPVOID arg)
 {
 	GameClient* clientMain = (GameClient*)arg;
 	while (1) {
-		clientMain->Update();
+		gameClient.Update();
 	}
 	return 0;
 }
 
 DWORD __stdcall CallDrawMsgThread(LPVOID arg)
 {
+	CGameTimer DrawTimer;
+	DrawTimer.Start();
 	HWND* hWnd = (HWND*)arg;
 	while (1) {
 		SendMessage(*hWnd, WM_PAINT, NULL, NULL);

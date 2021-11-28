@@ -28,8 +28,6 @@ struct GameServerThreadData
     void reset_main();
     void reset_main_cpy();
     void new_block(int ClientNum);
-    //void draw_map();
-    //void draw_main();
     void check_key();
     void KeyUpdate(int clientNum, float fTimeElapsed);
     void drop_block(int ClientNum, float fTimeElapsed);

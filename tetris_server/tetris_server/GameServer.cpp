@@ -35,19 +35,25 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	newRoomData.m_GameTimer.Start();
 	while (1)
 	{
+		newRoomData.m_GameTimer.Tick(60.0f);
 		WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
 		//printf("Call GameThread\n");
-		newRoomData.m_GameTimer.Tick();
 		newRoomData.check_key();
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
 			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0) {
+
 				newRoomData.KeyUpdate(GameClientNum, newRoomData.m_GameTimer.GetTimeElapsed());
+
 				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
 					newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
+
 				newRoomData.check_game_over(GameClientNum);
-				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1)
+
+				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.new_block_on == 1
+					&& newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0)
 					// 뉴 블럭 m_gamestatus[m_pGameClient->m_ClientNum].flag가 있는 경우 새로운 블럭 생성
+
 					newRoomData.new_block(GameClientNum);
 			}
 
@@ -259,10 +265,6 @@ void GameServerThreadData::check_key() {
 			pPlayers[i].m_gamestatus[GameClientNum].flag.space_flag = false;
 		}
 	}
-	if (GetAsyncKeyState(VK_ESCAPE)) {
-		system("cls"); //화면을 지우고 
-		exit(0); //게임종료 
-	}
 }
 
 void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
@@ -271,6 +273,11 @@ void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
 	int bx = pPlayers[clientNum].m_gamestatus[GameClientNum].bx;
 	int b_rotation = pPlayers[clientNum].m_gamestatus[GameClientNum].b_rotation;
 	pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime += fTimeElapsed;
+
+	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
+		if (pPlayers[clientNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] == EMPTY)
+			pPlayers[clientNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] = CEILLING;
+	}
 
 	if (pPlayers[clientNum].m_keys.left == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.left_flag == false) {
 		if (check_crush(clientNum, bx - 1, by, b_rotation) == true) {
@@ -325,7 +332,6 @@ void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
 		}
 		if (pPlayers[clientNum].m_keys.down == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.down_flag == 1) {
 			drop_block(clientNum, 100);
-			std::cout << "아래 꾹 누르는중\n" << std::endl;
 			pPlayers[clientNum].m_gamestatus[GameClientNum].fKeyMoveSpeed = 0.05f;
 			pPlayers[clientNum].m_gamestatus[GameClientNum].fMoveBlockTime = 0.0f;
 		}

@@ -14,25 +14,92 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
-	WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
-	check_key(); //키입력확인
-	//if (m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on && check_crush(m_gamestatus[m_pGameClient->m_ClientNum].bx, m_gamestatus[m_pGameClient->m_ClientNum].by + 1, m_gamestatus[m_pGameClient->m_ClientNum].b_rotation) == false) {
-	//	// 블록이 충돌했을 때 약간의 추가 시간을 부여해주는 부분인데 로직이 생각이 안나서 일딴 비워놓음
-	//	// 조금더 충분히 생각해 보고 추가하거나 아예 삭제하는 쪽으로 할 예정
-	//};
-	SetEvent(hWriteEvent);
+	//WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
+	//// check_key(); //키입력확인
+	//SetEvent(hWriteEvent);
 }
 
 void GamePlayScene::Paint(HDC hDC)
 {
-	SetBkMode(hDC, TRANSPARENT);
-	SetTextColor(hDC, RGB(0, 0, 0));
-	draw_main(hDC);
-	draw_map(hDC);
+	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
+
+	if (InitComplete) {
+		SetBkMode(hDC, TRANSPARENT);
+		SetTextColor(hDC, RGB(0, 0, 0));
+		draw_main(hDC);
+		draw_map(hDC);
+	}
+	// SetEvent(hWriteEvent);
 }
 
 void GamePlayScene::KeyDown(unsigned char KEYCODE)
 {
+	switch (KEYCODE) {
+	case VK_LEFT:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.left = true;
+		}
+		break;
+	case VK_RIGHT:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.right = true;
+		}
+		break;
+	case VK_UP:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.up = true;
+		}
+		break;
+	case VK_DOWN:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.down = true;
+		}
+		break;
+	case VK_SPACE:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.space = true;
+		}
+		break;
+	case VK_RETURN:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 1) {
+			TerminateThread(hThread, 0);
+			CloseHandle(hThread);
+			CloseHandle(hReadEvent);
+			hReadEvent = nullptr;
+			CloseHandle(hWriteEvent);
+			hWriteEvent = nullptr;
+			closesocket(m_pGameClient->GetSOCKET());
+			WSACleanup();
+			m_pGameClient->ChangeScene(Scene::SceneNum::Title);
+		}
+		break;
+	}
+}
+
+void GamePlayScene::KeyUp(unsigned char KEYCODE)
+{
+	switch (KEYCODE) {
+	case VK_LEFT:
+		m_keys.left = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.left_flag = false;
+		break;
+	case VK_RIGHT:
+		m_keys.right = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.right_flag = false;
+		break;
+	case VK_UP:
+		m_keys.up = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.up_flag = false;
+		break;
+	case VK_DOWN:
+		m_keys.down = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
+		break;
+	case VK_SPACE:
+		m_keys.space = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
+		break;
+	}
 }
 
 void GamePlayScene::reset(void) {
@@ -83,89 +150,88 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	int y = 130;
 
 	TextOut(hDC, x + 48, y, "NEXT", 4);
-	Rectangle(hDC, x+0, y+20, x + 130, y+120);
+	Rectangle(hDC, x + 0, y + 20, x + 130, y + 120);
 
 	if (m_pGameClient->m_ClientNum != -1) {
 		for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
 			for (int j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-					
+
 					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
 					//printf("■");
-					TextOut(hDC, x+23 + 20 * i, y+40 + j * 20, "■", 2);
+					TextOut(hDC, x + 23 + 20 * i, y + 40 + j * 20, "■", 2);
 				}
 				else {
 					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
 					//printf("  ");
-					TextOut(hDC, x+23 + 20 * i, y+40 + 20 * j, "  ", 2);
+					TextOut(hDC, x + 23 + 20 * i, y + 40 + 20 * j, "  ", 2);
 				}
 			}
 		}
 	}
-	
 
-	TextOut(hDC, x + 48, y+140, "ITEM", 4);
+	TextOut(hDC, x + 48, y + 140, "ITEM", 4);
 	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
 }
 
 void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
+	int x, y;
+	//for (int i = 0; i < MAX_PLAYER; ++i) {
+	//	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
+	//		if (m_gamestatus[i].board_org[CEILLING_Y][j] == EMPTY)
+	//			m_gamestatus[i].board_org[CEILLING_Y][j] = CEILLING;
+	//	}
+	//}
 
-	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
-		if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] == EMPTY)
-			m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
-	}
+	// 나와 내 옆 다른 사람들의 보드 그리기
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		if (i != m_pGameClient->m_ClientNum)
 			DrawPlayers++;
 		for (int j = 0; j < BOARD_Y; j++) {
 			for (int k = 0; k < BOARD_X; k++) {
 				if (i == m_pGameClient->m_ClientNum) {
-					int x = BOARD_X_ADJ + k;
-					int y = BOARD_Y_ADJ + j;
-					switch (m_gamestatus[m_pGameClient->m_ClientNum].board_org[j][k]) {
-					case EMPTY: //빈칸모양 
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
-						break;
-					case CEILLING: //천장모양 
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
-						break;
-					case WALL: //벽모양 
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
-						break;
-					case INACTIVE_BLOCK: //굳은 블럭 모양  
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "□", 2);
-						break;
-					case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "■", 2);
-						break;
-					}
+					x = BOARD_X_ADJ + k;
+					y = BOARD_Y_ADJ + j;
 				}
-				else{
-					int x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + k;
-					int y = BOARD_Y_ADJ + j;
-					switch (m_gamestatus[i].board_org[j][k]) {
-					case EMPTY: //빈칸모양 
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
-						break;
-					case CEILLING: //천장모양 
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
-						break;
-					case WALL: //벽모양 
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
-						break;
-					case INACTIVE_BLOCK: //굳은 블럭 모양  
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "□", 2);
-						break;
-					case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-						TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "■", 2);
-						break;
-					}
+				else {
+					x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + k;
+					y = BOARD_Y_ADJ + j;
+				}
+				switch (m_gamestatus[i].board_org[j][k]) {
+				case EMPTY: //빈칸모양
+					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
+					break;
+				case CEILLING: //천장모양
+					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
+					break;
+				case WALL: //벽모양 
+					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
+					break;
+				case INACTIVE_BLOCK: //굳은 블럭 모양
+					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "□", 2);
+					break;
+				case ACTIVE_BLOCK: //움직이고있는 블럭 모양
+					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "■", 2);
+					break;
 				}
 			}
 		}
+		// 게임 오버 확인
+		if (m_gamestatus[i].flag.gameover_flag == 1) {
+			if (i == m_pGameClient->m_ClientNum) {
+				x = BOARD_X_ADJ + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			else {
+				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
+		}
 	}
+
 }
 
 void GamePlayScene::new_block(void) { //새로운 블록 생성  
@@ -179,9 +245,10 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 
 	m_gamestatus[m_pGameClient->m_ClientNum].flag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flag를 끔  
 
-	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성  
+	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성
 		for (j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1) m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
+			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1) 
+				m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
 		}
 	}
 	for (i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
@@ -199,62 +266,12 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 }
 
 void GamePlayScene::check_key() {
-	// 왼쪽키 트리거
-	if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
-		if (GetAsyncKeyState(VK_LEFT)) {
-			m_keys.left = true;
-		}
-		else {
-			m_keys.left = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.left_flag = false;
-		}
 
-		// 오른쪽키 트리거
-		if (GetAsyncKeyState(VK_RIGHT)) {
-			m_keys.right = true;
-		}
-		else {
-			m_keys.right = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.right_flag = false;
-		}
-
-		// 아래키 트리거
-		if (GetAsyncKeyState(VK_DOWN)) {
-			m_keys.down = true;
-		}
-		else {
-			m_keys.down = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
-		}
-
-		// 위키 트리거
-		if (GetAsyncKeyState(VK_UP)) {
-			m_keys.up = true;
-		}
-		else {
-			m_keys.up = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.up_flag = false;
-		}
-
-		// 스페이스키 트리거
-		if (GetAsyncKeyState(VK_SPACE)) {
-			m_keys.space = true;
-		}
-		else {
-			m_keys.space = false;
-			m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
-		}
-		if (GetAsyncKeyState(VK_ESCAPE)) {
-			system("cls"); //화면을 지우고 
-			exit(0); //게임종료 
-		}
-	}
 }
 
 void GamePlayScene::InitScene() {
-	srand((unsigned)time(NULL)); //난수표생성
 	// reset(); //게임판 리셋
-
+	InitComplete = false;
 	int retval;
 	int len = 0;
 
@@ -282,7 +299,7 @@ void GamePlayScene::InitScene() {
 	//setcursortype(NOCURSOR); //커서 없앰
 	//draw_map(); // 게임화면을 그림
 
-	CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
+	hThread = CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
 
 
@@ -293,8 +310,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
 
 	while (1) {
-		WaitForSingleObject(hWriteEvent, INFINITE);
-
+		//WaitForSingleObject(hWriteEvent, INFINITE);
 		len = 0;
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
@@ -307,6 +323,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_quit("status");
 			break;
 		}
+		pGamePlayScene->InitComplete = true;
 
 		KeyInput keys = pGamePlayScene->m_keys;
 		len = htonl(sizeof(KeyInput));
@@ -320,8 +337,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_quit("send()");
 			break;
 		}
-
-		SetEvent(hReadEvent); // 읽기 완료 알리기
+		//SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
 	return 0;
 }

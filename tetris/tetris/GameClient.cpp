@@ -63,6 +63,11 @@ void GameClient::KeyDown(unsigned char KEYCODE)
     m_pScene->KeyDown(KEYCODE);
 }
 
+void GameClient::KeyUp(unsigned char KEYCODE)
+{
+    m_pScene->KeyUp(KEYCODE);
+}
+
 void GameClient::SetSOCKET(SOCKET arg)
 {
     sock = arg;

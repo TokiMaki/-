@@ -13,5 +13,9 @@ public:
     void Update(float fTimeElapsed) override;
     void Paint(HDC hDC) override;
     void KeyDown(unsigned char KEYCODE) override;
+    void KeyUp(unsigned char KEYCODE) override;
+    // void WaitSceneSend();
     static DWORD WINAPI TestThread(LPVOID arg);
+private:
+    HANDLE hThread;
 };
