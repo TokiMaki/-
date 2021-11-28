@@ -38,13 +38,13 @@
 
 #define BOARD_X 11 //게임판 가로크기
 #define BOARD_Y 25 //게임판 세로크기
-#define BOARD_X_ADJ 3 //게임판 위치조정 
+#define BOARD_X_ADJ 3 //게임판 위치조정
 #define BOARD_Y_ADJ 1 //게임판 위치조정
 
 #define CEILLING_Y BOARD_Y - 20     // 천장 위치
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
-#define MAX_PLAYER 1 // 최대 인원수
+#define MAX_PLAYER 2 // 최대 인원수
 
 struct KeyInput {
     bool left = false;      //←
@@ -79,12 +79,12 @@ struct Gamestatus {
     float fMoveBlockTime = 0.0f;
     int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
     int board_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
-                                  //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림) 
+                                  //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림)
                                   //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
     int item;       // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
-    int target;
+    int target = 1;
 
     Flag flag;
 };
