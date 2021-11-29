@@ -8,6 +8,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	GameServerThreadData newRoomData;
 	MatchSockets* match_sockets = (MatchSockets*)arg;
 
+	srand((unsigned int)time(NULL));
 
 	newRoomData.hupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (newRoomData.hupdate == NULL)
@@ -44,6 +45,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.gameover_flag == 0) {
 
 				newRoomData.KeyUpdate(GameClientNum, newRoomData.m_GameTimer.GetTimeElapsed());
+				newRoomData.TargetShift(GameClientNum, newRoomData.m_GameTimer.GetTimeElapsed());
 
 				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].flag.down_flag == 0)
 					newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
@@ -264,6 +266,11 @@ void GameServerThreadData::check_key() {
 		if (pPlayers[i].m_keys.space != true) {
 			pPlayers[i].m_gamestatus[GameClientNum].flag.space_flag = false;
 		}
+
+		// 쉬프트키 트리거
+		if (pPlayers[i].m_keys.shift != true) {
+			pPlayers[i].m_gamestatus[GameClientNum].flag.shift_flag = false;
+		}
 	}
 }
 
@@ -343,34 +350,47 @@ void GameServerThreadData::KeyUpdate(int clientNum, float fTimeElapsed) {
 	}
 }
 
-void GameServerThreadData::drop_block(int PlayerNum, float fTimeElapsed) {
-	int GameClientNum = pPlayers[PlayerNum].m_GameClientNum;
-	int by = pPlayers[PlayerNum].m_gamestatus[GameClientNum].by;
-	int bx = pPlayers[PlayerNum].m_gamestatus[GameClientNum].bx;
-	int b_rotation = pPlayers[PlayerNum].m_gamestatus[GameClientNum].b_rotation;
+void GameServerThreadData::TargetShift(int clientNum, float fTimeElapsed) {
+	int GameClientNum = pPlayers[clientNum].m_GameClientNum;
+	if (pPlayers[clientNum].m_keys.shift == true && pPlayers[clientNum].m_gamestatus[GameClientNum].flag.shift_flag == 0) {
+		if (pPlayers[clientNum].m_gamestatus[GameClientNum].target < MAX_PLAYER - 1) {
+			pPlayers[clientNum].m_gamestatus[GameClientNum].target += 1;
+		}
+		else {
+			pPlayers[clientNum].m_gamestatus[GameClientNum].target = 1;
+		}
+		pPlayers[clientNum].m_gamestatus[GameClientNum].flag.shift_flag = 1;
+	}
+}
 
-	pPlayers[PlayerNum].m_gamestatus[GameClientNum].fDropBlockTime += fTimeElapsed;
-	if (pPlayers[PlayerNum].m_gamestatus[GameClientNum].fDropBlockTime >= pPlayers[PlayerNum].m_gamestatus[GameClientNum].speed) {
-		if (check_crush(PlayerNum, bx, by + 1, b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
+void GameServerThreadData::drop_block(int ClientNum, float fTimeElapsed) {
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+	int by = pPlayers[ClientNum].m_gamestatus[GameClientNum].by;
+	int bx = pPlayers[ClientNum].m_gamestatus[GameClientNum].bx;
+	int b_rotation = pPlayers[ClientNum].m_gamestatus[GameClientNum].b_rotation;
+
+	pPlayers[ClientNum].m_gamestatus[GameClientNum].fDropBlockTime += fTimeElapsed;
+	if (pPlayers[ClientNum].m_gamestatus[GameClientNum].fDropBlockTime >= pPlayers[ClientNum].m_gamestatus[GameClientNum].speed) {
+		if (check_crush(ClientNum, bx, by + 1, b_rotation) == false) { //밑이 비어있지않고 crush flag가 켜저있으면
 			for (int j = 0; j < BOARD_Y; j++) { //현재 조작중인 블럭을 굳힘
 				for (int k = 0; k < BOARD_X; k++) {
-					if (pPlayers[PlayerNum].m_gamestatus[GameClientNum].board_org[j][k] == ACTIVE_BLOCK)
-						pPlayers[PlayerNum].m_gamestatus[GameClientNum].board_org[j][k] = INACTIVE_BLOCK;
+					if (pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[j][k] == ACTIVE_BLOCK)
+						pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[j][k] = INACTIVE_BLOCK;
 				}
 			}
-			pPlayers[PlayerNum].m_gamestatus[GameClientNum].flag.crush_on = false; //flag를 끔
-			check_line(); //라인체크를 함
-			pPlayers[PlayerNum].m_gamestatus[GameClientNum].flag.new_block_on = true; //새로운 블럭생성 flag를 켬
-			new_block(PlayerNum);
-			pPlayers[PlayerNum].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.crush_on = false; //flag를 끔
+			check_line(ClientNum); //라인체크를 함
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.new_block_on = true; //새로운 블럭생성 flag를 켬
+			new_block(ClientNum);
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
 		}
-		if (check_crush(PlayerNum, bx, by + 1, b_rotation) == true)
-			move_block(PlayerNum, DOWN); //밑이 비어있으면 밑으로 한칸 이동
+		if (check_crush(ClientNum, bx, by + 1, b_rotation) == true)
+			move_block(ClientNum, DOWN); //밑이 비어있으면 밑으로 한칸 이동
 
-		if (check_crush(PlayerNum, bx, by + 1, b_rotation) == false)
-			pPlayers[PlayerNum].m_gamestatus[GameClientNum].flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
+		if (check_crush(ClientNum, bx, by + 1, b_rotation) == false)
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.crush_on = true; //밑으로 이동이 안되면  crush flag를 켬
 
-		pPlayers[PlayerNum].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
+		pPlayers[ClientNum].m_gamestatus[GameClientNum].fDropBlockTime = 0.0f;
 	}
 }
 
@@ -390,7 +410,7 @@ void GameServerThreadData::hard_drop_block(int ClientNum) {
 				}
 			}
 			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.crush_on = false; //flag를 끔
-			check_line(); //라인체크를 함
+			check_line(ClientNum); //라인체크를 함
 			pPlayers[ClientNum].m_gamestatus[GameClientNum].flag.new_block_on = true; //새로운 블럭생성 flag를 켬
 			return;
 		}
@@ -503,31 +523,36 @@ void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시�
 	}
 }
 
-void GameServerThreadData::check_line(void) {
+void GameServerThreadData::check_line(int ClientNum) {
 	int block_amount; //한줄의 블록갯수를 저장하는 변수 
-	int combo = 0; //콤보갯수 저장하는 변수 지정및 초기화 
-	for (int i = 0; i < MAX_PLAYER; ++i) {
-		int GameClientNum = pPlayers[i].m_GameClientNum;
-		Gamestatus* m_gamestatus = &(pPlayers[i].m_gamestatus[GameClientNum]);
-		for (int j = BOARD_Y - 2; j > 3;) { //i=MAIN_Y-2 : 밑쪽벽의 윗칸부터,  i>3 : 천장(3)아래까지 검사 
-			block_amount = 0; //블록갯수 저장 변수 초기화 
-			for (int k = 1; k < BOARD_X - 1; k++) { //벽과 벽사이의 블록갯루를 셈 
-				if (m_gamestatus->board_org[j][k] > 0) block_amount++;
-			}
-			if (block_amount == BOARD_X - 2) { //블록이 가득 찬 경우 
-				for (int k = j; k > 1; k--) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만) 
-					for (int l = 1; l < BOARD_X - 1; l++) {
-						if (m_gamestatus->board_org[k - 1][l] != CEILLING)
-							m_gamestatus->board_org[k][l] = m_gamestatus->board_org[k - 1][l];
+	int combo = 0; //콤보갯수 저장하는 변수 지정및 초기화
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+	Gamestatus* m_gamestatus = &(pPlayers[ClientNum].m_gamestatus[GameClientNum]);
+	for (int j = BOARD_Y - 2; j > CEILLING_Y;) { //i=MAIN_Y-2 : 밑쪽벽의 윗칸부터,  i>3 : 천장(3)아래까지 검사 
+		block_amount = 0; //블록갯수 저장 변수 초기화
+		for (int k = 1; k < BOARD_X - 1; k++) { //벽과 벽사이의 블록갯루를 셈 
+			if (m_gamestatus->board_org[j][k] > 0) block_amount++;
+		}
+		if (block_amount == BOARD_X - 2) { //블록이 가득 찬 경우
+			for (int k = j; k > 1; k--) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만) 
+				for (int l = 1; l < BOARD_X - 1; l++) {
+					if (m_gamestatus->board_org[k - 1][l] != CEILLING)
+						m_gamestatus->board_org[k][l] = m_gamestatus->board_org[k - 1][l];
 
-						if (m_gamestatus->board_org[k - 1][l] == CEILLING)
-							m_gamestatus->board_org[k][l] = EMPTY;
-						//윗줄이 천장인 경우에는 천장을 한칸 내리면 안되니까 빈칸을 넣음 
-					}
+					if (m_gamestatus->board_org[k - 1][l] == CEILLING)
+						m_gamestatus->board_org[k][l] = EMPTY;
+					//윗줄이 천장인 경우에는 천장을 한칸 내리면 안되니까 빈칸을 넣음
 				}
 			}
-			else j--;
+			combo++;
 		}
+		else j--;
+	}
+	if (combo) {
+		attack(ClientNum, combo);
+	}
+	else {
+		// attacked(ClientNum);
 	}
 	//if (combo) { //줄 삭제가 있는 경우 점수와 레벨 목표를 새로 표시함  
 	//	if (combo > 1) { //2콤보이상인 경우 경우 보너스및 메세지를 게임판에 띄웠다가 지움 
@@ -541,6 +566,50 @@ void GameServerThreadData::check_line(void) {
 	//	// gotoxy(STATUS_X_ADJ, STATUS_Y_SCORE); printf("        %6d", score);
 	//}
 }
+// 공격함수
+void GameServerThreadData::attack(int ClientNum, int Combo) {
+	int EmptyX = rand() % BOARD_Y;
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+	int stack = 0;
+	int Target = 0;
+	for (int i = 0; i < MAX_PLAYER; ++i) {
+		if (i != GameClientNum)
+			stack++;
+		if (stack >= pPlayers[ClientNum].m_gamestatus[GameClientNum].target) {
+			Target = i;
+			break;
+		}
+	}
+	int TargetClientNum = pPlayers[Target].m_GameClientNum;
+	pPlayers[Target].m_gamestatus[TargetClientNum].AttackedBlock += Combo;
+}
+
+//공격받음함수
+void GameServerThreadData::attacked(int ClientNum) {
+	int EmptyX = rand() % (BOARD_X - 2);
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+	Gamestatus* m_gamestatus = &(pPlayers[ClientNum].m_gamestatus[GameClientNum]);
+	// int Target = pPlayers[ClientNum].m_gamestatus[GameClientNum].target;
+	for (int i = 0; i < m_gamestatus->AttackedBlock; ++i) {
+		for (int j = CEILLING_Y; j < BOARD_Y - 2; j++) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만)
+			for (int k = 1; k < BOARD_X - 1; k++) {
+				if (m_gamestatus->board_org[j + 1][k] != CEILLING)
+					m_gamestatus->board_org[j][k] = m_gamestatus->board_org[j + 1][k];
+
+				if (m_gamestatus->board_org[j + 1][k] == CEILLING)
+					m_gamestatus->board_org[j][k] = EMPTY;
+				//윗줄이 천장인 경우에는 천장을 한칸 내리면 안되니까 빈칸을 넣음
+			}
+		}
+		for (int j = 1; j < BOARD_X - 1; ++j) {
+			if (j != EmptyX + 1) {
+				m_gamestatus->board_org[BOARD_Y - 2][j] = INACTIVE_BLOCK;
+			}
+		}
+	}
+	m_gamestatus->AttackedBlock = 0;
+}
+// 
 //
 //void GameServerThreadData::check_level_up(void) {
 //	int i, j;
