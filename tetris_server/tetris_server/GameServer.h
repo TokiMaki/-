@@ -12,6 +12,7 @@ struct Player
 
     HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
     HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
+    CRITICAL_SECTION cs;
 };
 struct GameServerThreadData
 {
@@ -21,6 +22,8 @@ struct GameServerThreadData
 
     HANDLE hupdate;
     HANDLE hcheckupdate;
+
+    CRITICAL_SECTION cs;
 
 	void CreateCommThread(void); //클라이언트와 통신할 쓰레드생성
 

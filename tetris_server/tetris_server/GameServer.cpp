@@ -20,6 +20,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		return 1;
 	}
+	InitializeCriticalSection(&newRoomData.cs);
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
 		Player newplayerdata;
@@ -28,6 +29,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newplayerdata.m_GameClientNum = i;
 		newplayerdata.hupdate = newRoomData.hupdate;
 		newplayerdata.hcheckupdate = newRoomData.hcheckupdate;
+		newplayerdata.cs = newRoomData.cs;
 		newRoomData.pPlayers.push_back(newplayerdata);
 	}
 	newRoomData.reset();
@@ -36,9 +38,10 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	newRoomData.m_GameTimer.Start();
 	while (1)
 	{
-		newRoomData.m_GameTimer.Tick(30.0f);
-		WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
+		//WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
 		//printf("Call GameThread\n");
+		EnterCriticalSection(&newRoomData.cs);
+		newRoomData.m_GameTimer.Tick(60.0f);
 		newRoomData.check_key();
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
@@ -63,9 +66,11 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newRoomData.copy_another_map();
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
-		SetEvent(newRoomData.hcheckupdate);
+		//SetEvent(newRoomData.hcheckupdate);
+		LeaveCriticalSection(&newRoomData.cs);
 	}
 	delete match_sockets;
+	DeleteCriticalSection(&newRoomData.cs);
 	return 0;
 }
 DWORD WINAPI CommThread(LPVOID arg)
@@ -100,7 +105,8 @@ DWORD WINAPI CommThread(LPVOID arg)
 
 	while (1)
 	{
-		WaitForSingleObject(playdata->hcheckupdate, INFINITE);
+		EnterCriticalSection(&playdata->cs);
+		//WaitForSingleObject(playdata->hcheckupdate, INFINITE);
 		//ResetEvent(hcheckupdate);
 		// 클라이언트에 업데이트된 데이터 보내주기
 
@@ -139,7 +145,8 @@ DWORD WINAPI CommThread(LPVOID arg)
 		}
 		playdata->m_keys = tempKey;
 
-		SetEvent(playdata->hupdate); // 쓰기 완료
+		LeaveCriticalSection(&playdata->cs);
+		//SetEvent(playdata->hupdate); // 쓰기 완료
 		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
 	}
 
