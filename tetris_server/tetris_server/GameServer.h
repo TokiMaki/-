@@ -30,14 +30,17 @@ struct GameServerThreadData
     void new_block(int ClientNum);
     void check_key();
     void KeyUpdate(int clientNum, float fTimeElapsed);
+    void TargetShift(int clientNum, float fTimeElapsed);
     void drop_block(int ClientNum, float fTimeElapsed);
     void hard_drop_block(int ClientNum);
     bool check_crush(int ClientNum, int bx, int by, int b_rotation);
     void move_block(int ClientNum, int dir);
-    void check_line(void);
+    void check_line(int ClientNum);
     void copy_another_map(void);
     //void check_level_up(void);
     void check_game_over(int ClientNum);
+    void attack(int ClientNum, int Combo);
+    void attacked(int ClientNum);
 
     int blocks[7][4][4][4] = {
     {{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭

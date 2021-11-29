@@ -44,6 +44,7 @@ struct KeyInput {
     bool right = false;     //→
     bool up = false;        //↑
     bool down = false;      //←
+    bool shift = false;
     bool space = false;     //hard drop space(한번에 맨 밑으로 내리기)
 };
 
@@ -56,6 +57,7 @@ struct Flag {
     bool down_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool space_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
+    bool shift_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
 
     bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
 };
@@ -74,10 +76,11 @@ struct Gamestatus {
     int board_cpy[BOARD_Y][BOARD_X]; //maincpy는 게임판이 모니터에 표시되기 전의 정보를 가지고 있음 
                                   //main의 전체를 계속 모니터에 표시하지 않고(이렇게 하면 모니터가 깜빡거림)
                                   //main_cpy와 배열을 비교해서 값이 달라진 곳만 모니터에 고침
+    int AttackedBlock = 0;
     int item;       // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
-    int target;
+    int target = 1;
 
     Flag flag;
 };
