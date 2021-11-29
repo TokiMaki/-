@@ -246,7 +246,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 		int tempAttackedBlock = m_gamestatus[i].AttackedBlock;
 		for (int j = 0; j < tempAttackedBlock;) {
 			if (i == m_pGameClient->m_ClientNum) {
-				x = BOARD_X_ADJ + 1;
+				x = BOARD_X_ADJ + 1 + j;
 				y = BOARD_Y_ADJ + 2;
 			}
 			else {

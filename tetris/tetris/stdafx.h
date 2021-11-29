@@ -14,7 +14,7 @@
 #include<string.h>
 
 
-#define SERVERIP "127.0.0.1"
+#define SERVERIP "220.94.221.36"
 #define SERVERPORT 9000
 
 #define WINDOW_WIDTH 1280
@@ -44,7 +44,7 @@
 #define CEILLING_Y BOARD_Y - 20     // 천장 위치
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
-#define MAX_PLAYER 3 // 최대 인원수
+#define MAX_PLAYER 2 // 최대 인원수
 
 struct KeyInput {
     bool left = false;      //←
