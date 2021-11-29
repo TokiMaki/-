@@ -549,10 +549,14 @@ void GameServerThreadData::check_line(int ClientNum) {
 		else j--;
 	}
 	if (combo) {
+		while (m_gamestatus->AttackedBlock > 0 && combo > 0) {
+			m_gamestatus->AttackedBlock -= 1;
+			combo -= 1;
+		}
 		attack(ClientNum, combo);
 	}
 	else {
-		// attacked(ClientNum);
+		attacked(ClientNum);
 	}
 	//if (combo) { //줄 삭제가 있는 경우 점수와 레벨 목표를 새로 표시함  
 	//	if (combo > 1) { //2콤보이상인 경우 경우 보너스및 메세지를 게임판에 띄웠다가 지움 
@@ -568,7 +572,6 @@ void GameServerThreadData::check_line(int ClientNum) {
 }
 // 공격함수
 void GameServerThreadData::attack(int ClientNum, int Combo) {
-	int EmptyX = rand() % BOARD_Y;
 	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	int stack = 0;
 	int Target = 0;
@@ -602,6 +605,7 @@ void GameServerThreadData::attacked(int ClientNum) {
 			}
 		}
 		for (int j = 1; j < BOARD_X - 1; ++j) {
+			m_gamestatus->board_org[BOARD_Y - 2][j] = EMPTY;
 			if (j != EmptyX + 1) {
 				m_gamestatus->board_org[BOARD_Y - 2][j] = INACTIVE_BLOCK;
 			}
