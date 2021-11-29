@@ -36,7 +36,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	newRoomData.m_GameTimer.Start();
 	while (1)
 	{
-		newRoomData.m_GameTimer.Tick(60.0f);
+		newRoomData.m_GameTimer.Tick(30.0f);
 		WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
 		//printf("Call GameThread\n");
 		newRoomData.check_key();

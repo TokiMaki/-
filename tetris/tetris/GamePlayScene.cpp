@@ -250,7 +250,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 				y = BOARD_Y_ADJ + 2;
 			}
 			else {
-				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 1 + 8;
+				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 1 + 8 + j;
 				y = BOARD_Y_ADJ + 2;
 			}
 			if (tempAttackedBlock >= 10) {
