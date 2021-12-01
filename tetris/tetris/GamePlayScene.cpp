@@ -55,6 +55,11 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 			m_keys.down = true;
 		}
 		break;
+	case VK_SHIFT:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+			m_keys.shift = true;
+		}
+		break;
 	case VK_SPACE:
 		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
 			m_keys.space = true;
@@ -94,6 +99,9 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 	case VK_DOWN:
 		m_keys.down = false;
 		m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
+		break;
+	case VK_SHIFT:
+		m_keys.shift = false;
 		break;
 	case VK_SPACE:
 		m_keys.space = false;
@@ -172,6 +180,12 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 
 	TextOut(hDC, x + 48, y + 140, "ITEM", 4);
 	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
+
+	char temp[15];
+	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
+	TextOut(hDC, x + 30, y + 280, temp, strlen(temp));
+
+
 }
 
 void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
@@ -218,6 +232,38 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 				}
 			}
 		}
+		x = BOARD_X_ADJ + (BOARD_X / 2);
+		y = BOARD_Y_ADJ + BOARD_Y + 1;
+		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - 18, WINDOW_HEIGHT / 15 + 20 * (y + 1), "My Board", 8);
+
+		x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
+		y = BOARD_Y_ADJ + BOARD_Y + 1;
+
+		char temp[3];
+		wsprintf(temp, "%d", i);
+		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * (y + 1), temp, 1);
+
+		int tempAttackedBlock = m_gamestatus[i].AttackedBlock;
+		for (int j = 0; j < tempAttackedBlock;) {
+			if (i == m_pGameClient->m_ClientNum) {
+				x = BOARD_X_ADJ + 1 + j;
+				y = BOARD_Y_ADJ + 2;
+			}
+			else {
+				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 1 + 8 + j;
+				y = BOARD_Y_ADJ + 2;
+			}
+			if (tempAttackedBlock >= 10) {
+				TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "※", 2);
+				j++;
+				tempAttackedBlock -= 10;
+			}
+			else if (tempAttackedBlock < 10) {
+				TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "☆", 2);
+				j++;
+			}
+		}
+
 		// 게임 오버 확인
 		if (m_gamestatus[i].flag.gameover_flag == 1) {
 			if (i == m_pGameClient->m_ClientNum) {
@@ -247,7 +293,7 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 
 	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성
 		for (j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1) 
+			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1)
 				m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
 		}
 	}
@@ -323,6 +369,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_quit("status");
 			break;
 		}
+
 		pGamePlayScene->InitComplete = true;
 
 		KeyInput keys = pGamePlayScene->m_keys;
@@ -337,6 +384,8 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_quit("send()");
 			break;
 		}
+
+		//pGamePlayScene->m_keys.shift = false;
 		//SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
 	return 0;

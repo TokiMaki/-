@@ -25,12 +25,6 @@
     <ClCompile Include="GamePlayScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\겅부\넷겜플\과제 6\2017182021 양현석 GUITCPServer\GUITCPServer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\..\..\Desktop\겅부\넷겜플\과제 6\2017182021 양현석 GUITCPClinet\GUITCPClient.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameClient.h">

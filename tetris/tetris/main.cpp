@@ -92,10 +92,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		break;
 	}
 
-	
 	return(DefWindowProc(hWnd, iMsg, wParam, lParam));
 }
-
 
 DWORD __stdcall UpdateThread(LPVOID arg)
 {

@@ -36,8 +36,8 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 				}
 			}
 		}
-		std::cout << "대기인원 " << MatchMakingQ->size() << std::endl;
-		Sleep(1000);
+		//std::cout << "대기인원 " << MatchMakingQ->size() << std::endl;
+		//Sleep(1000);
 	}
 	return 0;
 }

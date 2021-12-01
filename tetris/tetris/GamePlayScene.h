@@ -32,7 +32,7 @@ public:
     // void PlaySceneRecv(); //GameServer 에서 연산된 값을 CommThread 로부터
     static DWORD WINAPI GamePlayThread(LPVOID arg);
 
-    bool InitComplete;
+    bool InitComplete = false;
 private:
     KeyInput m_keys;                    //클라이언트의 키입력을 저장
     Gamestatus m_gamestatus[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
