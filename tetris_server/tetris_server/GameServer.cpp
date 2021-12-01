@@ -118,8 +118,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 			LeaveCriticalSection(&playdata->cs);
 			break;
 		}
-		len = ntohl(len);
-		retval = send(client_sock, (char*)&playdata->m_gamestatus, len, 0);
+		retval = send(client_sock, (char*)&playdata->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("send()");
@@ -575,13 +574,13 @@ void GameServerThreadData::check_line(int ClientNum) {
 				}
 			}
 			combo++;
+			if (m_gamestatus->item == -1)
+				m_gamestatus->item = rand() % 3;
 		}
 		else j--;
 	}
 	if (combo) {
 		while (m_gamestatus->AttackedBlock > 0 && combo > 0) {
-			if (m_gamestatus->item == -1)
-				m_gamestatus->item = rand() % 3;
 			m_gamestatus->AttackedBlock -= 1;
 			combo -= 1;
 		}
@@ -742,6 +741,22 @@ void GameServerThreadData::active_item(int ClientNum)
 				move_block(Target, 101);		// 블록을 위로 2칸 올림
 			}
 		}
+
+		//현재좌표의 블럭을 지움 
+		for (int i = 0; i < 4; i++) { 
+			for (int j = 0; j < 4; j++) {
+				if (blocks[pPlayers[Target].m_gamestatus[TargetClientNum].b_type][b_rotation][i][j] == 1)
+					pPlayers[Target].m_gamestatus[TargetClientNum].board_org[bx + i][by + j] = EMPTY;
+			}
+		}
+		//왼쪽으로 한칸가서 active block을 찍음
+		for (int i = 0; i < 4; i++) {  
+			for (int j = 0; j < 4; j++) {
+				if (blocks[pPlayers[Target].m_gamestatus[TargetClientNum].b_type][b_rotation][i][j] == 1)
+					pPlayers[Target].m_gamestatus[TargetClientNum].board_org[by + i][bx + j - 1] = ACTIVE_BLOCK;
+			}
+		}
+
 		pPlayers[Target].m_gamestatus[TargetClientNum].b_type = rand() % 7;
 		pPlayers[Target].m_gamestatus[TargetClientNum].b_rotation = rand() % 4;
 		while (bx <= 1) {

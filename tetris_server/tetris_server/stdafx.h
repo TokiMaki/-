@@ -77,7 +77,7 @@ struct Gamestatus {
     int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
 
     int AttackedBlock = 0;
-    int item;       // 0 키 반전
+    int item = -1;       // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target = 1;
