@@ -13,6 +13,7 @@ struct Player
     HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
     HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
     CRITICAL_SECTION cs;
+    bool checkout_room;
 };
 
 struct GameServerThreadData
@@ -50,6 +51,7 @@ struct GameServerThreadData
     void attacked(int ClientNum);
     void check_level_up(float fTimeElapsed);
     void ActiveItem(int ClientNum, float fTimeElapsed);
+    bool Room_end();
 
     int blocks[7][4][4][4] = {
     {{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭
