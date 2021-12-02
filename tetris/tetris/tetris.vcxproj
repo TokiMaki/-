@@ -154,12 +154,20 @@
   <ItemGroup>
     <ClInclude Include="GameClient.h" />
     <ClInclude Include="GamePlayScene.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="socket_function.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="WaitScene.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tetris.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\block.bmp" />
+    <Image Include="textures\ui.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

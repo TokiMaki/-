@@ -1,5 +1,6 @@
 #include "GameClient.h"
 #include "Timer.h"
+#include "resource.h"
 
 GameClient gameClient;
 
@@ -58,11 +59,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 	HDC hDC, memDC;
 	HBITMAP hBitmap;
+	BITMAP bmp[2];
 	PAINTSTRUCT ps;
 
 	switch (iMsg) {
 	case WM_CREATE:
 		GetClientRect(hWnd, &rt);
+		gameClient.BlockBitmap=(HBITMAP)LoadBitmap(g_hinst, MAKEINTRESOURCE(IDB_BLOCK));
+		GetObject(gameClient.BlockBitmap, sizeof(BITMAP), &bmp[0]);
+		gameClient.UIBitmap = (HBITMAP)LoadBitmap(g_hinst, MAKEINTRESOURCE(IDB_UI));
+		GetObject(gameClient.UIBitmap, sizeof(BITMAP), &bmp[1]);
 		//SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:

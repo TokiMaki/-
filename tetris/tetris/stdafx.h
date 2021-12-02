@@ -2,6 +2,7 @@
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "ws2_32")
+#pragma comment(lib, "msimg32.lib")
 
 #define _WINSOCKAPI_
 #include<windows.h>
@@ -17,7 +18,7 @@
 #define SERVERIP "127.0.0.1"
 #define SERVERPORT 9000
 
-#define WINDOW_WIDTH 1280
+#define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 720
 
 #define LEFT 75 //좌로 이동    //키보드값들 

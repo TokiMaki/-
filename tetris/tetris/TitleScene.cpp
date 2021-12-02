@@ -22,7 +22,6 @@ void TitleScene::Paint(HDC hDC)
     HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
     HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
 
-    RECT rt = { x,y,x + 250,y + 100 };
     Rectangle(hDC, x, y, x+250, y+100);
 
     SetBkMode(hDC, TRANSPARENT);
