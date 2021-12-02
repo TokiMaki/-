@@ -21,7 +21,6 @@ public:
 
     void reset();
     void reset_main();
-    void reset_main_cpy();
     void new_block();
     void draw_map(HDC hDC);
     void draw_main(HDC hDC);
