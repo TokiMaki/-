@@ -14,6 +14,7 @@ struct Player
     HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
     CRITICAL_SECTION cs;
 };
+
 struct GameServerThreadData
 {
 	std::vector<SOCKET*> pClients; //MatchingThread에서 넘겨 받은 클라이언트 소켓들
@@ -23,7 +24,11 @@ struct GameServerThreadData
     HANDLE hupdate;
     HANDLE hcheckupdate;
 
+
     CRITICAL_SECTION cs;
+
+    int Level = 0; //현재 level
+    float fLevelUpTime = 0.f;
 
 	void CreateCommThread(void); //클라이언트와 통신할 쓰레드생성
 
@@ -43,6 +48,7 @@ struct GameServerThreadData
     void check_game_over(int ClientNum);
     void attack(int ClientNum, int Combo);
     void attacked(int ClientNum);
+    void check_level_up(float fTimeElapsed);
     void ActiveItem(int ClientNum, float fTimeElapsed);
 
     int blocks[7][4][4][4] = {

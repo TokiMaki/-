@@ -49,8 +49,8 @@ int main(int argc, char* argv[])
             break;
         }
         MatchMakingQ.push_back(client_sock);
-        printf("[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
-            inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+        printf("[TCP 서버] 클라이언트 접속: 소켓번호=%d IP 주소=%s, 포트 번호=%d\n",
+            client_sock, inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
     }
 
     // closesocket()
