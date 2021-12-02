@@ -152,50 +152,45 @@ void GamePlayScene::reset_main(void) { //게임판을 초기화
 }
 
 void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
+	HDC blockDC;
+	blockDC = CreateCompatibleDC(hDC);
+	(HBITMAP)SelectObject(blockDC, m_pGameClient->BlockBitmap);
+
 	int x = 360;
 	int y = 130;
 
 	TextOut(hDC, x + 48, y, "NEXT", 4);
-	Rectangle(hDC, x + 0, y + 20, x + 130, y + 120);
+	Rectangle(hDC, x + 0, y + 20, x + 120, y + 140);
 
 	if (m_pGameClient->m_ClientNum != -1) {
 		for (int i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
 			for (int j = 0; j < 4; j++) {
 				if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-
-					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-					//printf("■");
-					TextOut(hDC, x + 23 + 20 * i, y + 40 + j * 20, "■", 2);
-				}
-				else {
-					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-					//printf("  ");
-					TextOut(hDC, x + 23 + 20 * i, y + 40 + 20 * j, "  ", 2);
+					TransparentBlt(hDC, x + 20 + 20 * i, y + 40 + j * 20, 20, 20,
+						blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
 				}
 			}
 		}
 	}
 
-	TextOut(hDC, x + 48, y + 140, "ITEM", 4);
-	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
+	TextOut(hDC, x + 48, y + 150, "ITEM", 4);
+	Rectangle(hDC, x + 0, y + 170, x + 130, y + 270);
 
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 280, temp, strlen(temp));
 
-
+	DeleteDC(blockDC);
 }
 
 void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 	int x, y;
-	//for (int i = 0; i < MAX_PLAYER; ++i) {
-	//	for (int j = 1; j < BOARD_X - 1; j++) { //천장은 계속 새로운블럭이 지나가서 지워지면 새로 그려줌
-	//		if (m_gamestatus[i].board_org[CEILLING_Y][j] == EMPTY)
-	//			m_gamestatus[i].board_org[CEILLING_Y][j] = CEILLING;
-	//	}
-	//}
+	
+	HDC blockDC;
+	blockDC = CreateCompatibleDC(hDC);
+	(HBITMAP)SelectObject(blockDC, m_pGameClient->BlockBitmap);
 
 	// 나와 내 옆 다른 사람들의 보드 그리기
 	for (int i = 0; i < MAX_PLAYER; ++i) {
@@ -213,19 +208,27 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 				}
 				switch (m_gamestatus[i].board_org[j][k]) {
 				case EMPTY: //빈칸모양
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					break;
 				case CEILLING: //천장모양
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
+					//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15  + 20 * y, ". ", 2);
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					break;
 				case WALL: //벽모양 
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
+					//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
+	
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20, 
+						blockDC, 32 * 0, 0, 32, 32, RGB(255, 0, 255));
 					break;
 				case INACTIVE_BLOCK: //굳은 블럭 모양
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "□", 2);
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * 9, 0, 32, 32, RGB(255, 0, 255));
 					break;
 				case ACTIVE_BLOCK: //움직이고있는 블럭 모양
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "■", 2);
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * (m_gamestatus[i].b_type + 1), 0, 32, 32, RGB(255, 0, 255));
 					break;
 				}
 			}
@@ -276,6 +279,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 		}
 	}
 
+	DeleteDC(blockDC);
 }
 
 void GamePlayScene::new_block(void) { //새로운 블록 생성  
@@ -293,18 +297,6 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 		for (j = 0; j < 4; j++) {
 			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1)
 				m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
-		}
-	}
-	for (i = 1; i < 3; i++) { //게임상태표시에 다음에 나올블럭을 그림 
-		for (j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("■");
-			}
-			else {
-				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("  ");
-			}
 		}
 	}
 }

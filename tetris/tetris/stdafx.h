@@ -2,6 +2,7 @@
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "ws2_32")
+#pragma comment(lib, "msimg32.lib")
 
 #define _WINSOCKAPI_
 #include<windows.h>
