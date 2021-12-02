@@ -15,7 +15,7 @@ public:
     void KeyDown(unsigned char KEYCODE) override;
     void KeyUp(unsigned char KEYCODE) override;
     // void WaitSceneSend();
-    static DWORD WINAPI TestThread(LPVOID arg);
+    static DWORD WINAPI WaitThread(LPVOID arg);
 private:
     HANDLE hThread;
 };

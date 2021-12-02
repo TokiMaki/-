@@ -111,8 +111,7 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 }
 
 void GamePlayScene::reset(void) {
-	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
-	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
+	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.crush_on = 0;
 	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
 
 	//system("cls"); //화면지움

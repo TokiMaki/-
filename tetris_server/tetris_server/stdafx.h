@@ -67,7 +67,6 @@ struct Gamestatus {
     int b_type; //블록 종류
     int b_rotation; //블록 회전값
     int b_type_next; //다음 블록값
-    int level; //현재 level
     float speed; //블럭이 내려오는 속도 1이면 1초마다 한칸씩 내려옴
     float fKeyMoveSpeed = 0.1f; //블럭이 키 입력이 됬을 때 좌우나 아래로 움직이는 속도
     float fDropBlockTime = 0.0f;
