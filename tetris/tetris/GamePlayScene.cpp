@@ -22,6 +22,8 @@ void GamePlayScene::Update(float fTimeElapsed) {
 void GamePlayScene::Paint(HDC hDC)
 {
 	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
+	// 회전 적용하기위한 행렬 구조체
+
 
 	if (InitComplete) {
 		SetBkMode(hDC, TRANSPARENT);
@@ -36,42 +38,42 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 {
 	switch (KEYCODE) {
 	case VK_LEFT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.left = true;
 		}
 		break;
 	case VK_RIGHT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.right = true;
 		}
 		break;
 	case VK_UP:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.up = true;
 		}
 		break;
 	case VK_DOWN:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.down = true;
 		}
 		break;
 	case VK_SHIFT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.shift = true;
 		}
 		break;
 	case VK_SPACE:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.space = true;
 		}
 		break;
 	case VK_CONTROL:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.ctrl = true;
 		}
 		break;
 	case VK_RETURN:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 1) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
 			TerminateThread(hThread, 0);
 			CloseHandle(hThread);
 			CloseHandle(hReadEvent);
@@ -91,19 +93,19 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 	switch (KEYCODE) {
 	case VK_LEFT:
 		m_keys.left = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.left_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.left_flag = false;
 		break;
 	case VK_RIGHT:
 		m_keys.right = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.right_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.right_flag = false;
 		break;
 	case VK_UP:
 		m_keys.up = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.up_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.up_flag = false;
 		break;
 	case VK_DOWN:
 		m_keys.down = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.down_flag = false;
 		break;
 	case VK_SHIFT:
 		m_keys.shift = false;
@@ -113,14 +115,14 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 		break;
 	case VK_SPACE:
 		m_keys.space = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.space_flag = false;
 		break;
 	}
 }
 
 void GamePlayScene::reset(void) {
 	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //각종변수 초기화
-	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
+	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.crush_on = 0;
 	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
 
 	//system("cls"); //화면지움
@@ -262,7 +264,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 		}
 
 		// 게임 오버 확인
-		if (m_gamestatus[i].flag.gameover_flag == 1) {
+		if (m_gamestatus[i].m_KeyFlag.gameover_flag == 1) {
 			if (i == m_pGameClient->m_ClientNum) {
 				x = BOARD_X_ADJ + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
@@ -286,7 +288,7 @@ void GamePlayScene::new_block(void) { //새로운 블록 생성
 	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //다음 블럭을 만듦 
 	m_gamestatus[m_pGameClient->m_ClientNum].b_rotation = 0;  //회전은 0번으로 가져옴 
 
-	m_gamestatus[m_pGameClient->m_ClientNum].flag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flag를 끔  
+	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flag를 끔  
 
 	for (i = 0; i < 4; i++) { //게임판 bx, by위치에 블럭생성
 		for (j = 0; j < 4; j++) {

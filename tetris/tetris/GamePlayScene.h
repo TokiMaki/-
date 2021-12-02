@@ -25,7 +25,7 @@ public:
 	void draw_map(HDC hDC);
 	void draw_main(HDC hDC);
 	void check_key();
-	//void check_game_over(void);
+	void check_game_over();
 
 	// void PlaySceneSend(); //KeyInput m_keys 의 값을 Commthread 에 전송
 	// void PlaySceneRecv(); //GameServer 에서 연산된 값을 CommThread 로부터
