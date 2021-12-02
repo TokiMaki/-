@@ -32,6 +32,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newplayerdata.hupdate = newRoomData.hupdate;
 		newplayerdata.hcheckupdate = newRoomData.hcheckupdate;
 		newplayerdata.cs = newRoomData.cs;
+		newplayerdata.checkout_room = false;
 		newRoomData.pPlayers.push_back(newplayerdata);
 	}
 	newRoomData.reset();
@@ -42,6 +43,11 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	{
 		//WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
 		//printf("Call GameThread\n");
+		bool check_room = newRoomData.Room_end();
+		if (check_room == true)
+		{
+			break;
+		}
 		EnterCriticalSection(&newRoomData.cs);
 		newRoomData.m_GameTimer.Tick(60.0f);
 		newRoomData.check_key();
@@ -70,6 +76,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//SetEvent(newRoomData.hcheckupdate);
 		LeaveCriticalSection(&newRoomData.cs);
 	}
+	std::cout << "방종료" << std::endl;
 	delete match_sockets;
 	DeleteCriticalSection(&newRoomData.cs);
 	return 0;
@@ -149,7 +156,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		//SetEvent(playdata->hupdate); // 쓰기 완료
 		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
 	}
-
+	playdata->checkout_room = true;
 	return 0;
 }
 void GameServerThreadData::CreateCommThread(void)
@@ -770,5 +777,25 @@ void GameServerThreadData::ActiveItem(int ClientNum, float fTimeElapsed)
 			break;
 		}
 		pPlayers[ClientNum].m_gamestatus[GameClientNum].item = -1;
+	}
+}
+
+bool GameServerThreadData::Room_end()
+{
+	int check_count = 0;
+	for (int i = 0; i < MAX_PLAYER; ++i)
+	{
+		if (pPlayers[i].checkout_room == true)
+		{
+			check_count += 1;
+		}
+	}
+	if (check_count >= 3)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
