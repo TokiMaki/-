@@ -80,9 +80,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		hDC = BeginPaint(hWnd, &ps);
 
 		// 그래픽스 모드 변경
-		SetGraphicsMode(hDC, GM_ADVANCED);
+		//SetGraphicsMode(hDC, GM_ADVANCED);
 		// 변환 최종DC에 적용
-		ModifyWorldTransform(hDC, &test, MWT_RIGHTMULTIPLY);
+		//ModifyWorldTransform(hDC, &test, MWT_RIGHTMULTIPLY);
 
 		memDC = CreateCompatibleDC(hDC);
 
