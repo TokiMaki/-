@@ -49,7 +49,7 @@ struct KeyInput {
     bool ctrl = false;
 };
 
-struct Flag {
+struct KeyFlag {
     bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
     bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
 
@@ -62,6 +62,19 @@ struct Flag {
     bool ctrl_flag = 0; // 컨트롤키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
 
     bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
+};
+
+struct GameFlag {
+    bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
+
+    bool screen_rotate_flag = 0; // 스크린 돌아가는것을 알려주는 flag
+    float fScreenRotateTime = 0.0f;  // 스크린이 몇 초 돌아갓는지 알려주는 변수
+
+    bool speedup_flag = 0; // 스크린 돌아가는것을 알려주는 flag
+    float fSpeedUpTime = 0.0f;  // 스피드 업이 몇초 됬는지 알려주는 변수
+
+    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag
+    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
 };
 
 struct Gamestatus {
@@ -82,7 +95,8 @@ struct Gamestatus {
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target = 1;
 
-    Flag flag;
+    KeyFlag m_KeyFlag;
+    GameFlag m_GameFlag;
 };
 
 struct MatchSockets {

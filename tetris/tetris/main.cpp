@@ -72,23 +72,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		//SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:
-		// 회전 적용하기위한 행렬 구조체
-		// https://docs.microsoft.com/ko-kr/windows/win32/api/wingdi/ns-wingdi-xform
-		XFORM test;
-		test.eM11 = cos(180.0/180.0*3.141592);
-		test.eM12 = sin(180.0 / 180.0 * 3.141592);
-		test.eM21 = -sin(180.0 / 180.0 * 3.141592);
-		test.eM22 = cos(180.0 / 180.0 * 3.141592);
-		test.eDx = rt.right;
-		test.eDy = rt.bottom;
 		
 		InvalidateRect(hWnd, &rt, FALSE);
 		hDC = BeginPaint(hWnd, &ps);
 
 		// 그래픽스 모드 변경
-		//SetGraphicsMode(hDC, GM_ADVANCED);
-		// 변환 최종DC에 적용
-		//ModifyWorldTransform(hDC, &test, MWT_RIGHTMULTIPLY);
+		SetGraphicsMode(hDC, GM_ADVANCED);
+
+		gameClient.ScreenRotate(hDC, rt);
 
 		memDC = CreateCompatibleDC(hDC);
 
@@ -132,6 +123,7 @@ DWORD __stdcall CallDrawMsgThread(LPVOID arg)
 	DrawTimer.Start();
 	HWND* hWnd = (HWND*)arg;
 	while (1) {
+		DrawTimer.Tick(60.0f);
 		SendMessage(*hWnd, WM_PAINT, NULL, NULL);
 	}
 	return 0;

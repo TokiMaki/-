@@ -28,6 +28,7 @@ public:
 	void Paint(HDC hDC);
 	void KeyDown(unsigned char KEYCODE);
 	void KeyUp(unsigned char KEYCODE);
+	void ScreenRotate(HDC hDC, RECT rt);
 
 	void SetSOCKET(SOCKET);
 	SOCKET GetSOCKET();
