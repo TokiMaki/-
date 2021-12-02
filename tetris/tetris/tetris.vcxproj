@@ -167,6 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\block.bmp" />
+    <Image Include="textures\ui.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -44,4 +44,5 @@ public:
 	void TitleSceneSend(enum MSG_MatchMaking tag);
 
 	HBITMAP BlockBitmap;
+	HBITMAP UIBitmap;
 };

@@ -52,6 +52,8 @@ END
 
 IDB_BLOCK               BITMAP                  "textures\\block.bmp"
 
+IDB_UI                  BITMAP                  "textures\\ui.bmp"
+
 #endif    // 한국어(대한민국) resources
 /////////////////////////////////////////////////////////////////////////////
 

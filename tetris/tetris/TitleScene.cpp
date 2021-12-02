@@ -16,17 +16,12 @@ void TitleScene::Update(float fTimeElapsed) {
 
 void TitleScene::Paint(HDC hDC)
 {
-    HDC testDC;
-    testDC = CreateCompatibleDC(hDC);
-    (HBITMAP)SelectObject(testDC, m_pGameClient->BlockBitmap);
-
     int x = WINDOW_WIDTH / 4; //타이틀화면이 표시되는 x좌표
     int y = WINDOW_HEIGHT / 4; //타이틀화면이 표시되는 y좌표
 
     HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
     HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
 
-    RECT rt = { x,y,x + 250,y + 100 };
     Rectangle(hDC, x, y, x+250, y+100);
 
     SetBkMode(hDC, TRANSPARENT);
@@ -43,11 +38,6 @@ void TitleScene::Paint(HDC hDC)
 
     SelectObject(hDC, oldBrush);
     DeleteObject(myBrush);
-
-    TransparentBlt(hDC, 0, 0, 288, 32,
-        testDC, 0, 0, 288, 32, RGB(255, 0, 255));
-
-    DeleteDC(testDC);
 }
 
 void TitleScene::KeyDown(unsigned char KEYCODE)
