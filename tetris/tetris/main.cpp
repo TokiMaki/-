@@ -67,7 +67,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		break;
 	case WM_PAINT:
 		// 회전 적용하기위한 행렬 구조체
-		// https://docs.microsoft.com/ko-kr/windows/win32/api/wingdi/ns-wingdi-xform
 		XFORM test;
 		test.eM11 = cos(180.0/180.0*3.141592);
 		test.eM12 = sin(180.0 / 180.0 * 3.141592);
@@ -126,6 +125,7 @@ DWORD __stdcall CallDrawMsgThread(LPVOID arg)
 	DrawTimer.Start();
 	HWND* hWnd = (HWND*)arg;
 	while (1) {
+		DrawTimer.Tick(60.0f);
 		SendMessage(*hWnd, WM_PAINT, NULL, NULL);
 	}
 	return 0;
