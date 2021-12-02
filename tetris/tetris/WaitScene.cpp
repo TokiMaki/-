@@ -37,7 +37,7 @@ void WaitScene::InitScene() {
 		exit(1);
 	}
 
-	hThread = CreateThread(NULL, 0, TestThread, (LPVOID)this, 0, NULL);
+	hThread = CreateThread(NULL, 0, WaitThread, (LPVOID)this, 0, NULL);
 }
 
 void WaitScene::Update(float fTimeElapsed) {
@@ -85,7 +85,7 @@ void WaitScene::KeyUp(unsigned char KEYCODE)
 {
 }
 
-DWORD __stdcall WaitScene::TestThread(LPVOID arg)
+DWORD __stdcall WaitScene::WaitThread(LPVOID arg)
 {
 	int retval;
 	int len = 0;
@@ -100,6 +100,7 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 		}
 		else if (retval == 0)
 			break;
+
 		len = ntohl(len);
 
 		retval = recvn(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&pWaitScene->Msg, len, 0);
@@ -109,17 +110,13 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 		}
 		else if (retval == 0)
 			break;
+
 		pWaitScene->Msg = ntohl(pWaitScene->Msg);
 
-		if (pWaitScene->Msg == MSG_MatchMaking::Msg_PlayInGame) {
-			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
-			SetEvent(hWaitReadEvent);
-			break;
-		}
-		pWaitScene->Msg = 0;
 		int sendMsg = htonl(pWaitScene->Msg);
 
 		int MSG_len = htonl(sizeof(int));
+
 		retval = send(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&MSG_len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("send()");
@@ -131,6 +128,13 @@ DWORD __stdcall WaitScene::TestThread(LPVOID arg)
 			err_quit("send()");
 			break;
 		}
+
+		if (pWaitScene->Msg == MSG_MatchMaking::Msg_PlayInGame) {
+			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
+			SetEvent(hWaitReadEvent);
+			break;
+		}
+
 		//SetEvent(hWaitReadEvent);
 	}
 	return 0;
