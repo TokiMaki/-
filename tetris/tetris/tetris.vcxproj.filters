@@ -51,9 +51,6 @@
     <ClInclude Include="socket_function.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="리소스 파일">
@@ -68,18 +65,5 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{42776c80-c42f-42e0-873a-cfb340fa43c0}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="tetris.rc">
-      <Filter>리소스 파일</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="textures\block.bmp">
-      <Filter>리소스 파일</Filter>
-    </Image>
-    <Image Include="textures\ui.bmp">
-      <Filter>리소스 파일</Filter>
-    </Image>
   </ItemGroup>
 </Project>

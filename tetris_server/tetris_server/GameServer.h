@@ -43,7 +43,7 @@ struct GameServerThreadData
     void check_game_over(int ClientNum);
     void attack(int ClientNum, int Combo);
     void attacked(int ClientNum);
-    void ActiveItem(int ClientNum, float fTimeElapsed);
+    void active_item(int ClientNum);
 
     int blocks[7][4][4][4] = {
     {{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭

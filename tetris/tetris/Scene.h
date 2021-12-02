@@ -16,7 +16,6 @@ public:
     Scene();
     Scene(SceneNum num, GameClient* const pGameClient);
     ~Scene();
-    const SceneNum GetSceneNum() { return m_SceneNum; };
 
     virtual void InitScene() = 0;
     virtual void Update(float fTimeElapsed) = 0;

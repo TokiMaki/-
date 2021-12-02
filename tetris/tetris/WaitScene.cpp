@@ -54,17 +54,8 @@ void WaitScene::Paint(HDC hDC) {
 	int x = WINDOW_WIDTH / 2;
 	int y = WINDOW_HEIGHT / 2;
 
-	HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
+	HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
 	HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
-
-	Rectangle(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-	SelectObject(hDC, oldBrush);
-	DeleteObject(myBrush);
-
-
-	myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
-	oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
 
 	Rectangle(hDC, x - 250, y - 100, x + 250, y + 100);
 
