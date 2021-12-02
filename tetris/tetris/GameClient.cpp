@@ -68,6 +68,16 @@ void GameClient::KeyUp(unsigned char KEYCODE)
     m_pScene->KeyUp(KEYCODE);
 }
 
+void GameClient::ScreenRotate(HDC hDC, RECT rt)
+{
+    if (m_pScene->GetSceneNum() == Scene::SceneNum::GamePlay) {
+        GamePlayScene* TempScene = (GamePlayScene*)m_pScene;
+        TempScene->ScreenRotate(hDC, rt);
+    }
+    //ModifyWorldTransform(hDC, &rotate, MWT_IDENTITY);
+
+}
+
 void GameClient::SetSOCKET(SOCKET arg)
 {
     sock = arg;

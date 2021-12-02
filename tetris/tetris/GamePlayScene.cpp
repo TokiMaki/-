@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "socket_function.h"
 
-HANDLE hReadEvent, hWriteEvent; // ÀÌº¥Æ®
+HANDLE hReadEvent, hWriteEvent; // ï¿½Ìºï¿½Æ®
 
 GamePlayScene::GamePlayScene() {}
 GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
@@ -14,18 +14,35 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
-	//WaitForSingleObject(hReadEvent, INFINITE); // ÀÐ±â ¿Ï·á ±â´Ù¸®±â
-	//// check_key(); //Å°ÀÔ·ÂÈ®ÀÎ
+	//WaitForSingleObject(hReadEvent, INFINITE); // ï¿½Ð±ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½
+	//// check_key(); //Å°ï¿½Ô·ï¿½È®ï¿½ï¿½
 	//SetEvent(hWriteEvent);
+}
+
+void GamePlayScene::ScreenRotate(HDC hDC, RECT rt)
+{
+	XFORM rotate;
+	if (InitComplete && m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.screen_rotate_flag == 1) {
+		rotate.eM11 = cos(180.0 / 180.0 * 3.141592);
+		rotate.eM12 = sin(180.0 / 180.0 * 3.141592);
+		rotate.eM21 = -sin(180.0 / 180.0 * 3.141592);
+		rotate.eM22 = cos(180.0 / 180.0 * 3.141592);
+		rotate.eDx = rt.right;
+		rotate.eDy = rt.bottom;
+		ModifyWorldTransform(hDC, &rotate, MWT_RIGHTMULTIPLY);
+	}
+	else
+		ModifyWorldTransform(hDC, &rotate, MWT_IDENTITY);
 }
 
 void GamePlayScene::Paint(HDC hDC)
 {
-	// WaitForSingleObject(hReadEvent, INFINITE); // ÀÐ±â ¿Ï·á ±â´Ù¸®±â
+	// WaitForSingleObject(hReadEvent, INFINITE); // ï¿½Ð±ï¿½ ï¿½Ï·ï¿½ ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½
+	// È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼
+
 
 	if (InitComplete) {
 		SetBkMode(hDC, TRANSPARENT);
-		SetTextColor(hDC, RGB(0, 0, 0));
 		draw_main(hDC);
 		draw_map(hDC);
 	}
@@ -36,37 +53,42 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 {
 	switch (KEYCODE) {
 	case VK_LEFT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.left = true;
 		}
 		break;
 	case VK_RIGHT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.right = true;
 		}
 		break;
 	case VK_UP:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.up = true;
 		}
 		break;
 	case VK_DOWN:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.down = true;
 		}
 		break;
 	case VK_SHIFT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.shift = true;
 		}
 		break;
 	case VK_SPACE:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
 			m_keys.space = true;
 		}
 		break;
+	case VK_CONTROL:
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+			m_keys.ctrl = true;
+		}
+		break;
 	case VK_RETURN:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 1) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
 			TerminateThread(hThread, 0);
 			CloseHandle(hThread);
 			CloseHandle(hReadEvent);
@@ -86,120 +108,153 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 	switch (KEYCODE) {
 	case VK_LEFT:
 		m_keys.left = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.left_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.left_flag = false;
 		break;
 	case VK_RIGHT:
 		m_keys.right = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.right_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.right_flag = false;
 		break;
 	case VK_UP:
 		m_keys.up = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.up_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.up_flag = false;
 		break;
 	case VK_DOWN:
 		m_keys.down = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.down_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.down_flag = false;
 		break;
 	case VK_SHIFT:
 		m_keys.shift = false;
 		break;
 	case VK_SPACE:
 		m_keys.space = false;
-		m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
+		m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.space_flag = false;
 		break;
 	}
 }
 
 void GamePlayScene::reset(void) {
-	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //°¢Á¾º¯¼ö ÃÊ±âÈ­
-	m_gamestatus[m_pGameClient->m_ClientNum].flag.crush_on = 0;
+	m_gamestatus[m_pGameClient->m_ClientNum].level = 1; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
+	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.crush_on = 0;
 	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
 
-	//system("cls"); //È­¸éÁö¿ò
-	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org¸¦ ÃÊ±âÈ­
-	//draw_map(); // °ÔÀÓÈ­¸éÀ» ±×¸²
-	//draw_main(); // °ÔÀÓÆÇÀ» ±×¸²
+	//system("cls"); //È­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_orgï¿½ï¿½ ï¿½Ê±ï¿½È­
+	//draw_map(); // ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½
+	//draw_main(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½
 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //´ÙÀ½¹ø¿¡ ³ª¿Ã ºí·Ï Á¾·ù¸¦ ·£´ýÇÏ°Ô »ý¼º
-	new_block(); //»õ·Î¿î ºí·ÏÀ» ÇÏ³ª ¸¸µê
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½
+	new_block(); //ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½
 }
 
-void GamePlayScene::reset_main(void) { //°ÔÀÓÆÇÀ» ÃÊ±âÈ­
+void GamePlayScene::reset_main(void) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 
-	for (int i = 0; i < BOARD_Y; i++) { // °ÔÀÓÆÇÀ» 0À¸·Î ÃÊ±âÈ­
+	for (int i = 0; i < BOARD_Y; i++) { // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
 		for (int j = 0; j < BOARD_X; j++) {
 			m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][j] = 0;
 			m_gamestatus[m_pGameClient->m_ClientNum].board_cpy[i][j] = 100;
 		}
 	}
-	for (int j = 1; j < BOARD_X; j++) { //y°ªÀÌ 3ÀÎ À§Ä¡¿¡ ÃµÀåÀ» ¸¸µê
+	for (int j = 1; j < BOARD_X; j++) { //yï¿½ï¿½ï¿½ï¿½ 3ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ Ãµï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
 	}
-	for (int i = 1; i < BOARD_Y - 1; i++) { //ÁÂ¿ì º®À» ¸¸µê
+	for (int i = 1; i < BOARD_Y - 1; i++) { //ï¿½Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][0] = WALL;
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][BOARD_X - 1] = WALL;
 	}
-	for (int j = 0; j < BOARD_X; j++) { //¹Ù´Úº®À» ¸¸µê 
+	for (int j = 0; j < BOARD_X; j++) { //ï¿½Ù´Úºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[BOARD_Y - 1][j] = WALL;
 	}
 }
 
-void GamePlayScene::reset_main_cpy(void) { //m_gamestatus[m_pGameClient->m_ClientNum].board_cpy¸¦ ÃÊ±âÈ­ 
+void GamePlayScene::reset_main_cpy(void) { //m_gamestatus[m_pGameClient->m_ClientNum].board_cpyï¿½ï¿½ ï¿½Ê±ï¿½È­ 
 
-	for (int i = 0; i < BOARD_Y; i++) {         //°ÔÀÓÆÇ¿¡ °ÔÀÓ¿¡ »ç¿ëµÇÁö ¾Ê´Â ¼ýÀÚ¸¦ ³ÖÀ½ 
-		for (int j = 0; j < BOARD_X; j++) {  //ÀÌ´Â m_gamestatus[m_pGameClient->m_ClientNum].board_org¿Í °°Àº ¼ýÀÚ°¡ ¾ø°Ô ÇÏ±â À§ÇÔ 
+	for (int i = 0; i < BOARD_Y; i++) {         //ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ ï¿½ï¿½ï¿½Ó¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+		for (int j = 0; j < BOARD_X; j++) {  //ï¿½Ì´ï¿½ m_gamestatus[m_pGameClient->m_ClientNum].board_orgï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ 
 			m_gamestatus[m_pGameClient->m_ClientNum].board_cpy[i][j] = 100;
 		}
 	}
 }
 
-void GamePlayScene::draw_map(HDC hDC) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
-	int x = 360;
+void GamePlayScene::draw_map(HDC hDC) { //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½Ã¸ï¿½ ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+	HDC blockDC, UIDC;
+	blockDC = CreateCompatibleDC(hDC);
+	UIDC = CreateCompatibleDC(hDC);
+	(HBITMAP)SelectObject(blockDC, m_pGameClient->BlockBitmap);
+	(HBITMAP)SelectObject(UIDC, m_pGameClient->UIBitmap);
+
+	int x = WINDOW_WIDTH / 20 + 20 * (BOARD_X_ADJ + BOARD_X + 1);
 	int y = 130;
 
+	SetTextColor(hDC, RGB(255, 255, 255));
 	TextOut(hDC, x + 48, y, "NEXT", 4);
-	Rectangle(hDC, x + 0, y + 20, x + 130, y + 120);
+
+	
+	//Rectangle(hDC, x + 20, y + 20, x + 120, y + 140);
+	TransparentBlt(hDC, x, y + 20, 120, 120,
+		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
 
 	if (m_pGameClient->m_ClientNum != -1) {
-		for (int i = 1; i < 3; i++) { //°ÔÀÓ»óÅÂÇ¥½Ã¿¡ ´ÙÀ½¿¡ ³ª¿Ãºí·°À» ±×¸² 
+		for (int i = 0; i < 4; i++) { //ï¿½ï¿½ï¿½Ó»ï¿½ï¿½ï¿½Ç¥ï¿½Ã¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ 
 			for (int j = 0; j < 4; j++) {
-				if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-
-					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-					//printf("¡á");
-					TextOut(hDC, x + 23 + 20 * i, y + 40 + j * 20, "¡á", 2);
-				}
-				else {
-					//gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-					//printf("  ");
-					TextOut(hDC, x + 23 + 20 * i, y + 40 + 20 * j, "  ", 2);
+				switch (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next) {
+				case 0:
+					if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
+						TransparentBlt(hDC, x + 20 + 20 * j, y + 40 + i * 20, 20, 20,
+							blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
+					}
+					break;
+				case 1:
+					if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][1][i][j] == 1) {
+						TransparentBlt(hDC, x + 30 + 20 * j, y + 40 + i * 20, 20, 20,
+							blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
+					}
+					break;
+				default:
+					if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
+						TransparentBlt(hDC, x + 30 + 20 * j, y + 40 + i * 20, 20, 20,
+							blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
+					}
+					break;
 				}
 			}
 		}
 	}
 
-	TextOut(hDC, x + 48, y + 140, "ITEM", 4);
-	Rectangle(hDC, x + 0, y + 160, x + 130, y + 260);
+	TextOut(hDC, x + 48, y + 160, "ITEM", 4);
+	//Rectangle(hDC, x + 0, y + 180, x + 120, y + 300);
+	TransparentBlt(hDC, x, y + 180, 120, 120,
+		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
 
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
-	TextOut(hDC, x + 30, y + 280, temp, strlen(temp));
+	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
+	SetTextColor(hDC, RGB(0, 0, 0));
 
-
+	DeleteDC(blockDC);
+	DeleteDC(UIDC);
 }
 
-void GamePlayScene::draw_main(HDC hDC) { //°ÔÀÓÆÇ ±×¸®´Â ÇÔ¼ö
-	// ³ª¸¦ Á¦¿ÜÇÑ ÀÎ¿ø ¸î¸íÂ° ±×¸±°ÍÀÎÁö¿¡ ´ëÇÑ º¯¼ö
+void GamePlayScene::draw_main(HDC hDC) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½Â° ï¿½×¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	int DrawPlayers = 0;
 	int x, y;
-	//for (int i = 0; i < MAX_PLAYER; ++i) {
-	//	for (int j = 1; j < BOARD_X - 1; j++) { //ÃµÀåÀº °è¼Ó »õ·Î¿îºí·°ÀÌ Áö³ª°¡¼­ Áö¿öÁö¸é »õ·Î ±×·ÁÁÜ
-	//		if (m_gamestatus[i].board_org[CEILLING_Y][j] == EMPTY)
-	//			m_gamestatus[i].board_org[CEILLING_Y][j] = CEILLING;
-	//	}
-	//}
+	
+	HDC blockDC, UIDC;
+	UIDC = CreateCompatibleDC(hDC);
+	blockDC = CreateCompatibleDC(hDC);
+	(HBITMAP)SelectObject(blockDC, m_pGameClient->BlockBitmap);
+	(HBITMAP)SelectObject(UIDC, m_pGameClient->UIBitmap);
 
-	// ³ª¿Í ³» ¿· ´Ù¸¥ »ç¶÷µéÀÇ º¸µå ±×¸®±â
+	HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
+	HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
+
+	Rectangle(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+	SelectObject(hDC, oldBrush);
+	DeleteObject(myBrush);
+
+	SetTextColor(hDC, RGB(255, 255, 255));
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		if (i != m_pGameClient->m_ClientNum)
 			DrawPlayers++;
@@ -214,20 +269,28 @@ void GamePlayScene::draw_main(HDC hDC) { //°ÔÀÓÆÇ ±×¸®´Â ÇÔ¼ö
 					y = BOARD_Y_ADJ + j;
 				}
 				switch (m_gamestatus[i].board_org[j][k]) {
-				case EMPTY: //ºóÄ­¸ð¾ç
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "  ", 2);
+				case EMPTY: //ï¿½ï¿½Ä­ï¿½ï¿½ï¿½
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					break;
-				case CEILLING: //ÃµÀå¸ð¾ç
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, ". ", 2);
+				case CEILLING: //Ãµï¿½ï¿½ï¿½ï¿½
+					//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15  + 20 * y, ". ", 2);
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					break;
-				case WALL: //º®¸ð¾ç 
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "¢Ì", 2);
+				case WALL: //ï¿½ï¿½ï¿½ï¿½ï¿½ 
+					//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + y + 20 * y, "ï¿½ï¿½", 2);
+	
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20, 
+						blockDC, 32 * 0, 0, 32, 32, RGB(255, 0, 255));
 					break;
-				case INACTIVE_BLOCK: //±»Àº ºí·° ¸ð¾ç
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "¡à", 2);
+				case INACTIVE_BLOCK: //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * 9, 0, 32, 32, RGB(255, 0, 255));
 					break;
-				case ACTIVE_BLOCK: //¿òÁ÷ÀÌ°íÀÖ´Â ºí·° ¸ð¾ç
-					TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15 + y + 20 * y, "¡á", 2);
+				case ACTIVE_BLOCK: //ï¿½ï¿½ï¿½ï¿½ï¿½Ì°ï¿½ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+						blockDC, 32 * (m_gamestatus[i].b_type + 1), 0, 32, 32, RGB(255, 0, 255));
 					break;
 				}
 			}
@@ -254,18 +317,22 @@ void GamePlayScene::draw_main(HDC hDC) { //°ÔÀÓÆÇ ±×¸®´Â ÇÔ¼ö
 				y = BOARD_Y_ADJ + 2;
 			}
 			if (tempAttackedBlock >= 10) {
-				TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "¡Ø", 2);
+				//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "ï¿½ï¿½", 2);
+				TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+					UIDC, 256 + 18, 0, 18, 18, RGB(255, 0, 255));
 				j++;
 				tempAttackedBlock -= 10;
 			}
 			else if (tempAttackedBlock < 10) {
-				TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "¡Ù", 2);
+				//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "ï¿½ï¿½", 2);
+				TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
+					UIDC, 256, 0, 18, 18, RGB(255, 0, 255));
 				j++;
 			}
 		}
 
-		// °ÔÀÓ ¿À¹ö È®ÀÎ
-		if (m_gamestatus[i].flag.gameover_flag == 1) {
+		// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
+		if (m_gamestatus[i].m_KeyFlag.gameover_flag == 1) {
 			if (i == m_pGameClient->m_ClientNum) {
 				x = BOARD_X_ADJ + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
@@ -274,39 +341,31 @@ void GamePlayScene::draw_main(HDC hDC) { //°ÔÀÓÆÇ ±×¸®´Â ÇÔ¼ö
 				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
 			}
+			SetTextColor(hDC, RGB(rand() % 55+200, rand() % 55+200, rand() % 55+200));
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
+			SetTextColor(hDC, RGB(0, 0, 0));
 		}
 	}
 
+	DeleteDC(blockDC);
+	DeleteDC(UIDC);
 }
 
-void GamePlayScene::new_block(void) { //»õ·Î¿î ºí·Ï »ý¼º  
+void GamePlayScene::new_block(void) { //ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½  
 	int i, j;
 
-	m_gamestatus[m_pGameClient->m_ClientNum].bx = (BOARD_X / 2) - 1; //ºí·Ï »ý¼º À§Ä¡xÁÂÇ¥(°ÔÀÓÆÇÀÇ °¡¿îµ¥) 
-	m_gamestatus[m_pGameClient->m_ClientNum].by = 0;  //ºí·Ï »ý¼ºÀ§Ä¡ yÁÂÇ¥(Á¦ÀÏ À§) 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type = m_gamestatus[m_pGameClient->m_ClientNum].b_type_next; //´ÙÀ½ºí·°°ªÀ» °¡Á®¿È 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //´ÙÀ½ ºí·°À» ¸¸µê 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_rotation = 0;  //È¸ÀüÀº 0¹øÀ¸·Î °¡Á®¿È 
+	m_gamestatus[m_pGameClient->m_ClientNum].bx = (BOARD_X / 2) - 1; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡xï¿½ï¿½Ç¥(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½îµ¥) 
+	m_gamestatus[m_pGameClient->m_ClientNum].by = 0;  //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¡ yï¿½ï¿½Ç¥(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½) 
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type = m_gamestatus[m_pGameClient->m_ClientNum].b_type_next; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+	m_gamestatus[m_pGameClient->m_ClientNum].b_rotation = 0;  //È¸ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 
 
-	m_gamestatus[m_pGameClient->m_ClientNum].flag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flag¸¦ ²û  
+	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flagï¿½ï¿½ ï¿½ï¿½  
 
-	for (i = 0; i < 4; i++) { //°ÔÀÓÆÇ bx, byÀ§Ä¡¿¡ ºí·°»ý¼º
+	for (i = 0; i < 4; i++) { //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ bx, byï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		for (j = 0; j < 4; j++) {
 			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1)
 				m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
-		}
-	}
-	for (i = 1; i < 3; i++) { //°ÔÀÓ»óÅÂÇ¥½Ã¿¡ ´ÙÀ½¿¡ ³ª¿Ãºí·°À» ±×¸² 
-		for (j = 0; j < 4; j++) {
-			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("¡á");
-			}
-			else {
-				gotoxy(STATUS_X_ADJ + 2 + j, i + 6);
-				printf("  ");
-			}
 		}
 	}
 }
@@ -316,23 +375,23 @@ void GamePlayScene::check_key() {
 }
 
 void GamePlayScene::InitScene() {
-	// reset(); //°ÔÀÓÆÇ ¸®¼Â
+	// reset(); //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	InitComplete = false;
 	int retval;
 	int len = 0;
 
-	// ³»°¡ ¸î¹øÀÎÁö È®ÀÎ
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
 	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
-		err_quit("¹øÈ£");
+		err_quit("ï¿½ï¿½È£");
 	}
 	len = ntohl(len);
 	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&m_pGameClient->m_ClientNum, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
-		err_quit("¹øÈ£");
+		err_quit("ï¿½ï¿½È£");
 	}
 
-	// ÀÌº¥Æ® »ý¼º
+	// ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 	hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	if (hReadEvent == NULL) {
 		exit(1);
@@ -342,8 +401,8 @@ void GamePlayScene::InitScene() {
 		exit(1);
 	}
 
-	//setcursortype(NOCURSOR); //Ä¿¼­ ¾ø¾Ú
-	//draw_map(); // °ÔÀÓÈ­¸éÀ» ±×¸²
+	//setcursortype(NOCURSOR); //Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	//draw_map(); // ï¿½ï¿½ï¿½ï¿½È­ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½
 
 	hThread = CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
@@ -386,7 +445,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 		}
 
 		//pGamePlayScene->m_keys.shift = false;
-		//SetEvent(hReadEvent); // ÀÐ±â ¿Ï·á ¾Ë¸®±â
+		//SetEvent(hReadEvent); // ï¿½Ð±ï¿½ ï¿½Ï·ï¿½ ï¿½Ë¸ï¿½ï¿½ï¿½
 	}
 	return 0;
 }

@@ -16,29 +16,36 @@ void TitleScene::Update(float fTimeElapsed) {
 
 void TitleScene::Paint(HDC hDC)
 {
-    int x = WINDOW_WIDTH / 4; //타이틀화면이 표시되는 x좌표
+    int x = WINDOW_WIDTH / 2 - 3 * 20; //타이틀화면이 표시되는 x좌표
     int y = WINDOW_HEIGHT / 4; //타이틀화면이 표시되는 y좌표
 
-    HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(rand() % 255, rand() % 255, rand() % 255));
+    HDC UIDC;
+    UIDC = CreateCompatibleDC(hDC);
+    (HBITMAP)SelectObject(UIDC, m_pGameClient->UIBitmap);
+
+    HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
     HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
 
-    RECT rt = { x,y,x + 250,y + 100 };
-    Rectangle(hDC, x, y, x+250, y+100);
-
-    SetBkMode(hDC, TRANSPARENT);
-    SetTextColor(hDC, RGB(rand() % 255, rand() % 255, rand() % 255));
-    TextOut(hDC, x + 20 * 5, y + 20 * 2, "T E T R I S", 11);
-    SetTextColor(hDC, RGB(0, 0, 0));
-    TextOut(hDC, x, y + 20 * 7, "Enter Key to Start..", 20);
-    TextOut(hDC, x, y + 20 * 9, "  △   : Shift", 14);
-    TextOut(hDC, x, y + 20 * 10, "◁  ▷ : Left / Right", 21);
-    TextOut(hDC, x, y + 20 * 11, "  ▽   : Soft Drop", 18);
-    TextOut(hDC, x, y + 20 * 12, " SPACE : Hard Drop", 18);
-    TextOut(hDC, x, y + 20 * 13, "  F4  : Quit", 12);
-    TextOut(hDC, x, y + 20 * 15, "BONUS FOR HARD DROPS / COMBOS", 29);
+    Rectangle(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     SelectObject(hDC, oldBrush);
     DeleteObject(myBrush);
+
+    TransparentBlt(hDC, WINDOW_WIDTH / 2 - 128, y , 256, 177,
+        UIDC, 256, 18, 256, 177, RGB(255, 0, 255));
+
+    SetBkMode(hDC, TRANSPARENT);
+    SetTextColor(hDC, RGB(255, 255, 255));
+    TextOut(hDC, x, y + 20 * 10, "Enter Key to Start..", 20);
+    TextOut(hDC, x, y + 20 * 11, "  △   : Rotate", 15);
+    TextOut(hDC, x, y + 20 * 12, "◁  ▷ : Left / Right", 21);
+    TextOut(hDC, x, y + 20 * 13, "  ▽   : Soft Drop", 18);
+    TextOut(hDC, x, y + 20 * 14, " SPACE : Hard Drop", 18);
+    TextOut(hDC, x, y + 20 * 15, " Shift : Change Target", 22);
+    TextOut(hDC, x, y + 20 * 16, " Ctrl : Use Item", 16);
+    TextOut(hDC, x, y + 20 * 17, "  F4  : Quit", 12);
+
+    DeleteDC(UIDC);
 }
 
 void TitleScene::KeyDown(unsigned char KEYCODE)
