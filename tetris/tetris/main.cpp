@@ -78,7 +78,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 
 		// 그래픽스 모드 변경
 		SetGraphicsMode(hDC, GM_ADVANCED);
-		gameClient.ScreenRotate(hDC);
+
+		gameClient.ScreenRotate(hDC, rt);
+
 		memDC = CreateCompatibleDC(hDC);
 
 		hBitmap = CreateCompatibleBitmap(hDC, rt.right, rt.bottom);

@@ -19,6 +19,22 @@ void GamePlayScene::Update(float fTimeElapsed) {
 	//SetEvent(hWriteEvent);
 }
 
+void GamePlayScene::ScreenRotate(HDC hDC, RECT rt)
+{
+	XFORM rotate;
+	if (InitComplete && m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.screen_rotate_flag == 1) {
+		rotate.eM11 = cos(180.0 / 180.0 * 3.141592);
+		rotate.eM12 = sin(180.0 / 180.0 * 3.141592);
+		rotate.eM21 = -sin(180.0 / 180.0 * 3.141592);
+		rotate.eM22 = cos(180.0 / 180.0 * 3.141592);
+		rotate.eDx = rt.right;
+		rotate.eDy = rt.bottom;
+		ModifyWorldTransform(hDC, &rotate, MWT_RIGHTMULTIPLY);
+	}
+	else
+		ModifyWorldTransform(hDC, &rotate, MWT_IDENTITY);
+}
+
 void GamePlayScene::Paint(HDC hDC)
 {
 	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
@@ -174,15 +190,21 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 		for (int i = 0; i < 4; i++) { //게임상태표시에 다음에 나올블럭을 그림 
 			for (int j = 0; j < 4; j++) {
 				switch (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next) {
+				case 0:
+					if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
+						TransparentBlt(hDC, x + 20 + 20 * j, y + 40 + i * 20, 20, 20,
+							blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
+					}
+					break;
 				case 1:
 					if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][1][i][j] == 1) {
-						TransparentBlt(hDC, x + 20 + 20 * i, y + 50 + j * 20, 20, 20,
+						TransparentBlt(hDC, x + 30 + 20 * j, y + 40 + i * 20, 20, 20,
 							blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
 					}
 					break;
 				default:
 					if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type_next][0][i][j] == 1) {
-						TransparentBlt(hDC, x + 20 + 20 * i, y + 50 + j * 20, 20, 20,
+						TransparentBlt(hDC, x + 30 + 20 * j, y + 40 + i * 20, 20, 20,
 							blockDC, 32 * (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next + 1), 0, 32, 32, RGB(255, 0, 255));
 					}
 					break;

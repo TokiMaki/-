@@ -68,19 +68,12 @@ void GameClient::KeyUp(unsigned char KEYCODE)
     m_pScene->KeyUp(KEYCODE);
 }
 
-void GameClient::ScreenRotate(HDC hDC)
+void GameClient::ScreenRotate(HDC hDC, RECT rt)
 {
-    // 회전 적용하기위한 행렬 구조체
-    XFORM rotate;
-    rotate.eM11 = cos(180.0 / 180.0 * 3.141592);
-    rotate.eM12 = sin(180.0 / 180.0 * 3.141592);
-    rotate.eM21 = -sin(180.0 / 180.0 * 3.141592);
-    rotate.eM22 = cos(180.0 / 180.0 * 3.141592);
-    rotate.eDx = WINDOW_WIDTH;
-    rotate.eDy = WINDOW_HEIGHT;
-
-    // 변환 최종DC에 적용
-    ModifyWorldTransform(hDC, &rotate, MWT_RIGHTMULTIPLY);
+    if (m_pScene->GetSceneNum() == Scene::SceneNum::GamePlay) {
+        GamePlayScene* TempScene = (GamePlayScene*)m_pScene;
+        TempScene->ScreenRotate(hDC, rt);
+    }
     //ModifyWorldTransform(hDC, &rotate, MWT_IDENTITY);
 
 }
