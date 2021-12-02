@@ -37,7 +37,7 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 			}
 		}
 		//std::cout << "대기인원 " << MatchMakingQ->size() << std::endl;
-		//Sleep(1000);
+		Sleep(1000);
 	}
 	return 0;
 }
@@ -60,7 +60,7 @@ void CreateGameServerThread(MatchSockets* target)
 void MatchMakingQ_CloseSocket(std::vector<SOCKET>* MatchMakingQ, SOCKET client)
 {
 	MatchMakingQ->erase(std::remove_if(MatchMakingQ->begin(), MatchMakingQ->end(),
-		[client](SOCKET target) {return target == client; }));
+		[client](SOCKET target) {return target == client; }),MatchMakingQ->end());
 	closesocket(client);
 }
 

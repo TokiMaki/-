@@ -216,7 +216,21 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	//Rectangle(hDC, x + 0, y + 180, x + 120, y + 300);
 	TransparentBlt(hDC, x, y + 180, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
-
+	switch (m_gamestatus[m_pGameClient->m_ClientNum].item) {
+	case 0:
+		TransparentBlt(hDC, x + 12, y + 190, 100, 100,
+			UIDC, 512, 0, 256, 256, RGB(255, 0, 255));
+		break;
+	case 1:
+		TransparentBlt(hDC, x + 10, y + 190, 100, 100,
+			UIDC, 512 + 256 + 256, 0, 256, 256, RGB(255, 0, 255));
+		break;
+	case 2:
+		TransparentBlt(hDC, x + 10, y + 190, 100, 100,
+			UIDC, 512 + 256, 0, 256, 256, RGB(255, 0, 255));
+		break;
+	}
+	
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
