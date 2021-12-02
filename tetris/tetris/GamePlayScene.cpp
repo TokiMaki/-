@@ -65,11 +65,6 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 			m_keys.space = true;
 		}
 		break;
-	case VK_CONTROL:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 0) {
-			m_keys.ctrl = true;
-		}
-		break;
 	case VK_RETURN:
 		if (m_gamestatus[m_pGameClient->m_ClientNum].flag.gameover_flag == 1) {
 			TerminateThread(hThread, 0);
@@ -108,9 +103,6 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 	case VK_SHIFT:
 		m_keys.shift = false;
 		break;
-	case VK_CONTROL:
-		m_keys.ctrl = false;
-		break;
 	case VK_SPACE:
 		m_keys.space = false;
 		m_gamestatus[m_pGameClient->m_ClientNum].flag.space_flag = false;
@@ -137,6 +129,7 @@ void GamePlayScene::reset_main(void) { //게임판을 초기화
 	for (int i = 0; i < BOARD_Y; i++) { // 게임판을 0으로 초기화
 		for (int j = 0; j < BOARD_X; j++) {
 			m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][j] = 0;
+			m_gamestatus[m_pGameClient->m_ClientNum].board_cpy[i][j] = 100;
 		}
 	}
 	for (int j = 1; j < BOARD_X; j++) { //y값이 3인 위치에 천장을 만듦
@@ -148,6 +141,15 @@ void GamePlayScene::reset_main(void) { //게임판을 초기화
 	}
 	for (int j = 0; j < BOARD_X; j++) { //바닥벽을 만듦 
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[BOARD_Y - 1][j] = WALL;
+	}
+}
+
+void GamePlayScene::reset_main_cpy(void) { //m_gamestatus[m_pGameClient->m_ClientNum].board_cpy를 초기화 
+
+	for (int i = 0; i < BOARD_Y; i++) {         //게임판에 게임에 사용되지 않는 숫자를 넣음 
+		for (int j = 0; j < BOARD_X; j++) {  //이는 m_gamestatus[m_pGameClient->m_ClientNum].board_org와 같은 숫자가 없게 하기 위함 
+			m_gamestatus[m_pGameClient->m_ClientNum].board_cpy[i][j] = 100;
+		}
 	}
 }
 
@@ -325,7 +327,7 @@ void GamePlayScene::InitScene() {
 		err_quit("번호");
 	}
 	len = ntohl(len);
-	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&m_pGameClient->m_ClientNum, len, 0);
+	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&m_pGameClient->m_ClientNum, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
 		err_quit("번호");
 	}
@@ -362,7 +364,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			break;
 		}
 		len = ntohl(len);
-		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&pGamePlayScene->m_gamestatus, len, 0);
+		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&pGamePlayScene->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("status");
 			break;
