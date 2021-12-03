@@ -455,6 +455,18 @@ bool GameServerThreadData::check_crush(int ClientNum, int bx, int by, int b_rota
 	return true; //하나도 안겹치면 true리턴 
 };
 
+bool GameServerThreadData::check_crush(int ClientNum, int bx, int by, int b_rotation, int b_type) { //지정된 좌표와 회전값으로 충돌이 있는지 검사
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) { //지정된 위치의 게임판과 블럭모양을 비교해서 겹치면 false를 리턴
+			if (blocks[b_type][b_rotation][i][j] == 1 && pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[by + i][bx + j] > 0)
+				return false;
+		}
+	}
+	return true; //하나도 안겹치면 true리턴 
+};
+
 void GameServerThreadData::move_block(int ClientNum, int dir) { //블록을 이동시킴 
 	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	Gamestatus* m_gamestatus = &(pPlayers[ClientNum].m_gamestatus[GameClientNum]);
@@ -582,7 +594,8 @@ void GameServerThreadData::check_line(int ClientNum) {
 			}
 			combo++;
 			if (m_gamestatus->item == -1)
-				m_gamestatus->item = rand() % 3;
+				//m_gamestatus->item = rand() % 3;
+				m_gamestatus->item = 2;
 		}
 		else j--;
 	}
@@ -730,50 +743,29 @@ void GameServerThreadData::ActiveItem(int ClientNum, float fTimeElapsed)
 			pPlayers[Target].m_gamestatus[TargetClientNum].speed = pPlayers[Target].m_gamestatus[TargetClientNum].speed / 2.f;
 			break;
 		case 2:
-			//현재 내려오는 블록 종류 변경
-			int* bx = &pPlayers[Target].m_gamestatus[TargetClientNum].bx;
-			int* by = &pPlayers[Target].m_gamestatus[TargetClientNum].by;
-			int b_rotation = pPlayers[Target].m_gamestatus[TargetClientNum].b_rotation;
-			for (int i = 0; i < 2; ++i) {
-				if (*by < BOARD_Y) {
-					move_block(Target, 101);		// 블록을 위로 2칸 올림
-				}
-			}
+			//화면 바꾸기
+			Player tempGamestatus = pPlayers[ClientNum];
+			pPlayers[ClientNum].m_gamestatus[GameClientNum] = pPlayers[Target].m_gamestatus[TargetClientNum];
+			pPlayers[Target].m_gamestatus[TargetClientNum] = tempGamestatus.m_gamestatus[GameClientNum];
 
-			//현재좌표의 블럭을 지움 
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					if (blocks[pPlayers[Target].m_gamestatus[TargetClientNum].b_type][b_rotation][i][j] == 1)
-						pPlayers[Target].m_gamestatus[TargetClientNum].board_org[*bx + i][*by + j] = EMPTY;
-				}
-			}
-			pPlayers[Target].m_gamestatus[TargetClientNum].b_type = rand() % 7;
-			pPlayers[Target].m_gamestatus[TargetClientNum].b_rotation = rand() % 4;
-			while (*bx <= 2) {
-				if (check_crush(Target, *bx, *by, b_rotation))
-					*bx++;
-				else {
-					break;
-				}
-			}
-			while (*bx >= BOARD_X - 3) {
-				if (check_crush(Target, *bx, *by, b_rotation))
-					*bx--;
-				else
-					break;
-			}
-			while (*by > 0) {
-				if(check_crush(Target, *bx, *by, b_rotation))
-					*by--;
-				else
-					break;
-			}
-			for (int i = 0; i < 4; i++) { // 다시 찍음
-				for (int j = 0; j < 4; j++) {
-					if (blocks[pPlayers[Target].m_gamestatus[TargetClientNum].b_type][b_rotation][i][j] == 1)
-						pPlayers[Target].m_gamestatus[TargetClientNum].board_org[*bx + i][*by + j] = ACTIVE_BLOCK;
-				}
-			}
+			pPlayers[ClientNum].m_keys = pPlayers[Target].m_keys;
+			pPlayers[Target].m_keys = tempGamestatus.m_keys;
+
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].item = pPlayers[Target].m_gamestatus[TargetClientNum].item;
+			pPlayers[Target].m_gamestatus[TargetClientNum].item = tempGamestatus.m_gamestatus[GameClientNum].item;
+
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].target = pPlayers[Target].m_gamestatus[TargetClientNum].target;
+			pPlayers[Target].m_gamestatus[TargetClientNum].target = tempGamestatus.m_gamestatus[GameClientNum].target;
+
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].m_KeyFlag = pPlayers[Target].m_gamestatus[TargetClientNum].m_KeyFlag;
+			pPlayers[Target].m_gamestatus[TargetClientNum].m_KeyFlag = tempGamestatus.m_gamestatus[GameClientNum].m_KeyFlag;
+
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].AttackedBlock = pPlayers[Target].m_gamestatus[TargetClientNum].AttackedBlock;
+			pPlayers[Target].m_gamestatus[TargetClientNum].AttackedBlock = tempGamestatus.m_gamestatus[GameClientNum].AttackedBlock;
+
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].m_GameFlag = pPlayers[Target].m_gamestatus[TargetClientNum].m_GameFlag;
+			pPlayers[Target].m_gamestatus[TargetClientNum].m_GameFlag = tempGamestatus.m_gamestatus[GameClientNum].m_GameFlag;
+
 			break;
 		}
 		pPlayers[ClientNum].m_gamestatus[GameClientNum].item = -1;
