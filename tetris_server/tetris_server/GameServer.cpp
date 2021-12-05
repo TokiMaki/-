@@ -782,7 +782,7 @@ bool GameServerThreadData::Room_end()
 			check_count += 1;
 		}
 	}
-	if (check_count >= 3)
+	if (check_count >= MAX_PLAYER)
 	{
 		return true;
 	}
