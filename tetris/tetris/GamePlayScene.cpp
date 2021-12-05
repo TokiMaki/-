@@ -234,7 +234,6 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
-	SetTextColor(hDC, RGB(0, 0, 0));
 
 	DeleteDC(blockDC);
 	DeleteDC(UIDC);
@@ -244,6 +243,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 	int x, y;
+	int danger_background = 0;
 	
 	HDC blockDC, UIDC;
 	UIDC = CreateCompatibleDC(hDC);
@@ -251,13 +251,30 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 	(HBITMAP)SelectObject(blockDC, m_pGameClient->BlockBitmap);
 	(HBITMAP)SelectObject(UIDC, m_pGameClient->UIBitmap);
 
-	HBRUSH myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
+	for (int j = 0; j < BOARD_Y; j++) {
+		for (int k = 0; k < BOARD_X; k++) {
+			if (m_gamestatus[m_pGameClient->m_ClientNum].board_org[j][k] == INACTIVE_BLOCK) {
+				danger_background++;
+				break;
+			}
+		}
+	}
+	HBRUSH myBrush;
+	if (danger_background >= 13) {
+		myBrush = (HBRUSH)CreateSolidBrush(RGB(12.5 * danger_background + 2, 0, 106-5*danger_background));
+	}
+	else {
+		myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
+	}
 	HBRUSH oldBrush = (HBRUSH)SelectObject(hDC, myBrush);
 
 	Rectangle(hDC, 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	SelectObject(hDC, oldBrush);
 	DeleteObject(myBrush);
+
+	HPEN myPen = (HPEN)CreatePen(PS_DOT, 1, RGB(255, 255, 255));
+	HPEN oldPen = (HPEN)SelectObject(hDC, myPen);
 
 	SetTextColor(hDC, RGB(255, 255, 255));
 	// 나와 내 옆 다른 사람들의 보드 그리기
@@ -280,15 +297,17 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					break;
 				case CEILLING: //천장모양
-					//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, +WINDOW_HEIGHT / 15  + 20 * y, ". ", 2);
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
+					MoveToEx(hDC, WINDOW_WIDTH / 20 + 20 * x,
+						WINDOW_HEIGHT / 15 + 20 * y + 10, NULL);
+					LineTo(hDC, WINDOW_WIDTH / 20 + 20 * x + 20,
+						WINDOW_HEIGHT / 15 + 20 * y + 10);
 					break;
 				case WALL: //벽모양 
-					//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + y + 20 * y, "▩", 2);
-	
-					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20, 
+					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 0, 0, 32, 32, RGB(255, 0, 255));
+					
 					break;
 				case INACTIVE_BLOCK: //굳은 블럭 모양
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
@@ -301,6 +320,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 				}
 			}
 		}
+
 		x = BOARD_X_ADJ + (BOARD_X / 2);
 		y = BOARD_Y_ADJ + BOARD_Y + 1;
 		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - 18, WINDOW_HEIGHT / 15 + 20 * (y + 1), "My Board", 8);
@@ -352,6 +372,9 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 			SetTextColor(hDC, RGB(0, 0, 0));
 		}
 	}
+
+	SelectObject(hDC, oldPen);
+	DeleteObject(myPen);
 
 	DeleteDC(blockDC);
 	DeleteDC(UIDC);
