@@ -20,7 +20,6 @@ struct GameServerThreadData
 	std::vector<Player> pPlayers; //플레이어 개개인의 상태
 	CGameTimer m_GameTimer; //업데이트에서 프레임 시간 연산 시 사용
 
-
     CRITICAL_SECTION cs;
 
     int Level = 0; //현재 level
@@ -65,8 +64,9 @@ struct GameServerThreadData
     {{0,0,0,0,0,1,0,0,1,1,1,0,0,0,0,0},{0,0,0,0,0,1,0,0,0,1,1,0,0,1,0,0},           // 6 ㅗ모양 블럭
      {0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0},{0,0,0,0,0,1,0,0,1,1,0,0,0,1,0,0}}
     }; //블록모양 저장 4*4공간에 블록을 표현 blcoks[b_type][b_rotation][i][j]로 사용
-
-
 };
 
+ClientGameData ConvertGameData(Gamestatus m_gamestate);
+
 DWORD WINAPI CommThread(LPVOID arg);
+

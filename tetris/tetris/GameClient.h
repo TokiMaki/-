@@ -6,13 +6,10 @@
 class GameClient
 {
 private:
-	int retval;
 	WSADATA wsa;
 	SOCKET sock;
 	SOCKADDR_IN serveraddr;
 
-	KeyInput m_keys;                    //클라이언트의 키입력을 저장
-	Gamestatus m_gamestatus;  	        //내 클라이언트의 게임 상태
 	CGameTimer m_GameTimer;
 
 	void err_quit(char* msg);                       //에러 발생 시 해당 내용 출력

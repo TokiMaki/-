@@ -100,6 +100,7 @@ bool GameClient::InitWSA()
 
 void GameClient::ConnetServer()
 {
+    int retval;
     ZeroMemory(&serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
