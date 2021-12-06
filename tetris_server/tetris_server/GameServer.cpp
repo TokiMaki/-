@@ -680,7 +680,7 @@ void GameServerThreadData::attacked(int ClientNum) {
 void GameServerThreadData::check_level_up(float fTimeElapsed) {
 
 	fLevelUpTime += fTimeElapsed;
-	if (fLevelUpTime >= 15.f) {
+	if (fLevelUpTime >= 5.f) {
 		if (Level < 19) {
 			Level++;
 			fLevelUpTime = 0;

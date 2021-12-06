@@ -374,7 +374,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 			}
 			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
-			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (23 * 3.1), WINDOW_HEIGHT / 15 + y + 21 * y, "Enter를 누르면 메인화면", 23);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
 			SetTextColor(hDC, RGB(0, 0, 0));
 		}
 
@@ -390,7 +390,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 			}
 			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (3 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Win", 3);
-			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (23 * 3.1), WINDOW_HEIGHT / 15 + y + 21 * y, "Enter를 누르면 메인화면", 23);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
 			SetTextColor(hDC, RGB(0, 0, 0));
 		}
 	}

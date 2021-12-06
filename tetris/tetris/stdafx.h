@@ -15,7 +15,7 @@
 #include<string.h>
 
 
-#define SERVERIP "127.0.0.1"
+#define SERVERIP "220.94.221.36"
 #define SERVERPORT 9000
 
 #define WINDOW_WIDTH 1024
