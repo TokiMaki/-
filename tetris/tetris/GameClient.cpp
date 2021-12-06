@@ -74,8 +74,6 @@ void GameClient::ScreenRotate(HDC hDC, RECT rt)
         GamePlayScene* TempScene = (GamePlayScene*)m_pScene;
         TempScene->ScreenRotate(hDC, rt);
     }
-    //ModifyWorldTransform(hDC, &rotate, MWT_IDENTITY);
-
 }
 
 void GameClient::SetSOCKET(SOCKET arg)

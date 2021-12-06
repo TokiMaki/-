@@ -43,7 +43,6 @@ void TitleScene::Paint(HDC hDC)
     TextOut(hDC, x, y + 20 * 14, " SPACE : Hard Drop", 18);
     TextOut(hDC, x, y + 20 * 15, " Shift : Change Target", 22);
     TextOut(hDC, x, y + 20 * 16, " Ctrl : Use Item", 16);
-    TextOut(hDC, x, y + 20 * 17, "  F4  : Quit", 12);
 
     DeleteDC(UIDC);
 }

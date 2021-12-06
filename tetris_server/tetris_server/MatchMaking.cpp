@@ -45,7 +45,7 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ)
 {
 	if (MatchMakingQ->size() >= MAX_PLAYER){
-		std::cout << "There are more than 3 Waiting Clients.\n";
+		std::cout << "There are more than"<< MAX_PLAYER <<"Waiting Clients.\n";
 		return true;
 	}
 	else return false;
@@ -54,7 +54,7 @@ bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ)
 void CreateGameServerThread(MatchSockets* target)
 {
 	CreateThread(NULL, 0, GameServerThread, target, 0, NULL);
-	std::cout << "Called CreateGameServerThread().\n";
+	//std::cout << "Called CreateGameServerThread().\n";
 }
 
 void MatchMakingQ_CloseSocket(std::vector<SOCKET>* MatchMakingQ, SOCKET client)

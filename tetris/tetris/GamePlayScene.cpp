@@ -13,9 +13,7 @@ GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 GamePlayScene::~GamePlayScene() {}
 
 void GamePlayScene::Update(float fTimeElapsed) {
-	//WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
-	//// check_key(); //키입력확인
-	//SetEvent(hWriteEvent);
+
 }
 
 void GamePlayScene::ScreenRotate(HDC hDC, RECT rt)
@@ -36,16 +34,11 @@ void GamePlayScene::ScreenRotate(HDC hDC, RECT rt)
 
 void GamePlayScene::Paint(HDC hDC)
 {
-	// WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 기다리기
-	// 회전 적용하기위한 행렬 구조체
-
-
 	if (InitComplete) {
 		SetBkMode(hDC, TRANSPARENT);
 		draw_main(hDC);
 		draw_map(hDC);
 	}
-	// SetEvent(hWriteEvent);
 }
 
 void GamePlayScene::KeyDown(unsigned char KEYCODE)
@@ -142,10 +135,7 @@ void GamePlayScene::reset(void) {
 	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.crush_on = 0;
 	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
 
-	//system("cls"); //화면지움
 	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org를 초기화
-	//draw_map(); // 게임화면을 그림
-	//draw_main(); // 게임판을 그림
 
 	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
 	new_block(); //새로운 블록을 하나 만듦
@@ -181,13 +171,10 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	int y = 130;
 
 	SetTextColor(hDC, RGB(255, 255, 255));
+	// 다음 블록
 	TextOut(hDC, x + 48, y, "NEXT", 4);
-
-	
-	//Rectangle(hDC, x + 20, y + 20, x + 120, y + 140);
 	TransparentBlt(hDC, x, y + 20, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
-
 	if (m_pGameClient->m_ClientNum != -1) {
 		for (int i = 0; i < 4; i++) { //게임상태표시에 다음에 나올블럭을 그림 
 			for (int j = 0; j < 4; j++) {
@@ -215,8 +202,8 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 		}
 	}
 
+	// 아이템 창
 	TextOut(hDC, x + 48, y + 160, "ITEM", 4);
-	//Rectangle(hDC, x + 0, y + 180, x + 120, y + 300);
 	TransparentBlt(hDC, x, y + 180, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
 	switch (m_gamestatus[m_pGameClient->m_ClientNum].item) {
@@ -234,6 +221,7 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 		break;
 	}
 	
+	// 타겟 표시
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
@@ -333,13 +321,11 @@ void GamePlayScene::draw_main(HDC hDC) {
 			x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
 			y = BOARD_Y_ADJ + BOARD_Y + 1;
 		}
-
 		
 		if (m_gamestatus[m_pGameClient->m_ClientNum].target == i) {
 			TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * (x-1), WINDOW_HEIGHT / 15 + 20 * (y-1), 60, 100,
 				UIDC, 264, 197, 68, 56, RGB(255, 0, 255));
 		}
-
 
 		int tempAttackedBlock = m_gamestatus[i].AttackedBlock;
 		for (int j = 0; j < tempAttackedBlock;) {
@@ -430,16 +416,6 @@ void GamePlayScene::InitScene() {
 		err_quit("번호");
 	}
 
-	//// 이벤트 생성
-	//hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	//if (hReadEvent == NULL) {
-	//	exit(1);
-	//}
-	//hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
-	//if (hWriteEvent == NULL) {
-	//	exit(1);
-	//}
-
 	hThread = CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
 
@@ -451,7 +427,6 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
 
 	while (1) {
-		//WaitForSingleObject(hWriteEvent, INFINITE);
 		len = 0;
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
@@ -485,8 +460,6 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::Title);
 			break;
 		}
-		//pGamePlayScene->m_keys.shift = false;
-		//SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
 	WSACleanup();
 	return 0;
