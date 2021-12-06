@@ -59,9 +59,6 @@ struct KeyInput {
 };
 
 struct KeyFlag {
-    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag
-    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
-
     bool left_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool right_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool down_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
@@ -69,8 +66,6 @@ struct KeyFlag {
     bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool shift_flag = 0; // 쉬프트키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool ctrl_flag = 0; // 쉬프트키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
-
-    bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
 };
 
 struct GameFlag {
