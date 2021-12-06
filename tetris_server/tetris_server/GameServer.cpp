@@ -62,7 +62,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//받은 데이터들 모아서 업데이트 하기
 		LeaveCriticalSection(&newRoomData.cs);
 	}
-	std::cout << "방종료" << std::endl;
+	//std::cout << "방종료" << std::endl;
 	delete match_sockets;
 	DeleteCriticalSection(&newRoomData.cs);
 	return 0;
@@ -72,7 +72,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	Player* playdata = (Player*)arg;
 	SOCKET client_sock = playdata->clientSocket;
 	int retval;
-	std::cout << client_sock << "commThread running\n" << std::endl;
+	//std::cout << client_sock << "commThread running\n" << std::endl;
 
 	Player tempP;
 	KeyInput tempKey;
@@ -143,7 +143,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 
 		LeaveCriticalSection(&playdata->cs);
 	}
-	std::cout << client_sock << "게임오버 쓰레드 종료" << std::endl;
+	//std::cout << client_sock << "게임오버 쓰레드 종료" << std::endl;
 	closesocket(client_sock);
 	playdata->checkout_room = true;
 	return 0;
@@ -154,7 +154,7 @@ void GameServerThreadData::CreateCommThread(void)
 	//소켓만 보내지 말고 Player struct를 보내기
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
-		std::cout << pPlayers[i].clientSocket << std::endl;
+		//std::cout << pPlayers[i].clientSocket << std::endl;
 		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, &pPlayers[i], 0, NULL);
 	}
 

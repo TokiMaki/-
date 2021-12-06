@@ -10,8 +10,6 @@ struct Player
 	Gamestatus m_gamestatus[MAX_PLAYER];//게임의 상태 저장
 	int m_GameClientNum;
 
-    HANDLE hupdate; //클라로 부터 데이터를 받았는지 체크
-    HANDLE hcheckupdate; //받은 데이터를 업데이트 했는지 체크
     CRITICAL_SECTION cs;
     bool checkout_room;
 };
@@ -21,10 +19,6 @@ struct GameServerThreadData
 	std::vector<SOCKET*> pClients; //MatchingThread에서 넘겨 받은 클라이언트 소켓들
 	std::vector<Player> pPlayers; //플레이어 개개인의 상태
 	CGameTimer m_GameTimer; //업데이트에서 프레임 시간 연산 시 사용
-
-    HANDLE hupdate;
-    HANDLE hcheckupdate;
-
 
     CRITICAL_SECTION cs;
 

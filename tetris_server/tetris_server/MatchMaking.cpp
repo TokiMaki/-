@@ -45,7 +45,7 @@ DWORD WINAPI MatchMakingThread(LPVOID arg)
 bool isMatchMakingQFull(std::vector<SOCKET>*MatchMakingQ)
 {
 	if (MatchMakingQ->size() >= MAX_PLAYER){
-		std::cout << "There are more than"<< MAX_PLAYER <<"Waiting Clients.\n";
+		//std::cout << "There are more than "<< MAX_PLAYER <<" Waiting Clients.\n";
 		return true;
 	}
 	else return false;
