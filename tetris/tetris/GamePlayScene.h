@@ -23,15 +23,12 @@ public:
 	void draw_map(HDC hDC);
 	void draw_main(HDC hDC);
 
-	Gamestatus ConvertGameData(ClientGameData gamedata);
-
 	static DWORD WINAPI GamePlayThread(LPVOID arg);
 
 	bool InitComplete = false;
 private:
 	KeyInput m_keys;                    //클라이언트의 키입력을 저장
 	Gamestatus m_gamestatus[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
-	ClientGameData m_ClientGameData[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
 
 	int key; //키보드로 입력받은 키값을 저장
 

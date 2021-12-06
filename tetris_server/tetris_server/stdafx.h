@@ -29,12 +29,6 @@
 #define WALL 1          // 벽
 #define INACTIVE_BLOCK 2 // 굳어있는 블록
 
-//#define EMPTY 0b0000          // 비어있음
-//#define CEILLING 0b0001       // 천장
-//#define ACTIVE_BLOCK 0b0010   // 움직일 수 있는 블록
-//#define WALL 0b0011           // 벽
-//#define INACTIVE_BLOCK 0b0100 // 굳어있는 블록
-
 #define BOARD_X 11 //게임판 가로크기
 #define BOARD_Y 25 //게임판 세로크기
 #define BOARD_X_ADJ 3 //게임판 위치조정

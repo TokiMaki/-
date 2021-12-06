@@ -345,31 +345,6 @@ void GamePlayScene::draw_main(HDC hDC) {
 	DeleteDC(UIDC);
 }
 
-Gamestatus GamePlayScene::ConvertGameData(ClientGameData gamedata)
-{
-	Gamestatus TempGamestatus;
-	TempGamestatus.bx = gamedata.bx;
-	TempGamestatus.by = gamedata.by;
-	TempGamestatus.b_rotation = gamedata.b_rotation;
-	TempGamestatus.b_type = gamedata.b_type;
-	TempGamestatus.b_type_next = gamedata.b_type_next;
-	TempGamestatus.AttackedBlock = gamedata.AttackedBlock;
-	TempGamestatus.item = gamedata.item;
-	TempGamestatus.screen_rotate_flag = gamedata.screen_rotate_flag;
-	TempGamestatus.speedup_flag = gamedata.speedup_flag;
-	TempGamestatus.target = gamedata.target;
-	TempGamestatus.gameover_flag = gamedata.gameover_flag;
-	TempGamestatus.win_flag = gamedata.win_flag;
-
-	bool stack = false;
-	for (int i = 0; i < BOARD_X; ++i) {
-		for (int j = 0; j < BOARD_Y; ++j) {
-			TempGamestatus.board_org[j][i] = gamedata.board_org[j][i];
-		}
-	}
-	return TempGamestatus;
-}
-
 void GamePlayScene::InitScene() {
 	// reset(); //게임판 리셋
 	InitComplete = false;
@@ -399,7 +374,6 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	int len = 0;
 	int Msg = 0;
 	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
-	ClientGameData TempGameData[MAX_PLAYER];
 
 
 	while (1) {
@@ -415,10 +389,6 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_quit("status");
 			break;
 		}
-
-		//for (int i = 0; i < MAX_PLAYER; ++i) {
-		//	pGamePlayScene->m_gamestatus[i] = pGamePlayScene->ConvertGameData(TempGameData[i]);
-		//}
 
 		pGamePlayScene->InitComplete = true;
 

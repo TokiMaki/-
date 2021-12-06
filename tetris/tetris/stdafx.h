@@ -37,12 +37,6 @@
 #define WALL 1          // 벽
 #define INACTIVE_BLOCK 2 // 굳어있는 블록
 
-//#define EMPTY 0b0000          // 비어있음
-//#define CEILLING 0b0001       // 천장
-//#define ACTIVE_BLOCK 0b0010   // 움직일 수 있는 블록
-//#define WALL 0b0011           // 벽
-//#define INACTIVE_BLOCK 0b0100 // 굳어있는 블록
-
 #define BOARD_X 11 //게임판 가로크기
 #define BOARD_Y 25 //게임판 세로크기
 #define BOARD_X_ADJ 3 //게임판 위치조정
@@ -88,27 +82,6 @@ struct GameFlag {
     bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
 };
 
-//struct Gamestatus {
-//    int bx, by; //이동중인 블록의 게임판상의 x,y좌표
-//    int b_type; //블록 종류
-//    int b_rotation; //블록 회전값
-//    int b_type_next; //다음 블록값
-//    float speed; //블럭이 내려오는 속도 1이면 1초마다 한칸씩 내려옴
-//    float fKeyMoveSpeed = 0.1f; //블럭이 키 입력이 됬을 때 좌우나 아래로 움직이는 속도
-//    float fDropBlockTime = 0.0f;
-//    float fMoveBlockTime = 0.0f;
-//    int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
-//
-//    int AttackedBlock = 0;
-//    int item = -1;       // 0 키 반전
-//                    // 1 상대 일시적 스피드 업
-//                    // 2 내려오고 있는 블록 모양 바꾸기
-//    int target = 1;
-//
-//    KeyFlag m_KeyFlag;
-//    GameFlag m_GameFlag;
-//};
-
 struct Gamestatus {
     int bx, by;      //이동중인 블록의 게임판상의 x,y좌표
     int b_type;      //블록 종류
@@ -128,27 +101,6 @@ struct Gamestatus {
     bool screen_rotate_flag = 0; // 스크린 돌아가는것을 알려주는 flag
     bool speedup_flag = 0; // 스크린 돌아가는것을 알려주는 flag
 };
-
-struct ClientGameData {
-    int bx, by;      //이동중인 블록의 게임판상의 x,y좌표
-    int b_type;      //블록 종류
-    int b_rotation;  //블록 회전값
-    int b_type_next; //다음 블록값
-
-    int board_org[BOARD_Y][BOARD_X] = { 0, }; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
-
-    int AttackedBlock = 0;
-    int item = -1;  // 0 키 반전
-                    // 1 상대 일시적 스피드 업
-                    // 2 내려오고 있는 블록 모양 바꾸기
-    int target = 1;
-
-    bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
-    bool win_flag = 0;      // 이겼을 때 알려주는 flag
-    bool screen_rotate_flag = 0; // 스크린 돌아가는것을 알려주는 flag
-    bool speedup_flag = 0; // 스크린 돌아가는것을 알려주는 flag
-};
-
 
 enum MSG_MatchMaking //매치매이킹 시스템에서 사용할 메시지
 {
