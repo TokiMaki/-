@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "socket_function.h"
 
-HANDLE hReadEvent, hWriteEvent; // 이벤트
 
 GamePlayScene::GamePlayScene() {}
 GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
@@ -88,7 +87,7 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 		}
 		break;
 	case VK_RETURN:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
+		/*if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
 			TerminateThread(hThread, 0);
 			CloseHandle(hThread);
 			CloseHandle(hReadEvent);
@@ -98,7 +97,11 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 			closesocket(m_pGameClient->GetSOCKET());
 			WSACleanup();
 			m_pGameClient->ChangeScene(Scene::SceneNum::Title);
+		}*/
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
+			m_keys.enter = true;
 		}
+
 		break;
 	}
 }
@@ -239,7 +242,8 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	DeleteDC(UIDC);
 }
 
-void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
+void GamePlayScene::draw_main(HDC hDC) { 
+	// 게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 	int x, y;
@@ -325,8 +329,10 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 		y = BOARD_Y_ADJ + BOARD_Y + 1;
 		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - 18, WINDOW_HEIGHT / 15 + 20 * (y + 1), "My Board", 8);
 
-		x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
-		y = BOARD_Y_ADJ + BOARD_Y + 1;
+		if (i != 0) {
+			x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
+			y = BOARD_Y_ADJ + BOARD_Y + 1;
+		}
 
 		char temp[3];
 		wsprintf(temp, "%d", i);
@@ -359,7 +365,7 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 
 		// 게임 오버 확인
 		if (m_gamestatus[i].m_KeyFlag.gameover_flag == 1) {
-			if (i == m_pGameClient->m_ClientNum) {
+  			if (i == m_pGameClient->m_ClientNum) {
 				x = BOARD_X_ADJ + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
 			}
@@ -406,6 +412,9 @@ void GamePlayScene::check_key() {
 void GamePlayScene::InitScene() {
 	// reset(); //게임판 리셋
 	InitComplete = false;
+	m_keys = { false, false, false, false, false, false, false, false };
+
+
 	int retval;
 	int len = 0;
 
@@ -420,18 +429,15 @@ void GamePlayScene::InitScene() {
 		err_quit("번호");
 	}
 
-	// 이벤트 생성
-	hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	if (hReadEvent == NULL) {
-		exit(1);
-	}
-	hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
-	if (hWriteEvent == NULL) {
-		exit(1);
-	}
-
-	//setcursortype(NOCURSOR); //커서 없앰
-	//draw_map(); // 게임화면을 그림
+	//// 이벤트 생성
+	//hReadEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	//if (hReadEvent == NULL) {
+	//	exit(1);
+	//}
+	//hWriteEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	//if (hWriteEvent == NULL) {
+	//	exit(1);
+	//}
 
 	hThread = CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
 }
@@ -473,8 +479,14 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			break;
 		}
 
+		if (pGamePlayScene->m_gamestatus[pGamePlayScene->m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag && keys.enter) {
+			closesocket(pGamePlayScene->m_pGameClient->GetSOCKET());
+			pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::Title);
+			break;
+		}
 		//pGamePlayScene->m_keys.shift = false;
 		//SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
+	WSACleanup();
 	return 0;
 }
