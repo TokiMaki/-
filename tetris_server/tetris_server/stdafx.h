@@ -102,13 +102,6 @@ struct Gamestatus {
 };
 
 struct ClientGameData {
-    enum {
-        Empty,          // 비어있음
-        Ceilling,       // 천장
-        ActiveBlock,   // 움직일 수 있는 블록
-        Wall,           // 벽
-        InactiveBlock, // 굳어있는 블록
-    };
     int bx, by;      //이동중인 블록의 게임판상의 x,y좌표
     int b_type;      //블록 종류
     int b_rotation;  //블록 회전값
