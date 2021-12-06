@@ -42,13 +42,7 @@ void WaitScene::InitScene() {
 }
 
 void WaitScene::Update(float fTimeElapsed) {
-	//WaitForSingleObject(hWaitReadEvent, INFINITE);
-	//if (Msg == MSG_MatchMaking::Msg_PlayInGame) {
-	//	CloseHandle(hWaitReadEvent);
-	//	CloseHandle(hWaitWriteEvent);
-	//	m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
-	//}
-	//SetEvent(hWaitWriteEvent);
+
 }
 
 void WaitScene::Paint(HDC hDC) {
@@ -93,7 +87,6 @@ DWORD __stdcall WaitScene::WaitThread(LPVOID arg)
 	WaitScene* pWaitScene = (WaitScene*)arg;
 
 	while (1) {
-		//WaitForSingleObject(hWaitWriteEvent, INFINITE);
 		retval = recvn(pWaitScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("recv()");
@@ -135,8 +128,6 @@ DWORD __stdcall WaitScene::WaitThread(LPVOID arg)
 			SetEvent(hWaitReadEvent);
 			break;
 		}
-
-		//SetEvent(hWaitReadEvent);
 	}
 	return 0;
 }

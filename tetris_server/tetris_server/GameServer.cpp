@@ -11,17 +11,6 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 
 	srand((unsigned int)time(NULL));
 
-	newRoomData.hupdate = CreateEvent(NULL, FALSE, FALSE, NULL);
-	if (newRoomData.hupdate == NULL)
-	{
-		return 1;
-	}
-	newRoomData.hcheckupdate = CreateEvent(NULL, FALSE, TRUE, NULL);
-	if (newRoomData.hcheckupdate == NULL)
-	{
-		return 1;
-	}
-
 	InitializeCriticalSection(&newRoomData.cs);
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
@@ -29,8 +18,6 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		//방 정보에 해당 클라이언트 소켓과 play데이터를 추가한다.
 		newplayerdata.clientSocket = match_sockets->client[i];
 		newplayerdata.m_GameClientNum = i;
-		newplayerdata.hupdate = newRoomData.hupdate;
-		newplayerdata.hcheckupdate = newRoomData.hcheckupdate;
 		newplayerdata.cs = newRoomData.cs;
 		newplayerdata.checkout_room = false;
 		newRoomData.pPlayers.push_back(newplayerdata);
@@ -41,8 +28,6 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 	newRoomData.m_GameTimer.Start();
 	while (1)
 	{
-		//WaitForSingleObject(newRoomData.hupdate, INFINITE); // 쓰기 완료 기다리기
-		//printf("Call GameThread\n");
 		bool check_room = newRoomData.Room_end();
 		if (check_room == true)
 		{
@@ -75,10 +60,9 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newRoomData.copy_another_map();
 		//event사용?
 		//받은 데이터들 모아서 업데이트 하기
-		//SetEvent(newRoomData.hcheckupdate);
 		LeaveCriticalSection(&newRoomData.cs);
 	}
-	std::cout << "방종료" << std::endl;
+	//std::cout << "방종료" << std::endl;
 	delete match_sockets;
 	DeleteCriticalSection(&newRoomData.cs);
 	return 0;
@@ -88,7 +72,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	Player* playdata = (Player*)arg;
 	SOCKET client_sock = playdata->clientSocket;
 	int retval;
-	std::cout << client_sock << "commThread running\n" << std::endl;
+	//std::cout << client_sock << "commThread running\n" << std::endl;
 
 	KeyInput tempKey;
 	Gamestatus tempstatus[MAX_PLAYER];
@@ -116,8 +100,6 @@ DWORD WINAPI CommThread(LPVOID arg)
 	while (1)
 	{
 		EnterCriticalSection(&playdata->cs);
-		//WaitForSingleObject(playdata->hcheckupdate, INFINITE);
-		//ResetEvent(hcheckupdate);
 		// 클라이언트에 업데이트된 데이터 보내주기
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			tempClientGameData[i] = ConvertGameData(playdata->m_gamestatus[i]);
@@ -157,16 +139,14 @@ DWORD WINAPI CommThread(LPVOID arg)
 		}
 		playdata->m_keys = tempKey;
 
-		if (/*playdata->m_gamestatus[playdata->m_GameClientNum].m_KeyFlag.gameover_flag && */playdata->m_keys.enter) {
+		if (playdata->m_keys.enter) {
 			LeaveCriticalSection(&playdata->cs);
 			break;
 		}
 
 		LeaveCriticalSection(&playdata->cs);
-		//SetEvent(playdata->hupdate); // 쓰기 완료
-		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
 	}
-	std::cout << client_sock << "게임오버 쓰레드 종료" << std::endl;
+	//std::cout << client_sock << "게임오버 쓰레드 종료" << std::endl;
 	closesocket(client_sock);
 	playdata->checkout_room = true;
 	return 0;
@@ -177,7 +157,7 @@ void GameServerThreadData::CreateCommThread(void)
 	//소켓만 보내지 말고 Player struct를 보내기
 	for (int i = 0; i < MAX_PLAYER; ++i)
 	{
-		std::cout << pPlayers[i].clientSocket << std::endl;
+		//std::cout << pPlayers[i].clientSocket << std::endl;
 		HANDLE newCommThread = CreateThread(NULL, 0, CommThread, &pPlayers[i], 0, NULL);
 	}
 

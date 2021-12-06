@@ -34,7 +34,6 @@ void GamePlayScene::ScreenRotate(HDC hDC, RECT rt)
 
 void GamePlayScene::Paint(HDC hDC)
 {
-	// 회전 적용하기위한 행렬 구조체
 	if (InitComplete) {
 		SetBkMode(hDC, TRANSPARENT);
 		draw_main(hDC);
@@ -127,11 +126,10 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 �
 	int y = 130;
 
 	SetTextColor(hDC, RGB(255, 255, 255));
+	// 다음 블록
 	TextOut(hDC, x + 48, y, "NEXT", 4);
-
 	TransparentBlt(hDC, x, y + 20, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
-
 	if (m_pGameClient->m_ClientNum != -1) {
 		for (int i = 0; i < 4; i++) { //게임상태표시에 다음에 나올블럭을 그림 
 			for (int j = 0; j < 4; j++) {
@@ -159,8 +157,8 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 �
 		}
 	}
 
+	// 아이템 창
 	TextOut(hDC, x + 48, y + 160, "ITEM", 4);
-
 	TransparentBlt(hDC, x, y + 180, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
 	switch (m_gamestatus[m_pGameClient->m_ClientNum].item) {
@@ -177,7 +175,8 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 �
 			UIDC, 512 + 256, 0, 256, 256, RGB(255, 0, 255));
 		break;
 	}
-
+	
+	// 타겟 표시
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
@@ -277,7 +276,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 			x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
 			y = BOARD_Y_ADJ + BOARD_Y + 1;
 		}
-
+		
 		if (m_gamestatus[m_pGameClient->m_ClientNum].target == i) {
 			TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * (x-1), WINDOW_HEIGHT / 15 + 20 * (y-1), 60, 100,
 				UIDC, 264, 197, 68, 56, RGB(255, 0, 255));
