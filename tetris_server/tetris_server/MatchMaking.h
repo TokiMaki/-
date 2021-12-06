@@ -9,16 +9,16 @@ void CreateGameServerThread(MatchSockets* target);
 //GameServerThread를 생성하며, MatchMakingQ의 소켓들을 전달
 
 void MatchMakingQ_CloseSocket(std::vector<SOCKET>* MatchMakingQ, SOCKET client);
-//MatchMakingQ에 해당되는 클라이언트 소켓을 제거
+//MatchMakingQ에서 특정 클라이언트 소켓을 제거
 
 SOCKET MatchMakingQ_DeQ(std::vector<SOCKET>* MatchMakingQ);
-//MatchMakingQ에 제일 앞의 소켓을 제거 후 return
+//MatchMakingQ에서 제일 앞의 소켓을 제거 후 해당 소켓을 return
 
 int SendMsgtoClient(int Msg, SOCKET client);
 // 클라이언트에게 메세지 전송
 
 int RecvMsgfromClient(SOCKET client);
-
+// 클라이언트에게서 메세지 수신
 
 enum MSG_MatchMaking //매치매이킹 시스템에서 사용할 메시지
 {
