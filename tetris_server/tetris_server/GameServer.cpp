@@ -51,6 +51,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		EnterCriticalSection(&newRoomData.cs);
 		newRoomData.m_GameTimer.Tick(60.0f);
 		newRoomData.check_key();
+		newRoomData.check_level_up(newRoomData.m_GameTimer.GetTimeElapsed());
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
 			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_GameFlag.gameover_flag != 1 && newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_GameFlag.win_flag != 1) {
