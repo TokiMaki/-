@@ -149,6 +149,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	//std::cout << client_sock << "게임오버 쓰레드 종료" << std::endl;
 	closesocket(client_sock);
 	playdata->checkout_room = true;
+	playdata->m_gamestatus[playdata->m_GameClientNum].m_GameFlag.gameover_flag = 1;
 	return 0;
 }
 void GameServerThreadData::CreateCommThread(void)
