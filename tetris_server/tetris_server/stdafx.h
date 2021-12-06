@@ -12,7 +12,7 @@
 #include<iostream>
 #include<vector>
 
-#define SERVERIP   "127.0.0.1"
+#define SERVERIP   "220.94.221.36"
 #define SERVERPORT 9000
 #define BUF_SIZE 2048
 
@@ -37,7 +37,7 @@
 #define CEILLING_Y BOARD_Y - 20     // 천장 위치
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
-#define MAX_PLAYER 3 // 최대 인원수
+#define MAX_PLAYER 2 // 최대 인원수
 
 struct KeyInput {
     bool left = false;      //←
@@ -51,9 +51,6 @@ struct KeyInput {
 };
 
 struct KeyFlag {
-    bool new_block_on = 0; //새로운 블럭이 필요함을 알리는 flag 
-    bool crush_on = 0; //현재 이동중인 블록이 충돌상태인지 알려주는 flag
-
     bool left_flag = 0; // 하드드랍할때 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool right_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool down_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
@@ -61,13 +58,12 @@ struct KeyFlag {
     bool up_flag = 0; // 위키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool shift_flag = 0; // 쉬프트키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
     bool ctrl_flag = 0; // 컨트롤키 꾹 누르고 있어도 한번만 적용되게 해주는 flag
-
-    bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
 };
 
 struct GameFlag {
     bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
-
+    bool win_flag = 0;      // 이겼을 때 알려주는 flag
+    
     bool screen_rotate_flag = 0; // 스크린 돌아가는것을 알려주는 flag
     float fScreenRotateTime = 0.0f;  // 스크린이 몇 초 돌아갓는지 알려주는 변수
 
@@ -90,7 +86,7 @@ struct Gamestatus {
     int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
 
     int AttackedBlock = 0;
-    int item = -1;       // 0 키 반전
+    int item = -1;  // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target = 1;

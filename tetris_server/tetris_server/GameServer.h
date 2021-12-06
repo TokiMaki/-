@@ -46,8 +46,8 @@ struct GameServerThreadData
     void move_block(int ClientNum, int dir);
     void check_line(int ClientNum);
     void copy_another_map(void);
-    //void check_level_up(void);
     void check_game_over(int ClientNum);
+    void check_win(int ClientNum);
     void attack(int ClientNum, int Combo);
     void attacked(int ClientNum);
     void check_level_up(float fTimeElapsed);

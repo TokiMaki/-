@@ -45,37 +45,37 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 {
 	switch (KEYCODE) {
 	case VK_LEFT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.left = true;
 		}
 		break;
 	case VK_RIGHT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.right = true;
 		}
 		break;
 	case VK_UP:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.up = true;
 		}
 		break;
 	case VK_DOWN:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.down = true;
 		}
 		break;
 	case VK_SHIFT:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.shift = true;
 		}
 		break;
 	case VK_SPACE:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.space = true;
 		}
 		break;
 	case VK_CONTROL:
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 0) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 0) {
 			m_keys.ctrl = true;
 		}
 		break;
@@ -91,7 +91,7 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 			WSACleanup();
 			m_pGameClient->ChangeScene(Scene::SceneNum::Title);
 		}*/
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.gameover_flag == 1 || m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.win_flag == 1) {
 			m_keys.enter = true;
 		}
 
@@ -132,35 +132,35 @@ void GamePlayScene::KeyUp(unsigned char KEYCODE)
 }
 
 void GamePlayScene::reset(void) {
-	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.crush_on = 0;
+	m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.crush_on = 0;
 	m_gamestatus[m_pGameClient->m_ClientNum].speed = 1;
 
-	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_org¸¦ ÃÊ±âÈ­
+	reset_main(); // m_gamestatus[m_pGameClient->m_ClientNum].board_orgë¥¼ ì´ˆê¸°í™”
 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //´ÙÀ½¹ø¿¡ ³ª¿Ã ºí·Ï Á¾·ù¸¦ ·£´ıÇÏ°Ô »ı¼º
-	new_block(); //»õ·Î¿î ºí·ÏÀ» ÇÏ³ª ¸¸µê
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //ë‹¤ìŒë²ˆì— ë‚˜ì˜¬ ë¸”ë¡ ì¢…ë¥˜ë¥¼ ëœë¤í•˜ê²Œ ìƒì„±
+	new_block(); //ìƒˆë¡œìš´ ë¸”ë¡ì„ í•˜ë‚˜ ë§Œë“¦
 }
 
-void GamePlayScene::reset_main(void) { //°ÔÀÓÆÇÀ» ÃÊ±âÈ­
+void GamePlayScene::reset_main(void) { //ê²Œì„íŒì„ ì´ˆê¸°í™”
 
-	for (int i = 0; i < BOARD_Y; i++) { // °ÔÀÓÆÇÀ» 0À¸·Î ÃÊ±âÈ­
+	for (int i = 0; i < BOARD_Y; i++) { // ê²Œì„íŒì„ 0ìœ¼ë¡œ ì´ˆê¸°í™”
 		for (int j = 0; j < BOARD_X; j++) {
 			m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][j] = 0;
 		}
 	}
-	for (int j = 1; j < BOARD_X; j++) { //y°ªÀÌ 3ÀÎ À§Ä¡¿¡ ÃµÀåÀ» ¸¸µê
+	for (int j = 1; j < BOARD_X; j++) { //yê°’ì´ 3ì¸ ìœ„ì¹˜ì— ì²œì¥ì„ ë§Œë“¦
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
 	}
-	for (int i = 1; i < BOARD_Y - 1; i++) { //ÁÂ¿ì º®À» ¸¸µê
+	for (int i = 1; i < BOARD_Y; i++) { //ì¢Œìš° ë²½ì„ ë§Œë“¦
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][0] = WALL;
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][BOARD_X - 1] = WALL;
 	}
-	for (int j = 0; j < BOARD_X; j++) { //¹Ù´Úº®À» ¸¸µê 
+	for (int j = 0; j < BOARD_X; j++) { //ë°”ë‹¥ë²½ì„ ë§Œë“¦ 
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[BOARD_Y - 1][j] = WALL;
 	}
 }
 
-void GamePlayScene::draw_map(HDC hDC) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
+void GamePlayScene::draw_map(HDC hDC) { //ê²Œì„ ìƒíƒœ í‘œì‹œë¥¼ ë‚˜íƒ€ë‚´ëŠ” í•¨ìˆ˜
 	HDC blockDC, UIDC;
 	blockDC = CreateCompatibleDC(hDC);
 	UIDC = CreateCompatibleDC(hDC);
@@ -171,12 +171,12 @@ void GamePlayScene::draw_map(HDC hDC) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
 	int y = 130;
 
 	SetTextColor(hDC, RGB(255, 255, 255));
-	// ´ÙÀ½ ºí·Ï
+	// ë‹¤ìŒ ë¸”ë¡
 	TextOut(hDC, x + 48, y, "NEXT", 4);
 	TransparentBlt(hDC, x, y + 20, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
 	if (m_pGameClient->m_ClientNum != -1) {
-		for (int i = 0; i < 4; i++) { //°ÔÀÓ»óÅÂÇ¥½Ã¿¡ ´ÙÀ½¿¡ ³ª¿Ãºí·°À» ±×¸² 
+		for (int i = 0; i < 4; i++) { //ê²Œì„ìƒíƒœí‘œì‹œì— ë‹¤ìŒì— ë‚˜ì˜¬ë¸”ëŸ­ì„ ê·¸ë¦¼ 
 			for (int j = 0; j < 4; j++) {
 				switch (m_gamestatus[m_pGameClient->m_ClientNum].b_type_next) {
 				case 0:
@@ -202,7 +202,7 @@ void GamePlayScene::draw_map(HDC hDC) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
 		}
 	}
 
-	// ¾ÆÀÌÅÛ Ã¢
+	// ì•„ì´í…œ ì°½
 	TextOut(hDC, x + 48, y + 160, "ITEM", 4);
 	TransparentBlt(hDC, x, y + 180, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
@@ -221,7 +221,7 @@ void GamePlayScene::draw_map(HDC hDC) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
 		break;
 	}
 	
-	// Å¸°Ù Ç¥½Ã
+	// íƒ€ê²Ÿ í‘œì‹œ
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
@@ -230,13 +230,13 @@ void GamePlayScene::draw_map(HDC hDC) { //°ÔÀÓ »óÅÂ Ç¥½Ã¸¦ ³ªÅ¸³»´Â ÇÔ¼ö
 	DeleteDC(UIDC);
 }
 
-void GamePlayScene::draw_main(HDC hDC) { 
-	// °ÔÀÓÆÇ ±×¸®´Â ÇÔ¼ö
-	// ³ª¸¦ Á¦¿ÜÇÑ ÀÎ¿ø ¸î¸íÂ° ±×¸±°ÍÀÎÁö¿¡ ´ëÇÑ º¯¼ö
+void GamePlayScene::draw_main(HDC hDC) {
+	// ê²Œì„íŒ ê·¸ë¦¬ëŠ” í•¨ìˆ˜
+	// ë‚˜ë¥¼ ì œì™¸í•œ ì¸ì› ëª‡ëª…ì§¸ ê·¸ë¦´ê²ƒì¸ì§€ì— ëŒ€í•œ ë³€ìˆ˜
 	int DrawPlayers = 0;
 	int x, y;
 	int danger_background = 0;
-	
+
 	HDC blockDC, UIDC;
 	UIDC = CreateCompatibleDC(hDC);
 	blockDC = CreateCompatibleDC(hDC);
@@ -253,7 +253,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 	}
 	HBRUSH myBrush;
 	if (danger_background >= 13) {
-		myBrush = (HBRUSH)CreateSolidBrush(RGB(12.5 * danger_background + 2, 0, 106-5*danger_background));
+		myBrush = (HBRUSH)CreateSolidBrush(RGB(12.5 * danger_background + 2, 0, 106 - 5 * danger_background));
 	}
 	else {
 		myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
@@ -269,7 +269,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 	HPEN oldPen = (HPEN)SelectObject(hDC, myPen);
 
 	SetTextColor(hDC, RGB(255, 255, 255));
-	// ³ª¿Í ³» ¿· ´Ù¸¥ »ç¶÷µéÀÇ º¸µå ±×¸®±â
+	// ë‚˜ì™€ ë‚´ ì˜† ë‹¤ë¥¸ ì‚¬ëŒë“¤ì˜ ë³´ë“œ ê·¸ë¦¬ê¸°
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		if (i != m_pGameClient->m_ClientNum)
 			DrawPlayers++;
@@ -284,11 +284,11 @@ void GamePlayScene::draw_main(HDC hDC) {
 					y = BOARD_Y_ADJ + j;
 				}
 				switch (m_gamestatus[i].board_org[j][k]) {
-				case EMPTY: //ºóÄ­¸ğ¾ç
+				case EMPTY: //ë¹ˆì¹¸ëª¨ì–‘
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					break;
-				case CEILLING: //ÃµÀå¸ğ¾ç
+				case CEILLING: //ì²œì¥ëª¨ì–‘
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 8, 0, 32, 32, RGB(255, 0, 255));
 					MoveToEx(hDC, WINDOW_WIDTH / 20 + 20 * x,
@@ -296,16 +296,16 @@ void GamePlayScene::draw_main(HDC hDC) {
 					LineTo(hDC, WINDOW_WIDTH / 20 + 20 * x + 20,
 						WINDOW_HEIGHT / 15 + 20 * y + 10);
 					break;
-				case WALL: //º®¸ğ¾ç 
+				case WALL: //ë²½ëª¨ì–‘ 
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 0, 0, 32, 32, RGB(255, 0, 255));
-					
+
 					break;
-				case INACTIVE_BLOCK: //±»Àº ºí·° ¸ğ¾ç
+				case INACTIVE_BLOCK: //êµ³ì€ ë¸”ëŸ­ ëª¨ì–‘
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 9, 0, 32, 32, RGB(255, 0, 255));
 					break;
-				case ACTIVE_BLOCK: //¿òÁ÷ÀÌ°íÀÖ´Â ºí·° ¸ğ¾ç
+				case ACTIVE_BLOCK: //ì›€ì§ì´ê³ ìˆëŠ” ë¸”ëŸ­ ëª¨ì–‘
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * (m_gamestatus[i].b_type + 1), 0, 32, 32, RGB(255, 0, 255));
 					break;
@@ -350,9 +350,9 @@ void GamePlayScene::draw_main(HDC hDC) {
 			}
 		}
 
-		// °ÔÀÓ ¿À¹ö È®ÀÎ
-		if (m_gamestatus[i].m_KeyFlag.gameover_flag == 1) {
-  			if (i == m_pGameClient->m_ClientNum) {
+		// ê²Œì„ ì˜¤ë²„ í™•ì¸
+		if (m_gamestatus[i].m_GameFlag.gameover_flag == 1) {
+			if (i == m_pGameClient->m_ClientNum) {
 				x = BOARD_X_ADJ + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
 			}
@@ -360,8 +360,25 @@ void GamePlayScene::draw_main(HDC hDC) {
 				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
 			}
-			SetTextColor(hDC, RGB(rand() % 55+200, rand() % 55+200, rand() % 55+200));
+			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
+			SetTextColor(hDC, RGB(0, 0, 0));
+		}
+
+		// ê²Œì„ ì˜¤ë²„ í™•ì¸
+		if (m_gamestatus[i].m_GameFlag.win_flag == 1) {
+			if (i == m_pGameClient->m_ClientNum) {
+				x = BOARD_X_ADJ + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			else {
+				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (3 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Win", 3);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
 			SetTextColor(hDC, RGB(0, 0, 0));
 		}
 	}
@@ -373,18 +390,18 @@ void GamePlayScene::draw_main(HDC hDC) {
 	DeleteDC(UIDC);
 }
 
-void GamePlayScene::new_block(void) { //»õ·Î¿î ºí·Ï »ı¼º  
+void GamePlayScene::new_block(void) { //ìƒˆë¡œìš´ ë¸”ë¡ ìƒì„±  
 	int i, j;
 
-	m_gamestatus[m_pGameClient->m_ClientNum].bx = (BOARD_X / 2) - 1; //ºí·Ï »ı¼º À§Ä¡xÁÂÇ¥(°ÔÀÓÆÇÀÇ °¡¿îµ¥) 
-	m_gamestatus[m_pGameClient->m_ClientNum].by = 0;  //ºí·Ï »ı¼ºÀ§Ä¡ yÁÂÇ¥(Á¦ÀÏ À§) 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type = m_gamestatus[m_pGameClient->m_ClientNum].b_type_next; //´ÙÀ½ºí·°°ªÀ» °¡Á®¿È 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //´ÙÀ½ ºí·°À» ¸¸µê 
-	m_gamestatus[m_pGameClient->m_ClientNum].b_rotation = 0;  //È¸ÀüÀº 0¹øÀ¸·Î °¡Á®¿È 
+	m_gamestatus[m_pGameClient->m_ClientNum].bx = (BOARD_X / 2) - 1; //ë¸”ë¡ ìƒì„± ìœ„ì¹˜xì¢Œí‘œ(ê²Œì„íŒì˜ ê°€ìš´ë°) 
+	m_gamestatus[m_pGameClient->m_ClientNum].by = 0;  //ë¸”ë¡ ìƒì„±ìœ„ì¹˜ yì¢Œí‘œ(ì œì¼ ìœ„) 
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type = m_gamestatus[m_pGameClient->m_ClientNum].b_type_next; //ë‹¤ìŒë¸”ëŸ­ê°’ì„ ê°€ì ¸ì˜´ 
+	m_gamestatus[m_pGameClient->m_ClientNum].b_type_next = rand() % 7; //ë‹¤ìŒ ë¸”ëŸ­ì„ ë§Œë“¦ 
+	m_gamestatus[m_pGameClient->m_ClientNum].b_rotation = 0;  //íšŒì „ì€ 0ë²ˆìœ¼ë¡œ ê°€ì ¸ì˜´ 
 
-	m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flag¸¦ ²û  
+	m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.new_block_on = 0; //new_block m_gamestatus[m_pGameClient->m_ClientNum].flagë¥¼ ë”  
 
-	for (i = 0; i < 4; i++) { //°ÔÀÓÆÇ bx, byÀ§Ä¡¿¡ ºí·°»ı¼º
+	for (i = 0; i < 4; i++) { //ê²Œì„íŒ bx, byìœ„ì¹˜ì— ë¸”ëŸ­ìƒì„±
 		for (j = 0; j < 4; j++) {
 			if (blocks[m_gamestatus[m_pGameClient->m_ClientNum].b_type][m_gamestatus[m_pGameClient->m_ClientNum].b_rotation][i][j] == 1)
 				m_gamestatus[m_pGameClient->m_ClientNum].board_org[m_gamestatus[m_pGameClient->m_ClientNum].by + i][m_gamestatus[m_pGameClient->m_ClientNum].bx + j] = ACTIVE_BLOCK;
@@ -397,7 +414,7 @@ void GamePlayScene::check_key() {
 }
 
 void GamePlayScene::InitScene() {
-	// reset(); //°ÔÀÓÆÇ ¸®¼Â
+	// reset(); //ê²Œì„íŒ ë¦¬ì…‹
 	InitComplete = false;
 	m_keys = { false, false, false, false, false, false, false, false };
 
@@ -405,15 +422,15 @@ void GamePlayScene::InitScene() {
 	int retval;
 	int len = 0;
 
-	// ³»°¡ ¸î¹øÀÎÁö È®ÀÎ
+	// ë‚´ê°€ ëª‡ë²ˆì¸ì§€ í™•ì¸
 	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
 	if (retval == SOCKET_ERROR) {
-		err_quit("¹øÈ£");
+		err_quit("ë²ˆí˜¸");
 	}
 	len = ntohl(len);
 	retval = recvn(m_pGameClient->GetSOCKET(), (char*)&m_pGameClient->m_ClientNum, len, 0);
 	if (retval == SOCKET_ERROR) {
-		err_quit("¹øÈ£");
+		err_quit("ë²ˆí˜¸");
 	}
 
 	hThread = CreateThread(NULL, 0, GamePlayThread, (LPVOID)this, 0, NULL);
@@ -455,12 +472,12 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			break;
 		}
 
-		if (pGamePlayScene->m_gamestatus[pGamePlayScene->m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag && keys.enter) {
-			closesocket(pGamePlayScene->m_pGameClient->GetSOCKET());
+		if (keys.enter) {
 			pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::Title);
 			break;
 		}
 	}
+	closesocket(pGamePlayScene->m_pGameClient->GetSOCKET());
 	WSACleanup();
 	return 0;
 }
