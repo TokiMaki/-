@@ -69,6 +69,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMsg, WPARAM wParam, LPARAM lParam){
 		GetObject(gameClient.BlockBitmap, sizeof(BITMAP), &bmp[0]);
 		gameClient.UIBitmap = (HBITMAP)LoadBitmap(g_hinst, MAKEINTRESOURCE(IDB_UI));
 		GetObject(gameClient.UIBitmap, sizeof(BITMAP), &bmp[1]);
+		PlaySound(MAKEINTRESOURCE(IDR_BGM), g_hinst, SND_RESOURCE|SND_ASYNC | SND_LOOP);
 		//SetTimer(hWnd, 1, 1000 / 60, NULL);
 		break;
 	case WM_PAINT:
