@@ -54,6 +54,14 @@ IDB_BLOCK               BITMAP                  "textures\\block.bmp"
 
 IDB_UI                  BITMAP                  "textures\\ui.bmp"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// WAVE
+//
+
+IDR_BGM                 WAVE                    "sound\\BGM.wav"
+
 #endif    // 한국어(대한민국) resources
 /////////////////////////////////////////////////////////////////////////////
 
