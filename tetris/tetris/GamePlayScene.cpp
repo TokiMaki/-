@@ -334,9 +334,12 @@ void GamePlayScene::draw_main(HDC hDC) {
 			y = BOARD_Y_ADJ + BOARD_Y + 1;
 		}
 
-		char temp[3];
-		wsprintf(temp, "%d", i);
-		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * (y + 1), temp, 1);
+		
+		if (m_gamestatus[m_pGameClient->m_ClientNum].target == i) {
+			TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * (x-1), WINDOW_HEIGHT / 15 + 20 * (y-1), 60, 100,
+				UIDC, 264, 197, 68, 56, RGB(255, 0, 255));
+		}
+
 
 		int tempAttackedBlock = m_gamestatus[i].AttackedBlock;
 		for (int j = 0; j < tempAttackedBlock;) {
@@ -349,14 +352,12 @@ void GamePlayScene::draw_main(HDC hDC) {
 				y = BOARD_Y_ADJ + 2;
 			}
 			if (tempAttackedBlock >= 10) {
-				//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "¡Ø", 2);
 				TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 					UIDC, 256 + 18, 0, 18, 18, RGB(255, 0, 255));
 				j++;
 				tempAttackedBlock -= 10;
 			}
 			else if (tempAttackedBlock < 10) {
-				//TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, "¡Ù", 2);
 				TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 					UIDC, 256, 0, 18, 18, RGB(255, 0, 255));
 				j++;
