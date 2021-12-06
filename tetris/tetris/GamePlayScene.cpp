@@ -305,23 +305,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 			}
 		}
 
-		// 게임 오버 확인
-		if (m_gamestatus[i].gameover_flag == 1) {
-			if (i == m_pGameClient->m_ClientNum) {
-				x = BOARD_X_ADJ + (BOARD_X / 2);
-				y = BOARD_Y_ADJ + (BOARD_Y / 2);
-			}
-			else {
-				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
-				y = BOARD_Y_ADJ + (BOARD_Y / 2);
-			}
-			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
-			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
-			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
-			SetTextColor(hDC, RGB(0, 0, 0));
-		}
-
-		// 게임 오버 확인
+		// 게임 승리 확인
 		if (m_gamestatus[i].win_flag == 1) {
 			if (i == m_pGameClient->m_ClientNum) {
 				x = BOARD_X_ADJ + (BOARD_X / 2);
@@ -333,6 +317,21 @@ void GamePlayScene::draw_main(HDC hDC) {
 			}
 			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (3 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Win", 3);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
+			SetTextColor(hDC, RGB(0, 0, 0));
+		}
+		// 게임 오버 확인
+		else if (m_gamestatus[i].gameover_flag == 1) {
+			if (i == m_pGameClient->m_ClientNum) {
+				x = BOARD_X_ADJ + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			else {
+				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (27 * 2.8), WINDOW_HEIGHT / 15 + y + 21 * y, "Press Enter To Return Title", 27);
 			SetTextColor(hDC, RGB(0, 0, 0));
 		}

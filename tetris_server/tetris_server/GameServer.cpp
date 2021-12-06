@@ -678,6 +678,9 @@ void GameServerThreadData::check_game_over(int ClientNum) {
 void GameServerThreadData::check_win(int ClientNum)
 {
 	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+	if (pPlayers[ClientNum].m_gamestatus[GameClientNum].m_GameFlag.gameover_flag == 1) {
+		return;
+	}
 	for (int i = 0; i < MAX_PLAYER; i++) {
 		int i_GameClientNum = pPlayers[i].m_GameClientNum;
 		if (i != GameClientNum) {
