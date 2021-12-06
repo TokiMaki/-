@@ -20,6 +20,7 @@ struct GameServerThreadData
 	std::vector<Player> pPlayers; //플레이어 개개인의 상태
 	CGameTimer m_GameTimer; //업데이트에서 프레임 시간 연산 시 사용
 
+
     CRITICAL_SECTION cs;
 
     int Level = 0; //현재 level
@@ -68,7 +69,4 @@ struct GameServerThreadData
 
 };
 
-ClientGameData ConvertGameData(Gamestatus m_gamestate);
-
 DWORD WINAPI CommThread(LPVOID arg);
-

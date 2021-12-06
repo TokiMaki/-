@@ -20,18 +20,21 @@ public:
 	void KeyDown(unsigned char KEYCODE) override;
 	void KeyUp(unsigned char KEYCODE) override;
 
+	void reset();
+	void reset_main();
+	void new_block();
 	void draw_map(HDC hDC);
 	void draw_main(HDC hDC);
+	void check_key();
 
-	Gamestatus ConvertGameData(ClientGameData gamedata);
-
+	// void PlaySceneSend(); //KeyInput m_keys 의 값을 Commthread 에 전송
+	// void PlaySceneRecv(); //GameServer 에서 연산된 값을 CommThread 로부터
 	static DWORD WINAPI GamePlayThread(LPVOID arg);
 
 	bool InitComplete = false;
 private:
 	KeyInput m_keys;                    //클라이언트의 키입력을 저장
 	Gamestatus m_gamestatus[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
-	ClientGameData m_ClientGameData[MAX_PLAYER];  	        //내 클라이언트의 게임 상태
 
 	int key; //키보드로 입력받은 키값을 저장
 
@@ -39,8 +42,11 @@ private:
 	int cnt; //현재 레벨에서 제거한 줄 수를 저장
 	int score; //현재 점수
 
+
+	//int STATUS_Y_GOAL; //GOAL 정보표시위치Y 좌표 저장
 	int STATUS_Y_LEVEL; //LEVEL 정보표시위치Y 좌표 저장
 	HANDLE hThread;
+	//int STATUS_Y_SCORE; //SCORE 정보표시위치Y 좌표 저장
 
 	int blocks[7][4][4][4] = {
 		{{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},{0,0,0,0,0,1,1,0,0,1,1,0,0,0,0,0},           // 0 ㅁ모양 블럭
