@@ -15,7 +15,7 @@
 #include<string.h>
 
 
-#define SERVERIP "127.0.0.1"
+#define SERVERIP "183.101.112.36"
 // #define SERVERIP "220.94.221.36"
 #define SERVERPORT 9000
 
@@ -130,19 +130,12 @@ struct Gamestatus {
 };
 
 struct ClientGameData {
-    enum {
-        Empty,          // 비어있음
-        Ceilling,       // 천장
-        ActiveBlock,   // 움직일 수 있는 블록
-        Wall,           // 벽
-        InactiveBlock, // 굳어있는 블록
-    };
     int bx, by;      //이동중인 블록의 게임판상의 x,y좌표
     int b_type;      //블록 종류
     int b_rotation;  //블록 회전값
     int b_type_next; //다음 블록값
 
-    char board_org[BOARD_Y][BOARD_X] = { 0, }; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
+    int board_org[BOARD_Y][BOARD_X] = { 0, }; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
 
     int AttackedBlock = 0;
     int item = -1;  // 0 키 반전

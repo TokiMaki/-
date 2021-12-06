@@ -789,28 +789,7 @@ ClientGameData ConvertGameData(Gamestatus m_gamestate)
 
 	for (int i = 0; i < BOARD_X; ++i) {
 		for (int j = 0; j < BOARD_Y; ++j) {
-			int BlockShape = m_gamestate.board_org[j][i];
-			char ConvertBlockShape = -1;
-			switch (BlockShape) {
-			case ACTIVE_BLOCK:
-				ConvertBlockShape = TempClientGameData.ActiveBlock;
-				break;
-			case CEILLING:
-				ConvertBlockShape = TempClientGameData.Ceilling;
-				break;
-			case EMPTY:
-				ConvertBlockShape = TempClientGameData.Empty;
-				break;
-			case WALL:
-				ConvertBlockShape = TempClientGameData.Wall;
-				break;
-			case INACTIVE_BLOCK:
-				ConvertBlockShape = TempClientGameData.InactiveBlock;
-				break;
-			}
-			if (ConvertBlockShape != -1) {
-				TempClientGameData.board_org[j][i] = ConvertBlockShape;
-			}
+			TempClientGameData.board_org[j][i] = m_gamestate.board_org[j][i];
 		}
 	}
 

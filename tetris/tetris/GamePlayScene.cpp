@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "socket_function.h"
 
-
 GamePlayScene::GamePlayScene() {}
 GamePlayScene::GamePlayScene(SceneNum num, GameClient* const pGameClient) {
 	m_SceneNum = num;
@@ -35,6 +34,7 @@ void GamePlayScene::ScreenRotate(HDC hDC, RECT rt)
 void GamePlayScene::Paint(HDC hDC)
 {
 	if (InitComplete) {
+
 		SetBkMode(hDC, TRANSPARENT);
 		draw_main(hDC);
 		draw_map(hDC);
@@ -364,26 +364,7 @@ Gamestatus GamePlayScene::ConvertGameData(ClientGameData gamedata)
 	bool stack = false;
 	for (int i = 0; i < BOARD_X; ++i) {
 		for (int j = 0; j < BOARD_Y; ++j) {
-			char BlockShape = gamedata.board_org[j][i];
-			int ConvertBlockShape = 0;
-			switch (BlockShape) {
-			case 0:
-				ConvertBlockShape = EMPTY;
-				break;
-			case 1:
-				ConvertBlockShape = CEILLING;
-				break;
-			case 2:
-				ConvertBlockShape = ACTIVE_BLOCK;
-				break;
-			case 3:
-				ConvertBlockShape = WALL;
-				break;
-			case 4:
-				ConvertBlockShape = INACTIVE_BLOCK;
-				break;
-			}
-			TempGamestatus.board_org[j][i] = ConvertBlockShape;
+			TempGamestatus.board_org[j][i] = gamedata.board_org[j][i];
 		}
 	}
 	return TempGamestatus;
@@ -420,6 +401,7 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 	GamePlayScene* pGamePlayScene = (GamePlayScene*)arg;
 	ClientGameData TempGameData[MAX_PLAYER];
 
+
 	while (1) {
 		len = 0;
 		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&len, sizeof(int), 0);
@@ -428,15 +410,15 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			break;
 		}
 		len = ntohl(len);
-		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&TempGameData, len, 0);
+		retval = recvn(pGamePlayScene->m_pGameClient->GetSOCKET(), (char*)&pGamePlayScene->m_gamestatus, len, 0);
 		if (retval == SOCKET_ERROR) {
 			err_quit("status");
 			break;
 		}
 
-		for (int i = 0; i < MAX_PLAYER; ++i) {
-			pGamePlayScene->m_gamestatus[i] = pGamePlayScene->ConvertGameData(TempGameData[i]);
-		}
+		//for (int i = 0; i < MAX_PLAYER; ++i) {
+		//	pGamePlayScene->m_gamestatus[i] = pGamePlayScene->ConvertGameData(TempGameData[i]);
+		//}
 
 		pGamePlayScene->InitComplete = true;
 

@@ -12,7 +12,7 @@
 #include<iostream>
 #include<vector>
 
-#define SERVERIP   "127.0.0.1"
+#define SERVERIP   "183.101.112.36"
 #define SERVERPORT 9000
 #define BUF_SIZE 2048
 
@@ -43,7 +43,7 @@
 #define CEILLING_Y BOARD_Y - 20     // 천장 위치
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
-#define MAX_PLAYER 3 // 최대 인원수
+#define MAX_PLAYER 2 // 최대 인원수
 
 struct KeyInput {
     bool left = false;      //←
@@ -114,7 +114,7 @@ struct ClientGameData {
     int b_rotation;  //블록 회전값
     int b_type_next; //다음 블록값
 
-    char board_org[BOARD_Y][BOARD_X] = { 0, }; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
+    int board_org[BOARD_Y][BOARD_X] = { 0, }; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
 
     int AttackedBlock = 0;
     int item = -1;  // 0 키 반전
