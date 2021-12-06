@@ -45,7 +45,7 @@
 #define CEILLING_Y BOARD_Y - 20     // 천장 위치
 
 #define STATUS_X_ADJ BOARD_X_ADJ+BOARD_X+1 //게임정보표시 위치조정 
-#define MAX_PLAYER 3 // 최대 인원수
+#define MAX_PLAYER 1 // 최대 인원수
 
 struct KeyInput {
     bool left = false;      //←
@@ -55,6 +55,7 @@ struct KeyInput {
     bool shift = false;
     bool space = false;     //hard drop space(한번에 맨 밑으로 내리기)
     bool ctrl = false;
+    bool enter = false;
 };
 
 struct KeyFlag {

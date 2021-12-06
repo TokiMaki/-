@@ -22,6 +22,7 @@ void WaitScene::InitScene() {
 	}
 
 	// socket()
+
 	m_pGameClient->SetSOCKET(socket(AF_INET, SOCK_STREAM, 0));
 	if (m_pGameClient->GetSOCKET() == INVALID_SOCKET) err_quit("socket()");
 

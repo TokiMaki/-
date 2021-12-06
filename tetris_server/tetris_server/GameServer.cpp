@@ -152,10 +152,17 @@ DWORD WINAPI CommThread(LPVOID arg)
 		}
 		playdata->m_keys = tempKey;
 
+		if (/*playdata->m_gamestatus[playdata->m_GameClientNum].m_KeyFlag.gameover_flag && */playdata->m_keys.enter) {
+			LeaveCriticalSection(&playdata->cs);
+			break;
+		}
+
 		LeaveCriticalSection(&playdata->cs);
 		//SetEvent(playdata->hupdate); // 쓰기 완료
 		//WaitForSingleObject(playdata->hcheckupdate,INFINITE);
 	}
+	std::cout << client_sock << "게임오버 쓰레드 종료" << std::endl;
+	closesocket(client_sock);
 	playdata->checkout_room = true;
 	return 0;
 }
@@ -205,7 +212,7 @@ void GameServerThreadData::reset_main(void) { //게임판을 초기화
 		for (int k = 1; k < BOARD_X; k++) { //y값이 3인 위치에 천장을 만듦
 			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[CEILLING_Y][k] = CEILLING;
 		}
-		for (int j = 1; j < BOARD_Y - 1; j++) { //좌우 벽을 만듦
+		for (int j = 1; j < BOARD_Y; j++) { //좌우 벽을 만듦
 			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][0] = WALL;
 			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][BOARD_X - 1] = WALL;
 		}

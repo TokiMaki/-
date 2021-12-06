@@ -80,7 +80,11 @@ void GameClient::ScreenRotate(HDC hDC, RECT rt)
 
 void GameClient::SetSOCKET(SOCKET arg)
 {
+    LINGER optval;
+    optval.l_onoff = 1;
+    optval.l_linger = 1;
     sock = arg;
+    setsockopt(sock, SOL_SOCKET, SO_LINGER, (char*)&optval, sizeof(optval));
 }
 
 SOCKET GameClient::GetSOCKET()
