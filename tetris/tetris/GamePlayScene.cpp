@@ -332,6 +332,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 		if (i != 0) {
 			x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
 			y = BOARD_Y_ADJ + BOARD_Y + 1;
+		}
 
 		if (m_gamestatus[m_pGameClient->m_ClientNum].target == i) {
 			TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * (x-1), WINDOW_HEIGHT / 15 + 20 * (y-1), 60, 100,
