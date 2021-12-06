@@ -242,7 +242,8 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	DeleteDC(UIDC);
 }
 
-void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
+void GamePlayScene::draw_main(HDC hDC) { 
+	// 게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 	int x, y;
@@ -328,8 +329,10 @@ void GamePlayScene::draw_main(HDC hDC) { //게임판 그리는 함수
 		y = BOARD_Y_ADJ + BOARD_Y + 1;
 		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - 18, WINDOW_HEIGHT / 15 + 20 * (y + 1), "My Board", 8);
 
-		x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
-		y = BOARD_Y_ADJ + BOARD_Y + 1;
+		if (i != 0) {
+			x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
+			y = BOARD_Y_ADJ + BOARD_Y + 1;
+		}
 
 		char temp[3];
 		wsprintf(temp, "%d", i);
