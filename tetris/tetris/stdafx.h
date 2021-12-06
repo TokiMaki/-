@@ -75,6 +75,7 @@ struct KeyFlag {
 
 struct GameFlag {
     bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
+    bool win_flag = 0;      // 이겼을 때 알려주는 flag
 
     bool screen_rotate_flag = 0; // 스크린 돌아가는것을 알려주는 flag
     float fScreenRotateTime = 0.0f;  // 스크린이 몇 초 돌아갓는지 알려주는 변수

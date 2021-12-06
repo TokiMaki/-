@@ -67,7 +67,8 @@ struct KeyFlag {
 
 struct GameFlag {
     bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag
-
+    bool win_flag = 0;      // 이겼을 때 알려주는 flag
+    
     bool screen_rotate_flag = 0; // 스크린 돌아가는것을 알려주는 flag
     float fScreenRotateTime = 0.0f;  // 스크린이 몇 초 돌아갓는지 알려주는 변수
 
@@ -90,7 +91,7 @@ struct Gamestatus {
     int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
 
     int AttackedBlock = 0;
-    int item = -1;       // 0 키 반전
+    int item = -1;  // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
     int target = 1;
