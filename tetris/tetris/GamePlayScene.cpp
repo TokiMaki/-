@@ -98,7 +98,7 @@ void GamePlayScene::KeyDown(unsigned char KEYCODE)
 			WSACleanup();
 			m_pGameClient->ChangeScene(Scene::SceneNum::Title);
 		}*/
-		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1) {
+		if (m_gamestatus[m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag == 1 || m_gamestatus[m_pGameClient->m_ClientNum].m_GameFlag.win_flag == 1) {
 			m_keys.enter = true;
 		}
 
@@ -161,7 +161,7 @@ void GamePlayScene::reset_main(void) { //게임판을 초기화
 	for (int j = 1; j < BOARD_X; j++) { //y값이 3인 위치에 천장을 만듦
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[CEILLING_Y][j] = CEILLING;
 	}
-	for (int i = 1; i < BOARD_Y - 1; i++) { //좌우 벽을 만듦
+	for (int i = 1; i < BOARD_Y; i++) { //좌우 벽을 만듦
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][0] = WALL;
 		m_gamestatus[m_pGameClient->m_ClientNum].board_org[i][BOARD_X - 1] = WALL;
 	}
@@ -183,7 +183,7 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	SetTextColor(hDC, RGB(255, 255, 255));
 	TextOut(hDC, x + 48, y, "NEXT", 4);
 
-	
+
 	//Rectangle(hDC, x + 20, y + 20, x + 120, y + 140);
 	TransparentBlt(hDC, x, y + 20, 120, 120,
 		UIDC, 0, 0, 256, 256, RGB(255, 0, 255));
@@ -233,7 +233,7 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 			UIDC, 512 + 256, 0, 256, 256, RGB(255, 0, 255));
 		break;
 	}
-	
+
 	char temp[15];
 	wsprintf(temp, "TARGET : %d", m_gamestatus[m_pGameClient->m_ClientNum].target);
 	TextOut(hDC, x + 30, y + 310, temp, strlen(temp));
@@ -242,13 +242,13 @@ void GamePlayScene::draw_map(HDC hDC) { //게임 상태 표시를 나타내는 함수
 	DeleteDC(UIDC);
 }
 
-void GamePlayScene::draw_main(HDC hDC) { 
+void GamePlayScene::draw_main(HDC hDC) {
 	// 게임판 그리는 함수
 	// 나를 제외한 인원 몇명째 그릴것인지에 대한 변수
 	int DrawPlayers = 0;
 	int x, y;
 	int danger_background = 0;
-	
+
 	HDC blockDC, UIDC;
 	UIDC = CreateCompatibleDC(hDC);
 	blockDC = CreateCompatibleDC(hDC);
@@ -265,7 +265,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 	}
 	HBRUSH myBrush;
 	if (danger_background >= 13) {
-		myBrush = (HBRUSH)CreateSolidBrush(RGB(12.5 * danger_background + 2, 0, 106-5*danger_background));
+		myBrush = (HBRUSH)CreateSolidBrush(RGB(12.5 * danger_background + 2, 0, 106 - 5 * danger_background));
 	}
 	else {
 		myBrush = (HBRUSH)CreateSolidBrush(RGB(2, 29, 106));
@@ -311,7 +311,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 				case WALL: //벽모양 
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
 						blockDC, 32 * 0, 0, 32, 32, RGB(255, 0, 255));
-					
+
 					break;
 				case INACTIVE_BLOCK: //굳은 블럭 모양
 					TransparentBlt(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * y, 20, 20,
@@ -332,11 +332,11 @@ void GamePlayScene::draw_main(HDC hDC) {
 		if (i != 0) {
 			x = BOARD_X_ADJ + BOARD_X * i + 8 + (BOARD_X / 2);
 			y = BOARD_Y_ADJ + BOARD_Y + 1;
-		}
 
-		char temp[3];
-		wsprintf(temp, "%d", i);
-		TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * (y + 1), temp, 1);
+			char temp[3];
+			wsprintf(temp, "%d", i);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x, WINDOW_HEIGHT / 15 + 20 * (y + 1), temp, 1);
+		}
 
 		int tempAttackedBlock = m_gamestatus[i].AttackedBlock;
 		for (int j = 0; j < tempAttackedBlock;) {
@@ -365,7 +365,7 @@ void GamePlayScene::draw_main(HDC hDC) {
 
 		// 게임 오버 확인
 		if (m_gamestatus[i].m_KeyFlag.gameover_flag == 1) {
-  			if (i == m_pGameClient->m_ClientNum) {
+			if (i == m_pGameClient->m_ClientNum) {
 				x = BOARD_X_ADJ + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
 			}
@@ -373,8 +373,25 @@ void GamePlayScene::draw_main(HDC hDC) {
 				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
 				y = BOARD_Y_ADJ + (BOARD_Y / 2);
 			}
-			SetTextColor(hDC, RGB(rand() % 55+200, rand() % 55+200, rand() % 55+200));
+			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
 			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (9 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Game Over", 9);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (23 * 3.1), WINDOW_HEIGHT / 15 + y + 21 * y, "Enter를 누르면 메인화면", 23);
+			SetTextColor(hDC, RGB(0, 0, 0));
+		}
+
+		// 게임 오버 확인
+		if (m_gamestatus[i].m_GameFlag.win_flag == 1) {
+			if (i == m_pGameClient->m_ClientNum) {
+				x = BOARD_X_ADJ + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			else {
+				x = BOARD_X_ADJ + BOARD_X * DrawPlayers + 8 + (BOARD_X / 2);
+				y = BOARD_Y_ADJ + (BOARD_Y / 2);
+			}
+			SetTextColor(hDC, RGB(rand() % 55 + 200, rand() % 55 + 200, rand() % 55 + 200));
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (3 * 2.7), WINDOW_HEIGHT / 15 + y + 20 * y, "Win", 3);
+			TextOut(hDC, WINDOW_WIDTH / 20 + 20 * x - (23 * 3.1), WINDOW_HEIGHT / 15 + y + 21 * y, "Enter를 누르면 메인화면", 23);
 			SetTextColor(hDC, RGB(0, 0, 0));
 		}
 	}
@@ -479,14 +496,14 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			break;
 		}
 
-		if (pGamePlayScene->m_gamestatus[pGamePlayScene->m_pGameClient->m_ClientNum].m_KeyFlag.gameover_flag && keys.enter) {
-			closesocket(pGamePlayScene->m_pGameClient->GetSOCKET());
+		if (keys.enter) {
 			pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::Title);
 			break;
 		}
 		//pGamePlayScene->m_keys.shift = false;
 		//SetEvent(hReadEvent); // 읽기 완료 알리기
 	}
+	closesocket(pGamePlayScene->m_pGameClient->GetSOCKET());
 	WSACleanup();
 	return 0;
 }

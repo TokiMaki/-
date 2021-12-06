@@ -53,7 +53,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 		newRoomData.check_key();
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			int GameClientNum = newRoomData.pPlayers[i].m_GameClientNum;
-			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_KeyFlag.gameover_flag == 0) {
+			if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_KeyFlag.gameover_flag != 1 && newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_GameFlag.win_flag != 1) {
 
 				newRoomData.KeyUpdate(GameClientNum, newRoomData.m_GameTimer.GetTimeElapsed());
 
@@ -61,6 +61,7 @@ DWORD WINAPI GameServerThread(LPVOID arg)
 					newRoomData.drop_block(i, newRoomData.m_GameTimer.GetTimeElapsed());
 
 				newRoomData.check_game_over(GameClientNum);
+				newRoomData.check_win(GameClientNum);
 
 				if (newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_KeyFlag.new_block_on == 1
 					&& newRoomData.pPlayers[i].m_gamestatus[GameClientNum].m_KeyFlag.gameover_flag == 0)
@@ -180,6 +181,8 @@ void GameServerThreadData::CreateCommThread(void)
 
 void GameServerThreadData::reset(void) {
 	for (int i = 0; i < MAX_PLAYER; ++i) {
+		Gamestatus tempGameStatus;
+		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum] = tempGameStatus;
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].m_KeyFlag.crush_on = 0;
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].speed = 1;
 		pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].b_type_next = rand() % 7; //다음번에 나올 블록 종류를 랜덤하게 생성
@@ -212,7 +215,7 @@ void GameServerThreadData::reset_main(void) { //게임판을 초기화
 		for (int k = 1; k < BOARD_X; k++) { //y값이 3인 위치에 천장을 만듦
 			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[CEILLING_Y][k] = CEILLING;
 		}
-		for (int j = 1; j < BOARD_Y; j++) { //좌우 벽을 만듦
+		for (int j = 0; j < BOARD_Y; j++) { //좌우 벽을 만듦
 			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][0] = WALL;
 			pPlayers[i].m_gamestatus[pPlayers[i].m_GameClientNum].board_org[j][BOARD_X - 1] = WALL;
 		}
@@ -688,13 +691,27 @@ void GameServerThreadData::check_level_up(float fTimeElapsed) {
 	}
 }
 
-void GameServerThreadData::check_game_over(int ClinentNum) {
-	int GameClientNum = pPlayers[ClinentNum].m_GameClientNum;
+void GameServerThreadData::check_game_over(int ClientNum) {
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	for (int j = 1; j < BOARD_X - 2; j++) {
-		if (pPlayers[ClinentNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버
-			pPlayers[ClinentNum].m_gamestatus[GameClientNum].m_KeyFlag.gameover_flag = 1;
+		if (pPlayers[ClientNum].m_gamestatus[GameClientNum].board_org[CEILLING_Y][j] > 0) { //천장(위에서 세번째 줄)에 inactive가 생성되면 게임 오버
+			pPlayers[ClientNum].m_gamestatus[GameClientNum].m_KeyFlag.gameover_flag = 1;
 		}
 	}
+}
+
+void GameServerThreadData::check_win(int ClientNum)
+{
+	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
+	for (int i = 0; i < MAX_PLAYER; i++) {
+		int i_GameClientNum = pPlayers[i].m_GameClientNum;
+		if (i != GameClientNum) {
+			if (pPlayers[i].m_gamestatus[i_GameClientNum].m_KeyFlag.gameover_flag == 0) {
+				return;
+			}
+		}
+	}
+	pPlayers[ClientNum].m_gamestatus[GameClientNum].m_GameFlag.win_flag = true;
 }
 
 void GameServerThreadData::ActiveItem(int ClientNum, float fTimeElapsed)
