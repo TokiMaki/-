@@ -25,7 +25,6 @@ struct GameServerThreadData
     HANDLE hupdate;
     HANDLE hcheckupdate;
 
-
     CRITICAL_SECTION cs;
 
     int Level = 0; //ÇöÀç level
@@ -74,4 +73,7 @@ struct GameServerThreadData
 
 };
 
+ClientGameData ConvertGameData(Gamestatus m_gamestate);
+
 DWORD WINAPI CommThread(LPVOID arg);
+

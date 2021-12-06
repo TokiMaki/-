@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
     SOCKADDR_IN clientaddr;
     int addrlen;
 
+    std::cout << sizeof(ClientGameData) << std::endl;
     while (1) {
         // accept()
         addrlen = sizeof(clientaddr);
