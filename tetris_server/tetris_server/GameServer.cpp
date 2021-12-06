@@ -74,9 +74,9 @@ DWORD WINAPI CommThread(LPVOID arg)
 	int retval;
 	//std::cout << client_sock << "commThread running\n" << std::endl;
 
-	Player tempP;
 	KeyInput tempKey;
 	Gamestatus tempstatus[MAX_PLAYER];
+	ClientGameData tempClientGameData[MAX_PLAYER];
 	int tempClientNum = -1;
 	int len = 0;
 
@@ -101,8 +101,11 @@ DWORD WINAPI CommThread(LPVOID arg)
 	{
 		EnterCriticalSection(&playdata->cs);
 		// 클라이언트에 업데이트된 데이터 보내주기
+		for (int i = 0; i < MAX_PLAYER; ++i) {
+			tempClientGameData[i] = ConvertGameData(playdata->m_gamestatus[i]);
+		}
 
-		len = sizeof(Gamestatus) * MAX_PLAYER;
+		len = sizeof(ClientGameData) * MAX_PLAYER;
 		len = htonl(len);
 		retval = send(client_sock, (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR)
@@ -111,7 +114,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 			LeaveCriticalSection(&playdata->cs);
 			break;
 		}
-		retval = send(client_sock, (char*)&playdata->m_gamestatus, sizeof(Gamestatus) * MAX_PLAYER, 0);
+		retval = send(client_sock, (char*)&tempClientGameData, sizeof(ClientGameData) * MAX_PLAYER, 0);
 		if (retval == SOCKET_ERROR)
 		{
 			err_display("send()");
@@ -625,9 +628,9 @@ void GameServerThreadData::attacked(int ClientNum) {
 	int EmptyX = rand() % (BOARD_X - 2);
 	int GameClientNum = pPlayers[ClientNum].m_GameClientNum;
 	Gamestatus* m_gamestatus = &(pPlayers[ClientNum].m_gamestatus[GameClientNum]);
-	// int Target = pPlayers[ClientNum].m_gamestatus[GameClientNum].target;
 	for (int i = 0; i < m_gamestatus->AttackedBlock; ++i) {
-		for (int j = CEILLING_Y; j < BOARD_Y - 2; j++) { //윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만)
+		for (int j = CEILLING_Y; j < BOARD_Y - 2; j++) { 
+			//윗줄을 한칸씩 모두 내림(윗줄이 천장이 아닌 경우에만)
 			for (int k = 1; k < BOARD_X - 1; k++) {
 				if (m_gamestatus->board_org[j + 1][k] != CEILLING)
 					m_gamestatus->board_org[j][k] = m_gamestatus->board_org[j + 1][k];
@@ -651,14 +654,14 @@ void GameServerThreadData::check_level_up(float fTimeElapsed) {
 
 	fLevelUpTime += fTimeElapsed;
 	if (fLevelUpTime >= 5.f) {
-		if (Level < 19) {
+		if (Level < 17) {
 			Level++;
 			fLevelUpTime = 0;
 		}
 	}
 	for (int i = 0; i < MAX_PLAYER; ++i) {
 		int GameClientNum = pPlayers[i].m_GameClientNum;
-		pPlayers[i].m_gamestatus[GameClientNum].speed = 1 - Level * 0.5f;
+		pPlayers[i].m_gamestatus[GameClientNum].speed = 1 - Level * 0.05f;
 	}
 }
 
@@ -766,6 +769,52 @@ void GameServerThreadData::ActiveItem(int ClientNum, float fTimeElapsed)
 		}
 		pPlayers[ClientNum].m_gamestatus[GameClientNum].item = -1;
 	}
+}
+
+ClientGameData ConvertGameData(Gamestatus m_gamestate)
+{
+	ClientGameData TempClientGameData;
+	TempClientGameData.bx = m_gamestate.bx;
+	TempClientGameData.by = m_gamestate.by;
+	TempClientGameData.b_rotation = m_gamestate.b_rotation;
+	TempClientGameData.b_type = m_gamestate.b_type;
+	TempClientGameData.b_type_next = m_gamestate.b_type_next;
+	TempClientGameData.AttackedBlock = m_gamestate.AttackedBlock;
+	TempClientGameData.item = m_gamestate.item;
+	TempClientGameData.screen_rotate_flag = m_gamestate.m_GameFlag.screen_rotate_flag;
+	TempClientGameData.speedup_flag = m_gamestate.m_GameFlag.speedup_flag;
+	TempClientGameData.target = m_gamestate.target;
+	TempClientGameData.gameover_flag = m_gamestate.m_GameFlag.gameover_flag;
+	TempClientGameData.win_flag = m_gamestate.m_GameFlag.win_flag;
+
+	for (int i = 0; i < BOARD_X; ++i) {
+		for (int j = 0; j < BOARD_Y; ++j) {
+			int BlockShape = m_gamestate.board_org[j][i];
+			char ConvertBlockShape = -1;
+			switch (BlockShape) {
+			case ACTIVE_BLOCK:
+				ConvertBlockShape = TempClientGameData.ActiveBlock;
+				break;
+			case CEILLING:
+				ConvertBlockShape = TempClientGameData.Ceilling;
+				break;
+			case EMPTY:
+				ConvertBlockShape = TempClientGameData.Empty;
+				break;
+			case WALL:
+				ConvertBlockShape = TempClientGameData.Wall;
+				break;
+			case INACTIVE_BLOCK:
+				ConvertBlockShape = TempClientGameData.InactiveBlock;
+				break;
+			}
+			if (ConvertBlockShape != -1) {
+				TempClientGameData.board_org[j][i] = ConvertBlockShape;
+			}
+		}
+	}
+
+	return TempClientGameData;
 }
 
 bool GameServerThreadData::Room_end()
