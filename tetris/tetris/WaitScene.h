@@ -18,4 +18,5 @@ public:
     static DWORD WINAPI WaitThread(LPVOID arg);
 private:
     HANDLE hThread;
+    bool matchCancel = false;
 };

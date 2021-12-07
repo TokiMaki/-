@@ -66,6 +66,8 @@ void WaitScene::Paint(HDC hDC) {
 	SetBkMode(hDC, TRANSPARENT);
 	SetTextColor(hDC, RGB(rand() % 255, rand() % 255, rand() % 255));
 	TextOut(hDC, x-40, y, "W A I T I N G", 13);
+
+	TextOut(hDC, x - 120, y+100, "Press ENTER to Cancel Matchmaking", 33);
 	SetTextColor(hDC, RGB(0, 0, 0));
 
 	SelectObject(hDC, oldBrush);
@@ -74,6 +76,11 @@ void WaitScene::Paint(HDC hDC) {
 
 void WaitScene::KeyDown(unsigned char KEYCODE)
 {
+	switch (KEYCODE) {
+	case VK_RETURN:
+		matchCancel = true;
+		break;
+	}
 }
 
 void WaitScene::KeyUp(unsigned char KEYCODE)
@@ -108,6 +115,12 @@ DWORD __stdcall WaitScene::WaitThread(LPVOID arg)
 		pWaitScene->Msg = ntohl(pWaitScene->Msg);
 
 		int sendMsg = htonl(pWaitScene->Msg);
+		if (pWaitScene->matchCancel) {
+			sendMsg = htonl(MSG_MatchMaking::Msg_ReadyCancel);
+		}
+		else {
+			sendMsg = htonl(MSG_MatchMaking::Msg_Ready);
+		}
 
 		int MSG_len = htonl(sizeof(int));
 
@@ -126,6 +139,14 @@ DWORD __stdcall WaitScene::WaitThread(LPVOID arg)
 		if (pWaitScene->Msg == MSG_MatchMaking::Msg_PlayInGame) {
 			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::GamePlay);
 			SetEvent(hWaitReadEvent);
+			break;
+		}
+		if (sendMsg == htonl(MSG_MatchMaking::Msg_ReadyCancel)) {
+			pWaitScene->matchCancel = false;
+			pWaitScene->m_pGameClient->ChangeScene(Scene::SceneNum::Title);
+			SetEvent(hWaitReadEvent);
+			closesocket(pWaitScene->m_pGameClient->GetSOCKET());
+			WSACleanup();
 			break;
 		}
 	}
