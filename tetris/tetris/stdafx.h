@@ -12,8 +12,8 @@
 #include<conio.h>
 #include<time.h>
 #include<iostream>
-#include<string.h>
-
+#include<fstream>
+#include<string>
 
 #define SERVERIP "127.0.0.1"
 //#define SERVERIP "192.168.55.62"

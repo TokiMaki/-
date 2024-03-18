@@ -25,7 +25,21 @@ int main(int argc, char* argv[])
     ZeroMemory(&serveraddr, sizeof(serveraddr));
     serveraddr.sin_family = AF_INET;
     serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serveraddr.sin_port = htons(SERVERPORT);
+
+    string serverComponent;
+    ifstream readFile;
+    readFile.open("Server.txt");
+    if (readFile.is_open())
+    {
+        while (!readFile.eof())
+        {
+            getline(readFile, serverComponent);
+        }
+        readFile.close();
+    }
+    int serverPort = stoi(serverComponent);
+
+    serveraddr.sin_port = htons(serverPort);
     retval = bind(listen_sock, (SOCKADDR*)&serveraddr, sizeof(serveraddr));
     if (retval == SOCKET_ERROR) err_quit("bind()");
 

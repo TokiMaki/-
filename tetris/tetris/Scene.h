@@ -28,4 +28,3 @@ protected:
     SceneNum m_SceneNum;
     GameClient* m_pGameClient;
 };
-
