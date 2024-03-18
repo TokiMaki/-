@@ -12,8 +12,8 @@
 #include<iostream>
 #include<vector>
 
-//#define SERVERIP "127.0.0.1"
-#define SERVERIP "192.168.55.62"
+#define SERVERIP "127.0.0.1"
+//#define SERVERIP "192.168.55.62"
 #define SERVERPORT 9000
 #define BUF_SIZE 2048
 
