@@ -15,8 +15,8 @@
 #include<string.h>
 
 
-//#define SERVERIP "183.101.112.36"
-#define SERVERIP "220.94.221.36"
+//#define SERVERIP "127.0.0.1"
+#define SERVERIP "192.168.55.62"
 #define SERVERPORT 9000
 
 #define WINDOW_WIDTH 1024
@@ -91,9 +91,10 @@ struct Gamestatus {
     int board_org[BOARD_Y][BOARD_X]; //게임판의 정보를 저장하는 배열 모니터에 표시후에 main_cpy로 복사됨
 
     int AttackedBlock = 0;
-    int item = -1;  // 0 키 반전
+    int item = 2;  // 0 키 반전
                     // 1 상대 일시적 스피드 업
                     // 2 내려오고 있는 블록 모양 바꾸기
+                    // 4 아이템 없음
     int target = 1;
 
     bool gameover_flag = 0; // 게임오버가 됬을 때 알려주는 flag

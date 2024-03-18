@@ -403,7 +403,6 @@ DWORD WINAPI GamePlayScene::GamePlayThread(LPVOID arg) {
 			err_quit("send()");
 			break;
 		}
-
 		if (keys.enter) {
 			pGamePlayScene->m_pGameClient->ChangeScene(Scene::SceneNum::Title);
 			break;

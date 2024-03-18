@@ -100,6 +100,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 	while (1)
 	{
 		EnterCriticalSection(&playdata->cs);
+
 		// 클라이언트에 업데이트된 데이터 보내주기
 		for (int i = 0; i < MAX_PLAYER; ++i) {
 			tempClientGameData[i] = ConvertGameData(playdata->m_gamestatus[i]);
@@ -121,6 +122,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 			LeaveCriticalSection(&playdata->cs);
 			break;
 		}
+
 		//키입력 데이터 주고 받기
 		retval = recvn(client_sock, (char*)&len, sizeof(int), 0);
 		if (retval == SOCKET_ERROR)
@@ -153,6 +155,7 @@ DWORD WINAPI CommThread(LPVOID arg)
 		playdata->m_gamestatus[playdata->m_GameClientNum].m_GameFlag.gameover_flag = 1;
 	return 0;
 }
+
 void GameServerThreadData::CreateCommThread(void)
 {
 	//GameServerThread에 들어온 클라이언트들을 배열로 제작
@@ -589,7 +592,7 @@ void GameServerThreadData::check_line(int ClientNum) {
 				}
 			}
 			combo++;
-			if (m_gamestatus->item == -1)
+			if (m_gamestatus->item == 4)
 				if (rand() % 100 < 10) {
 					m_gamestatus->item = rand() % 3;
 				}
@@ -709,8 +712,6 @@ void GameServerThreadData::ActiveItem(int ClientNum, float fTimeElapsed)
 	int TargetClientNum = pPlayers[Target].m_GameClientNum;
 	int item_block = pPlayers[ClientNum].m_gamestatus[GameClientNum].item;
 
-
-
 	if (pPlayers[ClientNum].m_gamestatus[GameClientNum].m_GameFlag.screen_rotate_flag == 1) {
 		if (pPlayers[ClientNum].m_gamestatus[GameClientNum].m_GameFlag.fScreenRotateTime < 5.0f) {
 			pPlayers[ClientNum].m_gamestatus[GameClientNum].m_GameFlag.fScreenRotateTime += fTimeElapsed;
@@ -772,7 +773,7 @@ void GameServerThreadData::ActiveItem(int ClientNum, float fTimeElapsed)
 			pPlayers[Target].m_gamestatus[TargetClientNum] = tempGamestatus.m_gamestatus[GameClientNum];
 			break;
 		}
-		pPlayers[ClientNum].m_gamestatus[GameClientNum].item = -1;
+		pPlayers[ClientNum].m_gamestatus[GameClientNum].item = 4;
 	}
 }
 
